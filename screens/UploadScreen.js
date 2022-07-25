@@ -6,6 +6,8 @@ import { Button, Input } from 'react-native-elements'
 import ImagePicker from 'react-native-image-crop-picker';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
+import storage from '@react-native-firebase/storage';
+import firebase from '@react-native-firebase/app'
 
 const UploadScreen = ({ navigation }) => {
 
@@ -14,6 +16,8 @@ const UploadScreen = ({ navigation }) => {
     const [price, setPrice] = useState()
     const [title, setTitle] = useState()
     const [description, setDescription] = useState()
+    const [listImages, setListImages] = useState([])
+    let stringPath = 'postsImages/' + auth().currentUser.uid + '_' + Date.now() + '/'
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -22,7 +26,7 @@ const UploadScreen = ({ navigation }) => {
                 await firestore().collection('categories').get()
                     .then((querySnapshot) => {
                         querySnapshot.forEach(doc => {
-                            const {categoryName } = doc.data()
+                            const { categoryName } = doc.data()
                             list.push(
                                 categoryName
                             )
@@ -40,26 +44,45 @@ const UploadScreen = ({ navigation }) => {
     }, [])
 
     const uploadPost = async () => {
-        // const uploadUri = image
-        // let fileName = uploadUri.substring(uploadUri.lastIndexOf('/') + 1)
-        // let stringPath = 'postsImage/'+postTimestamp + '_' + title
 
-        // try {
-        //     storage.ref(stringPath).putFile(uploadUri)
-
-        // } catch (error) {
-        //     console.log(error)
-        // }
-
+        //Upload Firestore Database
         await firestore().collection('posts').add({
             postTitle: title,
             postCategory: selectedCategory,
             postBranch: selectedBranch,
-            postStatus: selectedStatus,
+            postStatusOfProduct: selectedStatus,
+            postStatus: 0,
             postPrice: price,
             postDescription: description,
-            postTimestamp: firestore.Timestamp.now().toString(),
+            postTimestamp: Date.now(),
+            postImages: stringPath,
+            postOwner: auth().currentUser.uid,
+            postID: auth().currentUser.uid + '_' + Date.now(),
         }).catch(error => alert(error.meesage))
+
+        //Upload Images
+        if (listImages.length > 0) {
+            listImages.forEach(item => {
+                let uploadUri = item
+                let fileName = uploadUri.substring(uploadUri.lastIndexOf('/') + 1)
+                stringPath = stringPath + fileName
+
+                try {
+                    const task = storage().ref(stringPath).putFile(uploadUri)
+                    task.then(() => {
+                        console.log('Uploaded: ', uploadUri)
+                    })
+                } catch (error) {
+                    console.log(error)
+                }
+            })
+        }
+
+
+        //Reset field
+        setTitle('')
+        setSelectedBranch(0)
+        setListImages([])
     }
 
     const pickImages = () => {
@@ -68,18 +91,17 @@ const UploadScreen = ({ navigation }) => {
             height: 400,
             cropping: true,
         }).then(image => {
-            setImage(image.path);
+            setListImages([...listImages, image.path])
+            console.log(image.path)
         });
     }
 
     const [selectedCategory, setSelectedCategory] = useState()
     const [selectedBranch, setSelectedBranch] = useState()
     const [selectedStatus, setSelectedStatus] = useState()
-    const [image, setImage] = useState()
 
     const dataStatus = ['New', 'Used (Not maintained yet)', 'Used (Maintained)']
     const dataBranch = ['Dell', 'Acer', 'Asus', 'HP']
-
     return (
         <SafeAreaView style={styles.container}>
             <KeyboardAvoidingView>
@@ -230,7 +252,7 @@ const UploadScreen = ({ navigation }) => {
                                 value={title}
                                 onChangeText={(text) => setTitle(text)}
                                 style={{
-                                    marginStart: 15
+                                    marginStart: 15,
                                 }} />
                         </View>
 
@@ -244,7 +266,8 @@ const UploadScreen = ({ navigation }) => {
                                 borderWidth: 2,
                                 borderColor: colors.primaryBackground,
                                 ...styles.inputContainer,
-                                paddingStart: 15
+                                paddingStart: 15,
+                                textAlignVertical: 'top'
                             }} />
 
                         {/* Button Submit  */}
