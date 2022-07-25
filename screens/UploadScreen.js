@@ -7,17 +7,16 @@ import ImagePicker from 'react-native-image-crop-picker';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
-import firebase from '@react-native-firebase/app'
 
 const UploadScreen = ({ navigation }) => {
 
     const [categories, setCategories] = useState()
     const [loading, setLoading] = useState(true)
-    const [price, setPrice] = useState()
+    let [price, setPrice] = useState()
     const [title, setTitle] = useState()
-    const [description, setDescription] = useState()
+    let [description, setDescription] = useState()
     const [listImages, setListImages] = useState([])
-    let stringPath = 'postsImages/' + auth().currentUser.uid + '_' + Date.now() + '/'
+    let stringPath = 'postsImages/' + auth().currentUser.uid + '/' + Date.now() + '/'
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -45,44 +44,73 @@ const UploadScreen = ({ navigation }) => {
 
     const uploadPost = async () => {
 
-        //Upload Firestore Database
-        await firestore().collection('posts').add({
-            postTitle: title,
-            postCategory: selectedCategory,
-            postBranch: selectedBranch,
-            postStatusOfProduct: selectedStatus,
-            postStatus: 0,
-            postPrice: price,
-            postDescription: description,
-            postTimestamp: Date.now(),
-            postImages: stringPath,
-            postOwner: auth().currentUser.uid,
-            postID: auth().currentUser.uid + '_' + Date.now(),
-        }).catch(error => alert(error.meesage))
+        //Validate data
+        if (title == undefined) {
+            alert('Title is required')
+        } else {
+            if (selectedCategory == undefined) {
+                alert('Category is required')
+            } else {
+                if (selectedBranch == undefined) {
+                    alert('Branch is required')
+                } else {
+                    if (selectedStatus == undefined) {
+                        alert('Status is required')
 
-        //Upload Images
-        if (listImages.length > 0) {
-            listImages.forEach(item => {
-                let uploadUri = item
-                let fileName = uploadUri.substring(uploadUri.lastIndexOf('/') + 1)
-                stringPath = stringPath + fileName
+                    } else {
+                        price = parseFloat(price)
+                        if (price == undefined || isNaN(price)) {
+                            alert('Price is required and must is positive number. ')
+                        } else {
+                            if (description == undefined) {
+                                description = ''
+                            }
 
-                try {
-                    const task = storage().ref(stringPath).putFile(uploadUri)
-                    task.then(() => {
-                        console.log('Uploaded: ', uploadUri)
-                    })
-                } catch (error) {
-                    console.log(error)
+                            if (listImages.length == 0) {
+                                stringPath = "No image"
+                            } else {
+                                // //Upload Images
+                                listImages.forEach(item => {
+                                    let uploadUri = item
+                                    let fileName = uploadUri.substring(uploadUri.lastIndexOf('/') + 1)
+                                    stringPath = stringPath + fileName
+
+                                    try {
+                                        const task = storage().ref(stringPath).putFile(uploadUri)
+                                        task.then(() => {
+                                            console.log('Uploaded: ', uploadUri)
+                                        })
+                                    } catch (error) {
+                                        console.log(error)
+                                    }
+                                })
+                            }
+                            // Upload Firestore Database
+                            await firestore().collection('posts').add({
+                                postTitle: title,
+                                postCategory: selectedCategory,
+                                postBranch: selectedBranch,
+                                postStatusOfProduct: selectedStatus,
+                                postStatus: 0,
+                                postPrice: price,
+                                postDescription: description,
+                                postTimestamp: Date.now(),
+                                postImages: stringPath,
+                                postOwner: auth().currentUser.uid,
+                                postID: auth().currentUser.uid + '_' + Date.now(),
+                            }).catch(error => alert(error.meesage))
+                                .then(
+                                    console.log('Update post successful')
+                                )
+                        }
+                    }
                 }
-            })
+            }
         }
-
-
-        //Reset field
-        setTitle('')
-        setSelectedBranch(0)
-        setListImages([])
+        // //Reset field
+        // setTitle('')
+        // setSelectedBranch(0)
+        // setListImages([])
     }
 
     const pickImages = () => {
@@ -124,11 +152,7 @@ const UploadScreen = ({ navigation }) => {
                             }}>*</Text>
                         </View>
                         <SelectDropdown data={categories}
-                            defaultValueByIndex={0}
-                            search={true}
-                            searchPlaceHolder={'Search a category.'}
-                            renderSearchInputLeftIcon={() =>
-                                <Image source={require('../assets/search.png')} />}
+                            defaultButtonText='Category'
                             buttonStyle={{
                                 width: '100%',
                                 alignSelf: 'center',
@@ -179,10 +203,6 @@ const UploadScreen = ({ navigation }) => {
                         }}>
                             <SelectDropdown data={dataBranch}
                                 defaultButtonText='Branch'
-                                search={true}
-                                searchPlaceHolder={'Search a category.'}
-                                renderSearchInputLeftIcon={() =>
-                                    <Image source={require('../assets/search.png')} />}
                                 buttonStyle={{
                                     width: '100%',
                                     alignSelf: 'center',
@@ -206,10 +226,6 @@ const UploadScreen = ({ navigation }) => {
                         }}>
                             <SelectDropdown data={dataStatus}
                                 defaultButtonText='Status'
-                                search={true}
-                                searchPlaceHolder={'Search a category.'}
-                                renderSearchInputLeftIcon={() =>
-                                    <Image source={require('../assets/search.png')} />}
                                 buttonStyle={{
                                     width: '100%',
                                     alignSelf: 'center',
