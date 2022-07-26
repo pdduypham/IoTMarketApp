@@ -6,6 +6,7 @@ import colors from '../constants/colors'
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
+import CategoryItem from '../components/CategoryItem'
 
 
 const HomeScreen = () => {
@@ -76,7 +77,11 @@ const HomeScreen = () => {
             marginStart: 10,
             marginTop: 20,
           }}>CATEGORIES</Text>
-
+          {/* <ScrollView>
+            {categories.map(category => (
+              <CategoryItem />
+            ))}
+          </ScrollView> */}
         </View>
 
       </ScrollView>

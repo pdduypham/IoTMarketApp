@@ -1,5 +1,5 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native'
-import React from 'react'
+import { StyleSheet, Text, View, Image, TouchableOpacity, Keyboard } from 'react-native'
+import React, { useEffect, useState } from 'react'
 import HomeScreen from '../screens/HomeScreen'
 import ChatsScreen from '../screens/ChatsScreen'
 import PostsScreen from '../screens/PostsScreen'
@@ -49,9 +49,8 @@ const CustomTabBarButton = ({children, onPress}) => (
 )
 
 const TabBar = ({navigation}) => {
-  
   return (
-    <Tab.Navigator screenOptions={screenOptions}>
+     <Tab.Navigator screenOptions={screenOptions}>
       <Tab.Screen name='Home' component={HomeScreen}
         options={{
           tabBarIcon: ({ focused }) => (

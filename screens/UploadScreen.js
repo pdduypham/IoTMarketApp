@@ -1,5 +1,5 @@
-import { FlatList, SafeAreaView, ScrollView, TextInput, StyleSheet, Text, View, Image, TouchableOpacity, KeyboardAvoidingView } from 'react-native'
-import React, { useEffect, useLayoutEffect, useState } from 'react'
+import { SafeAreaView, ScrollView, TextInput, StyleSheet, Text, View, Image, TouchableOpacity, KeyboardAvoidingView } from 'react-native'
+import React, { useEffect, useState } from 'react'
 import SelectDropdown from 'react-native-select-dropdown'
 import colors from '../constants/colors'
 import { Button, Input } from 'react-native-elements'
@@ -7,16 +7,18 @@ import ImagePicker from 'react-native-image-crop-picker';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
+import UploadImageItem from '../components/UploadImageItem'
 
 const UploadScreen = ({ navigation }) => {
 
     const [categories, setCategories] = useState()
     const [loading, setLoading] = useState(true)
     let [price, setPrice] = useState()
-    const [title, setTitle] = useState()
+    let [title, setTitle] = useState()
     let [description, setDescription] = useState()
     const [listImages, setListImages] = useState([])
     let stringPath = 'postsImages/' + auth().currentUser.uid + '/' + Date.now() + '/'
+    let [disableUpload, setDisableUpload] = useState(true)
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -42,75 +44,62 @@ const UploadScreen = ({ navigation }) => {
         fetchCategories()
     }, [])
 
+    useEffect(() => {
+        setDisableUpload((
+            title == undefined ||
+            title == '' ||
+            selectedCategory == undefined ||
+            selectedBranch == undefined ||
+            selectedStatus == undefined ||
+            price == undefined || isNaN(price) ||
+            price == '' ||
+            description == undefined ||
+            description == ''))
+    }, [description, price, selectedStatus, title, selectedCategory, selectedBranch])
+
     const uploadPost = async () => {
-
-        //Validate data
-        if (title == undefined) {
-            alert('Title is required')
+        price = parseFloat(price)
+        if (listImages.length == 0) {
+            stringPath = "No image"
         } else {
-            if (selectedCategory == undefined) {
-                alert('Category is required')
-            } else {
-                if (selectedBranch == undefined) {
-                    alert('Branch is required')
-                } else {
-                    if (selectedStatus == undefined) {
-                        alert('Status is required')
+            // //Upload Images
+            listImages.forEach(item => {
+                let uploadUri = item
+                let fileName = uploadUri.substring(uploadUri.lastIndexOf('/') + 1)
+                stringPath = stringPath + fileName
 
-                    } else {
-                        price = parseFloat(price)
-                        if (price == undefined || isNaN(price)) {
-                            alert('Price is required and must is positive number. ')
-                        } else {
-                            if (description == undefined) {
-                                description = ''
-                            }
-
-                            if (listImages.length == 0) {
-                                stringPath = "No image"
-                            } else {
-                                // //Upload Images
-                                listImages.forEach(item => {
-                                    let uploadUri = item
-                                    let fileName = uploadUri.substring(uploadUri.lastIndexOf('/') + 1)
-                                    stringPath = stringPath + fileName
-
-                                    try {
-                                        const task = storage().ref(stringPath).putFile(uploadUri)
-                                        task.then(() => {
-                                            console.log('Uploaded: ', uploadUri)
-                                        })
-                                    } catch (error) {
-                                        console.log(error)
-                                    }
-                                })
-                            }
-                            // Upload Firestore Database
-                            await firestore().collection('posts').add({
-                                postTitle: title,
-                                postCategory: selectedCategory,
-                                postBranch: selectedBranch,
-                                postStatusOfProduct: selectedStatus,
-                                postStatus: 0,
-                                postPrice: price,
-                                postDescription: description,
-                                postTimestamp: Date.now(),
-                                postImages: stringPath,
-                                postOwner: auth().currentUser.uid,
-                                postID: auth().currentUser.uid + '_' + Date.now(),
-                            }).catch(error => alert(error.meesage))
-                                .then(
-                                    console.log('Update post successful')
-                                )
-                        }
-                    }
+                try {
+                    const task = storage().ref(stringPath).putFile(uploadUri)
+                    task.then(() => {
+                        console.log('Uploaded: ', uploadUri)
+                    })
+                } catch (error) {
+                    console.log(error)
                 }
-            }
+            })
+
+            await firestore().collection('posts').add({
+                postTitle: title,
+                postCategory: selectedCategory,
+                postBranch: selectedBranch,
+                postStatusOfProduct: selectedStatus,
+                postStatus: 0,
+                postPrice: price,
+                postDescription: description,
+                postTimestamp: Date.now(),
+                postImages: stringPath,
+                postOwner: auth().currentUser.uid,
+                postID: auth().currentUser.uid + '_' + Date.now(),
+            }).catch(error => alert(error.meesage))
+                .then(
+                    console.log('Update post successful'),
+                    //Reset field
+                    setTitle(undefined),
+                    setListImages([]),
+                    setPrice(undefined),
+                    setDescription(undefined)
+                )
         }
-        // //Reset field
-        // setTitle('')
-        // setSelectedBranch(0)
-        // setListImages([])
     }
 
     const pickImages = () => {
@@ -118,9 +107,10 @@ const UploadScreen = ({ navigation }) => {
             width: 300,
             height: 400,
             cropping: true,
-        }).then(image => {
-            setListImages([...listImages, image.path])
-            console.log(image.path)
+            includeBase64: true
+        }).then(item => {
+            setListImages([...listImages, item.path])
+            // console.log(listImages)
         });
     }
 
@@ -193,6 +183,14 @@ const UploadScreen = ({ navigation }) => {
                                 marginBottom: 5
                             }}>Take a photo</Text>
                         </TouchableOpacity>
+                        <View style={{
+                            backgroundColor: 'red',
+                            height: 60
+                        }}>
+                            <ScrollView horizontal>
+                                {listImages.map(item => <UploadImageItem key={item} imageURI={item} />)}
+                            </ScrollView>
+                        </View>
 
                         {/* Select branch */}
                         <View style={{
@@ -288,10 +286,11 @@ const UploadScreen = ({ navigation }) => {
 
                         {/* Button Submit  */}
                         <Button title={'Upload'}
+                            disabled={disableUpload}
                             containerStyle={styles.button}
                             onPress={uploadPost}
                             buttonStyle={{
-                                height: 50
+                                height: 50,
                             }} />
                     </View>
                 </ScrollView>
@@ -323,6 +322,6 @@ const styles = StyleSheet.create({
     button: {
         width: 200,
         marginTop: 10,
-        alignSelf: 'center'
+        alignSelf: 'center',
     }
 })

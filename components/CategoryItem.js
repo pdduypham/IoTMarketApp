@@ -2,12 +2,11 @@ import { StyleSheet, Text, View,Image } from 'react-native'
 import React from 'react'
 import { ListItem } from 'react-native-elements'
 
-const CustomCategoryItem = ({id, categoryName}) => {
+const CategoryItem = ({categoryID, categoryName, categoryImage}) => {
   return (
     <View>
-      <ListItem key={id} bottomDivider 
+      <ListItem key={categoryID} bottomDivider 
       style={{
-        marginTop: 1,
         justifyContent:'center'
       }}>
             <ListItem.Content>
@@ -27,6 +26,6 @@ const CustomCategoryItem = ({id, categoryName}) => {
   )
 }
 
-export default CustomCategoryItem
+export default CategoryItem
 
 const styles = StyleSheet.create({})
