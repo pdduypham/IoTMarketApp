@@ -114,6 +114,11 @@ const UploadScreen = ({ navigation }) => {
         });
     }
 
+    let getData = (childData) => {
+        const new_arr = listImages.filter(item => item !== childData);
+        setListImages(new_arr)
+    }
+
     const [selectedCategory, setSelectedCategory] = useState()
     const [selectedBranch, setSelectedBranch] = useState()
     const [selectedStatus, setSelectedStatus] = useState()
@@ -124,23 +129,49 @@ const UploadScreen = ({ navigation }) => {
         <SafeAreaView style={styles.container}>
             <KeyboardAvoidingView>
                 <ScrollView>
-                    {/* Select category */}
+                    {/* Detail Infomation */}
+                    <View style={{
+                        marginTop: 20,
+                    }}>
+                        <Text style={{
+                            fontWeight: 'bold',
+                            fontSize: 18,
+                            marginStart: 10
+                        }}>DETAIL INFOMATION</Text>
+
+                        {/* Take a photo */}
+                        <TouchableOpacity style={styles.touchable}
+                            onPress={pickImages}
+                            disabled={listImages.length == 5 ? true : false}>
+                            <Image source={require('../assets/camera.png')}
+                                style={{
+                                    width: 64,
+                                    height: 64,
+                                    alignSelf: 'center',
+                                    marginTop: 10
+                                }} />
+                            <Text style={{
+                                fontSize: 16,
+                                textAlign: 'center',
+                                marginBottom: 5
+                            }}>Take a photo: {listImages.length}/5</Text>
+                        </TouchableOpacity>
+                        <View style={{
+                            height: 80,
+                            marginTop: 20
+                        }}>
+                            <ScrollView horizontal>
+                                {listImages.map(item => <UploadImageItem onPress={getData} key={item} imageURI={item} />)}
+                            </ScrollView>
+                        </View>
+
+                         {/* Select category */}
                     <View style={{
                         marginHorizontal: 20,
                         marginTop: 20,
                         backgroundColor: colors.primaryBackground,
                         borderRadius: 10
                     }}>
-                        <View style={{
-                            flexDirection: 'row',
-                            marginTop: 10,
-                            marginLeft: 10
-                        }}>
-                            <Text>Choose category </Text>
-                            <Text style={{
-                                color: 'red'
-                            }}>*</Text>
-                        </View>
                         <SelectDropdown data={categories}
                             defaultButtonText='Category'
                             buttonStyle={{
@@ -156,41 +187,6 @@ const UploadScreen = ({ navigation }) => {
                             onSelect={(selectedItem, index) => { setSelectedCategory(selectedItem) }}
                         />
                     </View>
-
-                    {/* Detail Infomation */}
-                    <View style={{
-                        marginTop: 20,
-                    }}>
-                        <Text style={{
-                            fontWeight: 'bold',
-                            fontSize: 18,
-                            marginStart: 10
-                        }}>DETAIL INFOMATION</Text>
-
-                        {/* Take a photo */}
-                        <TouchableOpacity style={styles.touchable}
-                            onPress={pickImages}>
-                            <Image source={require('../assets/camera.png')}
-                                style={{
-                                    width: 64,
-                                    height: 64,
-                                    alignSelf: 'center',
-                                    marginTop: 10
-                                }} />
-                            <Text style={{
-                                fontSize: 16,
-                                textAlign: 'center',
-                                marginBottom: 5
-                            }}>Take a photo</Text>
-                        </TouchableOpacity>
-                        <View style={{
-                            backgroundColor: 'red',
-                            height: 60
-                        }}>
-                            <ScrollView horizontal>
-                                {listImages.map(item => <UploadImageItem key={item} imageURI={item} />)}
-                            </ScrollView>
-                        </View>
 
                         {/* Select branch */}
                         <View style={{

@@ -10,6 +10,9 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.1.2",
+    "@fortawesome/free-solid-svg-icons": "^6.1.2",
+    "@fortawesome/react-fontawesome": "^0.2.0",
     "@react-native-firebase/app": "^15.2.0",
     "@react-native-firebase/auth": "^15.2.0",
     "@react-native-firebase/firestore": "^15.2.0",
