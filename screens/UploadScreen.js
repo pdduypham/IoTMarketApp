@@ -19,6 +19,7 @@ const UploadScreen = ({ navigation }) => {
     const [listImages, setListImages] = useState([])
     let stringPath = 'postsImages/' + auth().currentUser.uid + '/' + Date.now() + '/'
     let [disableUpload, setDisableUpload] = useState(true)
+    let storageRef
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -69,7 +70,8 @@ const UploadScreen = ({ navigation }) => {
                 stringPath = stringPath + fileName
 
                 try {
-                    const task = storage().ref(stringPath).putFile(uploadUri)
+                    storageRef = storage().ref(stringPath)
+                    const task = storageRef.putFile(uploadUri)
                     task.then(() => {
                         console.log('Uploaded: ', uploadUri)
                     })
@@ -87,7 +89,7 @@ const UploadScreen = ({ navigation }) => {
                 postPrice: price,
                 postDescription: description,
                 postTimestamp: Date.now(),
-                postImages: stringPath,
+                postImages: storageRef.getDownloadURL(),
                 postOwner: auth().currentUser.uid,
                 postID: auth().currentUser.uid + '_' + Date.now(),
             }).catch(error => alert(error.meesage))

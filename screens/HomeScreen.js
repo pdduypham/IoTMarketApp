@@ -1,44 +1,42 @@
 import { StyleSheet, Text, View, Image, KeyboardAvoidingView, StatusBar, SafeAreaView, TextInput, ScrollView } from 'react-native'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useLayoutEffect } from 'react'
 import { color } from 'react-native-elements/dist/helpers'
 import { Button, Input } from 'react-native-elements'
 import colors from '../constants/colors'
-import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
-import storage from '@react-native-firebase/storage';
 import CategoryItem from '../components/CategoryItem'
 
 
 const HomeScreen = () => {
 
-  const [categories, setCategories] = useState()
+  const [categories, setCategories] = useState([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const fetchCategories = async () => {
-        try {
-            const list = []
-            await firestore().collection('categories').get()
-                .then((querySnapshot) => {
-                    querySnapshot.forEach(doc => {
-                        const { categoryName, categoryID, categoryImage } = doc.data()
-                        list.push({
-                          categoryName,
-                          categoryID,
-                          categoryImage
-                        })
-                    })
-                })
-            setCategories(list)
-            if (loading) {
-                setLoading(false)
-            }
-        } catch (error) {
-            console.log(error)
+      try {
+        const list = []
+        await firestore().collection('categories').get()
+          .then((querySnapshot) => {
+            querySnapshot.forEach(doc => {
+              const { categoryName, categoryID, categoryImage } = doc.data()
+              list.push({
+                categoryName,
+                categoryID,
+                categoryImage
+              })
+            })
+          })
+        setCategories(list)
+        if (loading) {
+          setLoading(false)
         }
+      } catch (error) {
+        console.log(error)
+      }
     }
     fetchCategories()
-}, [])
+  }, [])
 
   return (
     <SafeAreaView
@@ -77,11 +75,14 @@ const HomeScreen = () => {
             marginStart: 10,
             marginTop: 20,
           }}>CATEGORIES</Text>
-          {/* <ScrollView>
+          <ScrollView horizontal>
             {categories.map(category => (
-              <CategoryItem />
+              <CategoryItem key={category.categoryID}
+                categoryName={category.categoryName}
+                categoryImage = {category.categoryImage}
+                categoryID = {category.categoryID} />
             ))}
-          </ScrollView> */}
+          </ScrollView>
         </View>
 
       </ScrollView>

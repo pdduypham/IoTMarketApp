@@ -1,28 +1,35 @@
-import { StyleSheet, Text, View,Image } from 'react-native'
-import React from 'react'
-import { ListItem } from 'react-native-elements'
+import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native'
+import React, { useEffect } from 'react'
+import colors from '../constants/colors'
+import storage from '@react-native-firebase/storage';
 
-const CategoryItem = ({categoryID, categoryName, categoryImage}) => {
+const CategoryItem = ({ categoryID, categoryName, categoryImage }) => {
+
+  
+  const url = storage().ref('categories/laptop.png').getDownloadURL()
+
+  useEffect(() => {
+    console.log(url)
+  })
   return (
-    <View>
-      <ListItem key={categoryID} bottomDivider 
+    <TouchableOpacity key={categoryID} style={{
+      flexDirection: 'column',
+      margin: 1,
+      width: 80,
+      height: 80,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: colors.primaryBackground,
+      borderRadius: 10
+    }}>
+      {/* <Image source={{uri: url}}
       style={{
-        justifyContent:'center'
-      }}>
-            <ListItem.Content>
-                <ListItem.Title>
-                    {categoryName}
-                </ListItem.Title>
-            </ListItem.Content>
-            <Image source={require('../assets/next.png')}
-            resizeMode={'contain'}
-            style={{
-                width: 16, 
-                height: 16,
-                paddingEnd: 40
-            }}/>
-      </ListItem>
-    </View>
+        width: 40,
+        height: 40,
+      }}
+      resizeMode='contain'/> */}
+      <Text>{categoryName}</Text>
+    </TouchableOpacity>
   )
 }
 
