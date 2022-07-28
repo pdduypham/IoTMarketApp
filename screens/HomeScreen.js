@@ -15,6 +15,7 @@ const HomeScreen = () => {
   const [posts, setPosts] = useState([])
   const [loading, setLoading] = useState(true)
 
+  //Get Categories Menu
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -40,56 +41,19 @@ const HomeScreen = () => {
       }
     }
     fetchCategories()
-  }, [])
+  })
 
   useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const listPosts = []
-        await firestore().collection('posts').get()
-          .then((querySnapshot) => {
-            querySnapshot.forEach(doc => {
-              const {
-                postTitle,
-                postCategory,
-                postBranch,
-                postStatusOfProduct,
-                postStatus,
-                postPrice,
-                postDescription,
-                postTimestamp,
-                postImages,
-                postOwner,
-                postID
-              } = doc.data()
-
-              listPosts.push({
-                postTitle,
-                postCategory,
-                postBranch,
-                postStatusOfProduct,
-                postStatus,
-                postPrice,
-                postDescription,
-                postTimestamp,
-                postImages,
-                postOwner,
-                postID
-              })
-
-              setPosts(listPosts)
-
-              if (loading) {
-                setLoading(false)
-              }
-            })
-          })
-      } catch (error) {
-        console.log(error)
-      }
-    }
-
-    fetchPosts()
+    const subscriber = firestore()
+      .collection('posts')
+      .orderBy('postTimestamp','desc')
+      .onSnapshot(documentSnapshot => {
+        setPosts(documentSnapshot.docs.map((doc) => ({
+          id: doc.id,
+          data: doc.data()
+        })))
+      });
+    return subscriber
   })
 
   return (
@@ -152,8 +116,8 @@ const HomeScreen = () => {
             marginTop: 20,
           }}>RECOMMEND FOR YOU</Text>
           <ScrollView>
-            {posts.map(post => (
-              <PostItem key={post.postID}/>
+            {posts.map(({ id, data: { postTitle } }) => (
+              <PostItem key={id} postTitle ={postTitle} />
             ))}
           </ScrollView>
         </View>

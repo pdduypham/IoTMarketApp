@@ -1,10 +1,10 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 
-const PostItem = () => {
+const PostItem = ({postTitle}) => {
   return (
     <View>
-      <Text>PostItem</Text>
+      <Text>{postTitle}</Text>
     </View>
   )
 }

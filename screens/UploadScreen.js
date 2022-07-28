@@ -119,7 +119,7 @@ const UploadScreen = ({ navigation }) => {
                 postTimestamp: timestamp,
                 postImages: stringPath,
                 postOwner: auth().currentUser.uid,
-                postID: auth().currentUser.uid +'_'+ timestamp,
+                postID: auth().currentUser.uid + '_' + timestamp,
             }).catch(error => alert(error.meesage))
                 .then(
                     console.log('Update post successful'),
@@ -198,28 +198,28 @@ const UploadScreen = ({ navigation }) => {
                             </ScrollView>
                         </View>
 
-                         {/* Select category */}
-                    <View style={{
-                        marginHorizontal: 20,
-                        marginTop: 20,
-                        backgroundColor: colors.primaryBackground,
-                        borderRadius: 10
-                    }}>
-                        <SelectDropdown data={categories}
-                            defaultButtonText='Category'
-                            buttonStyle={{
-                                width: '100%',
-                                alignSelf: 'center',
-                                borderRadius: 10
-                            }}
-                            buttonTextStyle={{
-                                textAlign: 'left'
-                            }}
-                            renderDropdownIcon={() =>
-                                <Image source={require('../assets/dropdown.png')} />}
-                            onSelect={(selectedItem, index) => { setSelectedCategory(selectedItem) }}
-                        />
-                    </View>
+                        {/* Select category */}
+                        <View style={{
+                            marginHorizontal: 20,
+                            marginTop: 20,
+                            backgroundColor: colors.primaryBackground,
+                            borderRadius: 10
+                        }}>
+                            <SelectDropdown data={categories}
+                                defaultButtonText='Category'
+                                buttonStyle={{
+                                    width: '100%',
+                                    alignSelf: 'center',
+                                    borderRadius: 10
+                                }}
+                                buttonTextStyle={{
+                                    textAlign: 'left'
+                                }}
+                                renderDropdownIcon={() =>
+                                    <Image source={require('../assets/dropdown.png')} />}
+                                onSelect={(selectedItem, index) => { setSelectedCategory(selectedItem) }}
+                            />
+                        </View>
 
                         {/* Select branch */}
                         <View style={{
