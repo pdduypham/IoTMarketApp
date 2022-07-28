@@ -8,6 +8,7 @@ import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
 import UploadImageItem from '../components/UploadImageItem'
+import firebase from '@react-native-firebase/app'
 
 const UploadScreen = ({ navigation }) => {
 
@@ -17,10 +18,12 @@ const UploadScreen = ({ navigation }) => {
     let [title, setTitle] = useState()
     let [description, setDescription] = useState()
     const [listImages, setListImages] = useState([])
-    let stringPath = 'postsImages/' + auth().currentUser.uid + '/' + Date.now()
+    let stringPath = 'postsImages/' + auth().currentUser.uid + '/'
     let [disableUpload, setDisableUpload] = useState(true)
     let storageRef
+    const [timestamp, setTimestamp] = useState(firebase.firestore.Timestamp.now().seconds)
 
+    //Get Categories from db.
     useEffect(() => {
         const fetchCategories = async () => {
             try {
@@ -45,6 +48,7 @@ const UploadScreen = ({ navigation }) => {
         fetchCategories()
     }, [])
 
+    //Disable Upload when field is empty.
     useEffect(() => {
         setDisableUpload((
             title == undefined ||
@@ -58,22 +62,46 @@ const UploadScreen = ({ navigation }) => {
             description == ''))
     }, [description, price, selectedStatus, title, selectedCategory, selectedBranch])
 
+    //Upload post.
     const uploadPost = async () => {
+        setTimestamp(firebase.firestore.Timestamp.now().seconds)
         price = parseFloat(price)
         if (listImages.length == 0) {
             stringPath = "No image"
+            await firestore().collection('posts').add({
+                postTitle: title,
+                postCategory: selectedCategory,
+                postBranch: selectedBranch,
+                postStatusOfProduct: selectedStatus,
+                postStatus: 0,
+                postPrice: price,
+                postDescription: description,
+                postTimestamp: timestamp,
+                postImages: stringPath,
+                postOwner: auth().currentUser.uid,
+                postID: auth().currentUser.uid + '_' + timestamp
+            }).catch(error => alert(error.meesage))
+                .then(
+                    console.log('Update post successful'),
+                    //Reset field
+                    setTitle(undefined),
+                    setListImages([]),
+                    setPrice(undefined),
+                    setDescription(undefined)
+                )
         } else {
             // //Upload Images
+            stringPath += timestamp
             listImages.forEach(item => {
                 let uploadUri = item
                 let fileName = uploadUri.substring(uploadUri.lastIndexOf('/') + 1)
-                uploadStringPath = stringPath + fileName
+                let uploadStringPath = stringPath + fileName
 
                 try {
                     storageRef = storage().ref(uploadStringPath)
                     const task = storageRef.putFile(uploadUri)
                     task.then(() => {
-                        console.log('Uploaded: ', uploadUri)
+                        console.log('Uploaded image: ', uploadUri)
                     })
                 } catch (error) {
                     console.log(error)
@@ -88,10 +116,10 @@ const UploadScreen = ({ navigation }) => {
                 postStatus: 0,
                 postPrice: price,
                 postDescription: description,
-                postTimestamp: Date.now(),
+                postTimestamp: timestamp,
                 postImages: stringPath,
                 postOwner: auth().currentUser.uid,
-                postID: auth().currentUser.uid + '_' + Date.now(),
+                postID: auth().currentUser.uid +'_'+ timestamp,
             }).catch(error => alert(error.meesage))
                 .then(
                     console.log('Update post successful'),
@@ -104,6 +132,7 @@ const UploadScreen = ({ navigation }) => {
         }
     }
 
+    //Pick Image from Camera.
     const pickImages = () => {
         ImagePicker.openCamera({
             width: 300,
@@ -115,6 +144,7 @@ const UploadScreen = ({ navigation }) => {
         });
     }
 
+    //Get and Delete image from child component.
     let getData = (childData) => {
         const new_arr = listImages.filter(item => item !== childData);
         setListImages(new_arr)
@@ -124,8 +154,10 @@ const UploadScreen = ({ navigation }) => {
     const [selectedBranch, setSelectedBranch] = useState()
     const [selectedStatus, setSelectedStatus] = useState()
 
+    //Data.
     const dataStatus = ['New', 'Used (Not maintained yet)', 'Used (Maintained)']
     const dataBranch = ['Dell', 'Acer', 'Asus', 'HP']
+
     return (
         <SafeAreaView style={styles.container}>
             <KeyboardAvoidingView>

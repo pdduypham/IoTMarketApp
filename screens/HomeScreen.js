@@ -7,21 +7,23 @@ import firestore from '@react-native-firebase/firestore';
 import CategoryItem from '../components/CategoryItem'
 import storage from '@react-native-firebase/storage';
 import firebase from '@react-native-firebase/app'
+import PostItem from '../components/PostItem'
 
 const HomeScreen = () => {
 
   const [categories, setCategories] = useState([])
+  const [posts, setPosts] = useState([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const list = []
+        const listCategories = []
         await firestore().collection('categories').get()
           .then((querySnapshot) => {
             querySnapshot.forEach(doc => {
               const { categoryName, categoryID, categoryImage } = doc.data()
-              list.push({
+              listCategories.push({
                 categoryName,
                 categoryID,
                 categoryImage
@@ -29,7 +31,7 @@ const HomeScreen = () => {
             })
           })
 
-        setCategories(list)
+        setCategories(listCategories)
         if (loading) {
           setLoading(false)
         }
@@ -39,6 +41,56 @@ const HomeScreen = () => {
     }
     fetchCategories()
   }, [])
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const listPosts = []
+        await firestore().collection('posts').get()
+          .then((querySnapshot) => {
+            querySnapshot.forEach(doc => {
+              const {
+                postTitle,
+                postCategory,
+                postBranch,
+                postStatusOfProduct,
+                postStatus,
+                postPrice,
+                postDescription,
+                postTimestamp,
+                postImages,
+                postOwner,
+                postID
+              } = doc.data()
+
+              listPosts.push({
+                postTitle,
+                postCategory,
+                postBranch,
+                postStatusOfProduct,
+                postStatus,
+                postPrice,
+                postDescription,
+                postTimestamp,
+                postImages,
+                postOwner,
+                postID
+              })
+
+              setPosts(listPosts)
+
+              if (loading) {
+                setLoading(false)
+              }
+            })
+          })
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
+    fetchPosts()
+  })
 
   return (
     <SafeAreaView
@@ -52,6 +104,8 @@ const HomeScreen = () => {
           justifyContent: 'center',
           alignItems: 'center'
         }}>
+
+          {/* Search bar */}
           <TextInput placeholder='Search...'
             rightIcon={require('../assets/home.png')}
             style={{
@@ -70,6 +124,8 @@ const HomeScreen = () => {
               right: 45
             }} />
         </View>
+
+        {/* Categories Menu */}
         <View>
           <Text style={{
             fontWeight: 'bold',
@@ -81,8 +137,23 @@ const HomeScreen = () => {
             {categories.map(category => (
               <CategoryItem key={category.categoryID}
                 categoryName={category.categoryName}
-                categoryImage = {category.categoryImage}
-                categoryID = {category.categoryID} />
+                categoryImage={category.categoryImage}
+                categoryID={category.categoryID} />
+            ))}
+          </ScrollView>
+        </View>
+
+        {/* List Product */}
+        <View>
+          <Text style={{
+            fontWeight: 'bold',
+            fontSize: 18,
+            marginStart: 10,
+            marginTop: 20,
+          }}>RECOMMEND FOR YOU</Text>
+          <ScrollView>
+            {posts.map(post => (
+              <PostItem key={post.postID}/>
             ))}
           </ScrollView>
         </View>
