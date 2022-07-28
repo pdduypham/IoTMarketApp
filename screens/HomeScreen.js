@@ -6,6 +6,7 @@ import colors from '../constants/colors'
 import firestore from '@react-native-firebase/firestore';
 import CategoryItem from '../components/CategoryItem'
 import storage from '@react-native-firebase/storage';
+import firebase from '@react-native-firebase/app'
 
 const HomeScreen = () => {
 
@@ -27,7 +28,7 @@ const HomeScreen = () => {
               })
             })
           })
-          console.log(storage().ref('gs://').listAll())
+
         setCategories(list)
         if (loading) {
           setLoading(false)

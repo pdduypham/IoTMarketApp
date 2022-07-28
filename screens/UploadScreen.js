@@ -17,7 +17,7 @@ const UploadScreen = ({ navigation }) => {
     let [title, setTitle] = useState()
     let [description, setDescription] = useState()
     const [listImages, setListImages] = useState([])
-    let stringPath = 'postsImages/' + auth().currentUser.uid + '/' + Date.now() + '/'
+    let stringPath = 'postsImages/' + auth().currentUser.uid + '/' + Date.now()
     let [disableUpload, setDisableUpload] = useState(true)
     let storageRef
 
@@ -67,10 +67,10 @@ const UploadScreen = ({ navigation }) => {
             listImages.forEach(item => {
                 let uploadUri = item
                 let fileName = uploadUri.substring(uploadUri.lastIndexOf('/') + 1)
-                stringPath = stringPath + fileName
+                uploadStringPath = stringPath + fileName
 
                 try {
-                    storageRef = storage().ref(stringPath)
+                    storageRef = storage().ref(uploadStringPath)
                     const task = storageRef.putFile(uploadUri)
                     task.then(() => {
                         console.log('Uploaded: ', uploadUri)
@@ -89,7 +89,7 @@ const UploadScreen = ({ navigation }) => {
                 postPrice: price,
                 postDescription: description,
                 postTimestamp: Date.now(),
-                postImages: storageRef.getDownloadURL(),
+                postImages: stringPath,
                 postOwner: auth().currentUser.uid,
                 postID: auth().currentUser.uid + '_' + Date.now(),
             }).catch(error => alert(error.meesage))
@@ -112,7 +112,6 @@ const UploadScreen = ({ navigation }) => {
             includeBase64: true
         }).then(item => {
             setListImages([...listImages, item.path])
-            // console.log(listImages)
         });
     }
 

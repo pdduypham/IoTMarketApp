@@ -1,14 +1,20 @@
 import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import colors from '../constants/colors'
-import storage from '@react-native-firebase/storage';
+import storage from '@react-native-firebase/storage'
+import firebase from '@react-native-firebase/app'
 
 const CategoryItem = ({ categoryID, categoryName, categoryImage }) => {
 
-  
-  const url = storage().ref('categories/laptop.png').getDownloadURL()
+  const [imageURL, setImageURL] = useState('https://i.pinimg.com/564x/64/ba/95/64ba9507533272c92924364a6c451ca2.jpg')
 
   useEffect(() => {
+    const fetchImage = async () => await firebase.storage().ref(categoryImage)
+      .getDownloadURL()
+      .then((url) => {
+        setImageURL(url)
+      })
+    fetchImage()
   })
   return (
     <TouchableOpacity key={categoryID} style={{
@@ -19,15 +25,20 @@ const CategoryItem = ({ categoryID, categoryName, categoryImage }) => {
       justifyContent: 'center',
       alignItems: 'center',
       backgroundColor: colors.primaryBackground,
-      borderRadius: 10
+      borderRadius: 10,
+      paddingBottom: 5,
+      paddingTop: 5
     }}>
-      {/* <Image source={{uri: url}}
-      style={{
-        width: 40,
-        height: 40,
-      }}
-      resizeMode='contain'/> */}
-      <Text>{categoryName}</Text>
+       <Image source={{uri: imageURL}}
+        style={{
+          width: 50,
+          height: 50,
+          flex: 1
+        }}
+        resizeMode='contain'/>
+      <Text style={{
+        fontWeight: 'bold'
+      }}>{categoryName}</Text>
     </TouchableOpacity>
   )
 }
