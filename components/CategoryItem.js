@@ -9,7 +9,6 @@ const CategoryItem = ({ categoryID, categoryName, categoryImage }) => {
   const url = storage().ref('categories/laptop.png').getDownloadURL()
 
   useEffect(() => {
-    console.log(url)
   })
   return (
     <TouchableOpacity key={categoryID} style={{

@@ -5,7 +5,7 @@ import { Button, Input } from 'react-native-elements'
 import colors from '../constants/colors'
 import firestore from '@react-native-firebase/firestore';
 import CategoryItem from '../components/CategoryItem'
-
+import storage from '@react-native-firebase/storage';
 
 const HomeScreen = () => {
 
@@ -27,6 +27,7 @@ const HomeScreen = () => {
               })
             })
           })
+          console.log(storage().ref('gs://').listAll())
         setCategories(list)
         if (loading) {
           setLoading(false)

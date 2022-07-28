@@ -6,9 +6,7 @@ import PostsScreen from '../screens/PostsScreen'
 import UploadScreen from '../screens/UploadScreen'
 import MoreScreen from '../screens/MoreScreen'
 import { createBottomTabNavigator  } from '@react-navigation/bottom-tabs'
-import Icon from 'react-native-vector-icons/FontAwesome5'
 import colors from '../constants/colors'
-import { color } from 'react-native-elements/dist/helpers'
 
 const Tab = createBottomTabNavigator()
 
@@ -27,6 +25,7 @@ const screenOptions = ({ navigation }) => ({
     ...styles.shadow
   },
   tabBarShowLabel: false,
+  tabBarHideOnKeyboard: true
 })
 
 const CustomTabBarButton = ({children, onPress}) => (
@@ -49,7 +48,7 @@ const CustomTabBarButton = ({children, onPress}) => (
 )
 
 const TabBar = ({navigation}) => {
-  return (
+return (
      <Tab.Navigator screenOptions={screenOptions}>
       <Tab.Screen name='Home' component={HomeScreen}
         options={{
@@ -60,7 +59,7 @@ const TabBar = ({navigation}) => {
                 style={{
                   width: 24,
                   height: 24,
-                  tintColor: focused ? colors.primary : 'black'
+                  tintColor: focused ? colors.primary : 'black',
                 }} />
               <Text style={{
                 color: focused ? colors.primary : 'black',
@@ -164,5 +163,9 @@ const styles = StyleSheet.create({
   viewContainer: {
     alignItems: 'center',
     justifyContent: 'center',
+    
+  },
+  hideTabNavigation: {
+    display: 'none'
   }
 })
