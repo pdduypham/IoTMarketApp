@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image, KeyboardAvoidingView, StatusBar, SafeAreaView, TextInput, ScrollView } from 'react-native'
+import { StyleSheet, Text, View, Image, KeyboardAvoidingView, StatusBar, SafeAreaView, TextInput, ScrollView, FlatList } from 'react-native'
 import React, { useState, useEffect, useLayoutEffect } from 'react'
 import { color } from 'react-native-elements/dist/helpers'
 import { Button, Input } from 'react-native-elements'
@@ -15,38 +15,38 @@ const HomeScreen = () => {
   const [posts, setPosts] = useState([])
   const [loading, setLoading] = useState(true)
 
-  //Get Categories Menu
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const listCategories = []
-        await firestore().collection('categories').get()
-          .then((querySnapshot) => {
-            querySnapshot.forEach(doc => {
-              const { categoryName, categoryID, categoryImage } = doc.data()
-              listCategories.push({
-                categoryName,
-                categoryID,
-                categoryImage
-              })
-            })
-          })
+  // //Get Categories Menu
+  // useEffect(() => {
+  //   const fetchCategories = async () => {
+  //     try {
+  //       const listCategories = []
+  //       await firestore().collection('categories').get()
+  //         .then((querySnapshot) => {
+  //           querySnapshot.forEach(doc => {
+  //             const { categoryName, categoryID, categoryImage } = doc.data()
+  //             listCategories.push({
+  //               categoryName,
+  //               categoryID,
+  //               categoryImage
+  //             })
+  //           })
+  //         })
 
-        setCategories(listCategories)
-        if (loading) {
-          setLoading(false)
-        }
-      } catch (error) {
-        console.log(error)
-      }
-    }
-    fetchCategories()
-  })
+  //       setCategories(listCategories)
+  //       if (loading) {
+  //         setLoading(false)
+  //       }
+  //     } catch (error) {
+  //       console.log(error)
+  //     }
+  //   }
+  //   fetchCategories()
+  // })
 
   useEffect(() => {
     const subscriber = firestore()
       .collection('posts')
-      .orderBy('postTimestamp','desc')
+      .orderBy('postTimestamp', 'desc')
       .onSnapshot(documentSnapshot => {
         setPosts(documentSnapshot.docs.map((doc) => ({
           id: doc.id,
@@ -54,7 +54,7 @@ const HomeScreen = () => {
         })))
       });
     return subscriber
-  })
+  }, [])
 
   return (
     <SafeAreaView
@@ -62,11 +62,12 @@ const HomeScreen = () => {
         backgroundColor: 'white',
         flex: 1
       }}>
-      <ScrollView stickyHeaderIndices={[1]}>
+      <ScrollView stickyHeaderIndices={[0]}>
         <View style={{
           flexDirection: 'row',
           justifyContent: 'center',
-          alignItems: 'center'
+          alignItems: 'center',
+          backgroundColor: 'white'
         }}>
 
           {/* Search bar */}
@@ -97,14 +98,14 @@ const HomeScreen = () => {
             marginStart: 10,
             marginTop: 20,
           }}>CATEGORIES</Text>
-          <ScrollView horizontal>
+          {/* <ScrollView horizontal>
             {categories.map(category => (
               <CategoryItem key={category.categoryID}
                 categoryName={category.categoryName}
                 categoryImage={category.categoryImage}
                 categoryID={category.categoryID} />
             ))}
-          </ScrollView>
+          </ScrollView> */}
         </View>
 
         {/* List Product */}
@@ -115,9 +116,23 @@ const HomeScreen = () => {
             marginStart: 10,
             marginTop: 20,
           }}>RECOMMEND FOR YOU</Text>
-          <ScrollView>
-            {posts.map(({ id, data: { postTitle } }) => (
-              <PostItem key={id} postTitle ={postTitle} />
+          <ScrollView
+            contentContainerStyle={{
+              flexDirection: 'row',
+              flexWrap: 'wrap',
+              paddingHorizontal: 20,
+              paddingTop: 10,
+              paddingBottom: 130
+            }}>
+            {posts.map(({ id, data: { postTitle,
+              postPrice,
+              postTimestamp,
+              postImages } }) => (
+              <PostItem key={id}
+                postTitle={postTitle}
+                postPrice={postPrice}
+                postTimestamp={postTimestamp}
+                postImages={postImages} />
             ))}
           </ScrollView>
         </View>

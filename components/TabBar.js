@@ -22,7 +22,7 @@ const screenOptions = ({ navigation }) => ({
     borderRadius: 15,
     height: 70,
     justifyContent: 'center',
-    ...styles.shadow
+    ...styles.shadow,
   },
   tabBarShowLabel: false,
   tabBarHideOnKeyboard: true
