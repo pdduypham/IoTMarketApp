@@ -5,7 +5,7 @@ import firebase from '@react-native-firebase/app'
 import storage from '@react-native-firebase/storage'
 import fonts from '../constants/fonts'
 
-const PostItem = ({ postTitle, postPrice, postTimestamp, postImages }) => {
+const PostItem = ({ postTitle, postPrice, postTimestamp, postImages, postID, onPress }) => {
   const [time, setTime] = useState('')
   const [imageURL, setImageURL] = useState('https://i.pinimg.com/564x/64/ba/95/64ba9507533272c92924364a6c451ca2.jpg')
 
@@ -40,8 +40,14 @@ const PostItem = ({ postTitle, postPrice, postTimestamp, postImages }) => {
     }
   }, [])
 
+  //Handle Click
+  // const detailPost = () => {
+  //   alert(postID)
+  // }
+
   return (
-    <TouchableOpacity style={{
+    <TouchableOpacity onPress={()=> onPress(postTitle,postPrice)} 
+    style={{
       width: '50%',
       padding: 5
     }}>

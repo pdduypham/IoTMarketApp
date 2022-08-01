@@ -10,7 +10,7 @@ import firebase from '@react-native-firebase/app'
 import PostItem from '../components/PostItem'
 import ViewHide from '../components/ViewHide'
 import fonts from '../constants/fonts'
-const HomeScreen = () => {
+const HomeScreen = ({navigation}) => {
 
   const [categories, setCategories] = useState([])
   const [posts, setPosts] = useState([])
@@ -44,6 +44,7 @@ const HomeScreen = () => {
     fetchCategories()
   })
 
+  //Listen for realtime update post
   useEffect(() => {
     const subscriber = firestore()
       .collection('posts')
@@ -56,6 +57,10 @@ const HomeScreen = () => {
       });
     return subscriber
   }, [])
+
+  const detailPost = (postTitle,postPrice) => {
+    navigation.navigate("PostDetail",{postTitle,postPrice})
+  }
 
   return (
     <SafeAreaView
@@ -127,12 +132,15 @@ const HomeScreen = () => {
             {posts.map(({ id, data: { postTitle,
               postPrice,
               postTimestamp,
-              postImages } }) => (
+              postImages,
+              postID } }) => (
               <PostItem key={id}
                 postTitle={postTitle}
                 postPrice={postPrice}
                 postTimestamp={postTimestamp}
-                postImages={postImages} />
+                postImages={postImages}
+                postID = {postID}
+                onPress = {detailPost} />
             ))}
           </ScrollView>
         </View>

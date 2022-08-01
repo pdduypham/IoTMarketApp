@@ -6,6 +6,8 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import SignUpScreen from './screens/SignUpScreen';
 import TabBar from './components/TabBar';
 import colors from './constants/colors';
+import HomeScreen from './screens/HomeScreen';
+import PostDetail from './components/PostDetail';
 
 
 const Stack = createNativeStackNavigator();
@@ -25,7 +27,9 @@ export default function App() {
       >
         <Stack.Screen name='Login' component={LoginScreen} />
         <Stack.Screen name='SignUp' component={SignUpScreen} />
-        <Stack.Screen i name='TabBar' component={TabBar} />
+        <Stack.Screen name='TabBar' component={TabBar} />
+        <Stack.Screen name='Home' component={HomeScreen} />
+        <Stack.Screen name='PostDetail' component={PostDetail} />
       </Stack.Navigator>
     </NavigationContainer>
   );
