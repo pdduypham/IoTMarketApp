@@ -24,7 +24,7 @@ const UploadScreen = ({ navigation }) => {
     const [timestamp, setTimestamp] = useState(firebase.firestore.Timestamp.now().seconds)
     const [transferred, setTransferred] = useState(0)
     const [uploading, setUploading] = useState(false)
-    const [open,setOpen] = useState(false)
+    const [open, setOpen] = useState(false)
 
     //Get Categories from db.
     useEffect(() => {
@@ -201,14 +201,14 @@ const UploadScreen = ({ navigation }) => {
                                 marginBottom: 5
                             }}>Take a photo: {listImages.length}/5</Text>
                         </TouchableOpacity>
-                        <View style={{
+                        {listImages.length > 0 && <View style={{
                             height: 80,
                             marginTop: 20
                         }}>
                             <ScrollView horizontal>
                                 {listImages.map(item => <UploadImageItem onPress={getData} key={item} imageURI={item} />)}
                             </ScrollView>
-                        </View>
+                        </View>}
 
                         {/* Select category */}
                         <View style={{
@@ -230,7 +230,7 @@ const UploadScreen = ({ navigation }) => {
                                 renderDropdownIcon={() =>
                                     <Image source={require('../assets/dropdown.png')} />}
                                 onSelect={(selectedItem, index) => { setSelectedCategory(selectedItem) }}
-                                dropdownStyle = {{
+                                dropdownStyle={{
                                     borderRadius: 10,
                                 }}
                             />
@@ -256,7 +256,7 @@ const UploadScreen = ({ navigation }) => {
                                 renderDropdownIcon={() =>
                                     <Image source={require('../assets/dropdown.png')} />}
                                 onSelect={(selectedItem, index) => { setSelectedBranch(selectedItem) }}
-                                dropdownStyle = {{
+                                dropdownStyle={{
                                     borderRadius: 10,
                                 }}
                             />
@@ -282,7 +282,7 @@ const UploadScreen = ({ navigation }) => {
                                 renderDropdownIcon={() =>
                                     <Image source={require('../assets/dropdown.png')} />}
                                 onSelect={(selectedItem, index) => { setSelectedStatus(selectedItem) }}
-                                dropdownStyle = {{
+                                dropdownStyle={{
                                     borderRadius: 10,
                                 }}
                             />
