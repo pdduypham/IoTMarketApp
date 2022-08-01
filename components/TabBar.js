@@ -11,7 +11,6 @@ import colors from '../constants/colors'
 const Tab = createBottomTabNavigator()
 
 const screenOptions = ({ navigation }) => ({
-  headerShown: false,
   tabbarActiveTintColor: 'red',
   tabBarStyle: {
     position: 'absolute',
@@ -25,7 +24,11 @@ const screenOptions = ({ navigation }) => ({
     ...styles.shadow,
   },
   tabBarShowLabel: false,
-  tabBarHideOnKeyboard: true
+  tabBarHideOnKeyboard: true,
+  headerStyle: { backgroundColor: colors.primary },
+  headerTitleStyle: { color: "white" },
+  hearderTintColor: "white",
+  headerTitleAlign: 'center'
 })
 
 const CustomTabBarButton = ({ children, onPress }) => (

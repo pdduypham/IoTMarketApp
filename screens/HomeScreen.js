@@ -8,6 +8,7 @@ import CategoryItem from '../components/CategoryItem'
 import storage from '@react-native-firebase/storage';
 import firebase from '@react-native-firebase/app'
 import PostItem from '../components/PostItem'
+import ViewHide from '../components/ViewHide'
 
 const HomeScreen = () => {
 
@@ -96,7 +97,6 @@ const HomeScreen = () => {
             fontWeight: 'bold',
             fontSize: 18,
             marginStart: 10,
-            marginTop: 20,
           }}>CATEGORIES</Text>
           <ScrollView horizontal>
             {categories.map(category => (
@@ -114,7 +114,7 @@ const HomeScreen = () => {
             fontWeight: 'bold',
             fontSize: 18,
             marginStart: 10,
-            marginTop: 20,
+            marginTop: 10,
           }}>RECOMMEND FOR YOU</Text>
           <ScrollView
             contentContainerStyle={{
@@ -122,7 +122,6 @@ const HomeScreen = () => {
               flexWrap: 'wrap',
               paddingHorizontal: 20,
               paddingTop: 10,
-              paddingBottom: 130
             }}>
             {posts.map(({ id, data: { postTitle,
               postPrice,
@@ -138,6 +137,7 @@ const HomeScreen = () => {
         </View>
 
       </ScrollView>
+      <ViewHide />
     </SafeAreaView>
   )
 }

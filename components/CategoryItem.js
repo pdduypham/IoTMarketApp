@@ -19,8 +19,8 @@ const CategoryItem = ({ categoryID, categoryName, categoryImage }) => {
     <TouchableOpacity key={categoryID} style={{
       flexDirection: 'column',
       margin: 1,
-      width: 80,
-      height: 80,
+      width: 50,
+      height: 50,
       justifyContent: 'center',
       alignItems: 'center',
       backgroundColor: colors.primaryBackground,
@@ -30,13 +30,14 @@ const CategoryItem = ({ categoryID, categoryName, categoryImage }) => {
     }}>
       <Image source={{ uri: imageURL }}
         style={{
-          width: 50,
-          height: 50,
+          width: 30,
+          height: 30,
           flex: 1
         }}
         resizeMode='contain' />
       <Text style={{
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        fontSize: 12
       }}>{categoryName}</Text>
     </TouchableOpacity>
   )

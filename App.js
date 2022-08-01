@@ -20,12 +20,12 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        screenOptions={globalSreenOptions}
+        screenOptions={id=='TabBar' ? globalSreenOptions : {headerShown: false}}
         initialRouteName='TabBar'
       >
-        <Stack.Screen name='Login' component={LoginScreen} />
-        <Stack.Screen name='SignUp' component={SignUpScreen} />
-        <Stack.Screen name='TabBar' component={TabBar} />
+        <Stack.Screen id= {'Login'} name='Login' component={LoginScreen}/>
+        <Stack.Screen id = {'SignUp'} name='SignUp' component={SignUpScreen} />
+        <Stack.Screen id = {'TabBar'} name='TabBar' component={TabBar} />
       </Stack.Navigator>
     </NavigationContainer>
   );
