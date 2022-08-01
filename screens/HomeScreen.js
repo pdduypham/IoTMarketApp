@@ -9,7 +9,7 @@ import storage from '@react-native-firebase/storage';
 import firebase from '@react-native-firebase/app'
 import PostItem from '../components/PostItem'
 import ViewHide from '../components/ViewHide'
-
+import fonts from '../constants/fonts'
 const HomeScreen = () => {
 
   const [categories, setCategories] = useState([])
@@ -81,7 +81,8 @@ const HomeScreen = () => {
               paddingLeft: 10,
               flex: 1,
               marginLeft: 24,
-              marginTop: 20
+              marginTop: 20,
+              fontFamily: fonts.normal
             }} />
           <Image source={require('../assets/search.png')}
             resizeMode='cover'
@@ -94,9 +95,9 @@ const HomeScreen = () => {
         {/* Categories Menu */}
         <View>
           <Text style={{
-            fontWeight: 'bold',
             fontSize: 18,
             marginStart: 10,
+            fontFamily: fonts.bold
           }}>CATEGORIES</Text>
           <ScrollView horizontal>
             {categories.map(category => (
@@ -111,10 +112,10 @@ const HomeScreen = () => {
         {/* List Product */}
         <View>
           <Text style={{
-            fontWeight: 'bold',
             fontSize: 18,
             marginStart: 10,
             marginTop: 10,
+            fontFamily: 'OpenSans-Bold'
           }}>RECOMMEND FOR YOU</Text>
           <ScrollView
             contentContainerStyle={{

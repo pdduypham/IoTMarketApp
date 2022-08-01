@@ -7,6 +7,7 @@ import UploadScreen from '../screens/UploadScreen'
 import MoreScreen from '../screens/MoreScreen'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import colors from '../constants/colors'
+import fonts from '../constants/fonts'
 
 const Tab = createBottomTabNavigator()
 
@@ -26,9 +27,12 @@ const screenOptions = ({ navigation }) => ({
   tabBarShowLabel: false,
   tabBarHideOnKeyboard: true,
   headerStyle: { backgroundColor: colors.primary },
-  headerTitleStyle: { color: "white" },
+  headerTitleStyle: {
+    color: "white",
+    fontFamily: fonts.bold
+  },
   hearderTintColor: "white",
-  headerTitleAlign: 'center'
+  headerTitleAlign: 'center',
 })
 
 const CustomTabBarButton = ({ children, onPress }) => (
@@ -67,7 +71,8 @@ const TabBar = ({ navigation }) => {
               <Text style={{
                 color: focused ? colors.primary : 'black',
                 fontSize: 12,
-                width: '100%'
+                width: '100%',
+                fontFamily: fonts.normal
               }}>HOME</Text>
             </View>
           )
@@ -87,7 +92,8 @@ const TabBar = ({ navigation }) => {
               <Text style={{
                 color: focused ? colors.primary : 'black',
                 fontSize: 12,
-                width: '100%'
+                width: '100%',
+                fontFamily: fonts.normal
               }}>POSTS</Text>
             </View>
           )
@@ -121,7 +127,8 @@ const TabBar = ({ navigation }) => {
               <Text style={{
                 color: focused ? colors.primary : 'black',
                 fontSize: 12,
-                width: '100%'
+                width: '100%',
+                fontFamily: fonts.normal
               }}>CHATS</Text>
             </View>
           )
@@ -140,7 +147,8 @@ const TabBar = ({ navigation }) => {
               <Text style={{
                 color: focused ? colors.primary : 'black',
                 fontSize: 12,
-                width: '100%'
+                width: '100%',
+                fontFamily: fonts.normal
               }}>MORE</Text>
             </View>
           )

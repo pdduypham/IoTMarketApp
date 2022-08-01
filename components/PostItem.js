@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { Card } from 'react-native-elements'
 import firebase from '@react-native-firebase/app'
 import storage from '@react-native-firebase/storage'
+import fonts from '../constants/fonts'
 
 const PostItem = ({ postTitle, postPrice, postTimestamp, postImages }) => {
   const [time, setTime] = useState('')
@@ -57,14 +58,16 @@ const PostItem = ({ postTitle, postPrice, postTimestamp, postImages }) => {
           paddingLeft: 10
         }}>
           <Text style={{
-            fontWeight: 'bold',
-            marginTop: 5
+            marginTop: 5,
+            fontFamily: fonts.bold
           }}>{postTitle}</Text>
           <Text style={{
-            color: 'red'
+            color: 'red',
+            fontFamily: fonts.normal
           }}>{parseInt(postPrice)} đ</Text>
           <Text style={{
-            fontSize: 12
+            fontSize: 12,
+            fontFamily: fonts.light
           }}>{time}</Text>
         </View>
       </Card>

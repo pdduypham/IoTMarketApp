@@ -2,6 +2,7 @@ import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import colors from '../constants/colors'
 import firebase from '@react-native-firebase/app'
+import fonts from '../constants/fonts'
 
 const CategoryItem = ({ categoryID, categoryName, categoryImage }) => {
 
@@ -36,8 +37,8 @@ const CategoryItem = ({ categoryID, categoryName, categoryImage }) => {
         }}
         resizeMode='contain' />
       <Text style={{
-        fontWeight: 'bold',
-        fontSize: 12
+        fontSize: 12,
+        fontFamily: fonts.bold
       }}>{categoryName}</Text>
     </TouchableOpacity>
   )
