@@ -76,7 +76,7 @@ export default PostItem
 
 const styles = StyleSheet.create({
   container: {
-    height: 150,
+    height: 162,
     width: '100%',
     margin: 0,
     borderRadius: 10,

@@ -24,6 +24,7 @@ const UploadScreen = ({ navigation }) => {
     const [timestamp, setTimestamp] = useState(firebase.firestore.Timestamp.now().seconds)
     const [transferred, setTransferred] = useState(0)
     const [uploading, setUploading] = useState(false)
+    const [open,setOpen] = useState(false)
 
     //Get Categories from db.
     useEffect(() => {
@@ -229,6 +230,9 @@ const UploadScreen = ({ navigation }) => {
                                 renderDropdownIcon={() =>
                                     <Image source={require('../assets/dropdown.png')} />}
                                 onSelect={(selectedItem, index) => { setSelectedCategory(selectedItem) }}
+                                dropdownStyle = {{
+                                    borderRadius: 10,
+                                }}
                             />
                         </View>
 
@@ -252,6 +256,9 @@ const UploadScreen = ({ navigation }) => {
                                 renderDropdownIcon={() =>
                                     <Image source={require('../assets/dropdown.png')} />}
                                 onSelect={(selectedItem, index) => { setSelectedBranch(selectedItem) }}
+                                dropdownStyle = {{
+                                    borderRadius: 10,
+                                }}
                             />
                         </View>
 
@@ -275,6 +282,9 @@ const UploadScreen = ({ navigation }) => {
                                 renderDropdownIcon={() =>
                                     <Image source={require('../assets/dropdown.png')} />}
                                 onSelect={(selectedItem, index) => { setSelectedStatus(selectedItem) }}
+                                dropdownStyle = {{
+                                    borderRadius: 10,
+                                }}
                             />
                         </View>
 
