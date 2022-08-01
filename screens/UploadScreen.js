@@ -1,4 +1,4 @@
-import { SafeAreaView, ScrollView, TextInput, StyleSheet, Text, View, Image, TouchableOpacity, KeyboardAvoidingView } from 'react-native'
+import { SafeAreaView, ScrollView, TextInput, StyleSheet, Text, View, Image, TouchableOpacity, KeyboardAvoidingView, ActivityIndicator, Alert } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import SelectDropdown from 'react-native-select-dropdown'
 import colors from '../constants/colors'
@@ -22,6 +22,8 @@ const UploadScreen = ({ navigation }) => {
     let [disableUpload, setDisableUpload] = useState(true)
     let storageRef
     const [timestamp, setTimestamp] = useState(firebase.firestore.Timestamp.now().seconds)
+    const [transferred, setTransferred] = useState(0)
+    const [uploading, setUploading] = useState(false)
 
     //Get Categories from db.
     useEffect(() => {
@@ -82,7 +84,9 @@ const UploadScreen = ({ navigation }) => {
                 postID: auth().currentUser.uid + '_' + timestamp
             }).catch(error => alert(error.meesage))
                 .then(
-                    console.log('Update post successful'),
+                    setUploading(false),
+                    Alert.alert("Success", "Your post is uploaded!"),
+                    console.log('Update post successful with no image'),
                     //Reset field
                     setTitle(undefined),
                     setListImages([]),
@@ -90,9 +94,10 @@ const UploadScreen = ({ navigation }) => {
                     setDescription(undefined)
                 )
         } else {
-            // //Upload Images
-            stringPath += timestamp
-            listImages.forEach(item => {
+            //Upload Images
+            setUploading(true)
+            stringPath += timestamp + '/'
+            listImages.forEach((item, index) => {
                 let uploadUri = item
                 let fileName = uploadUri.substring(uploadUri.lastIndexOf('/') + 1)
                 let uploadStringPath = stringPath + fileName
@@ -100,35 +105,41 @@ const UploadScreen = ({ navigation }) => {
                 try {
                     storageRef = storage().ref(uploadStringPath)
                     const task = storageRef.putFile(uploadUri)
+                    task.on('state_changed', taskSnapshot => {
+                        setTransferred(Math.round(taskSnapshot.bytesTransferred / taskSnapshot.totalBytes * 100))
+                    });
                     task.then(() => {
                         console.log('Uploaded image: ', uploadUri)
+                        if (index == listImages.length - 1) {
+                            firestore().collection('posts').add({
+                                postTitle: title,
+                                postCategory: selectedCategory,
+                                postBranch: selectedBranch,
+                                postStatusOfProduct: selectedStatus,
+                                postStatus: 0,
+                                postPrice: price,
+                                postDescription: description,
+                                postTimestamp: timestamp,
+                                postImages: stringPath,
+                                postOwner: auth().currentUser.uid,
+                                postID: auth().currentUser.uid + '_' + timestamp,
+                            }).catch(error => alert(error.meesage))
+                                .then(
+                                    setUploading(false),
+                                    Alert.alert("Success", "Your post is uploaded!"),
+                                    console.log('Update post successful with images'),
+                                    //Reset field
+                                    setTitle(undefined),
+                                    setListImages([]),
+                                    setPrice(undefined),
+                                    setDescription(undefined)
+                                )
+                        }
                     })
                 } catch (error) {
                     console.log(error)
                 }
             })
-
-            await firestore().collection('posts').add({
-                postTitle: title,
-                postCategory: selectedCategory,
-                postBranch: selectedBranch,
-                postStatusOfProduct: selectedStatus,
-                postStatus: 0,
-                postPrice: price,
-                postDescription: description,
-                postTimestamp: timestamp,
-                postImages: stringPath,
-                postOwner: auth().currentUser.uid,
-                postID: auth().currentUser.uid + '_' + timestamp,
-            }).catch(error => alert(error.meesage))
-                .then(
-                    console.log('Update post successful'),
-                    //Reset field
-                    setTitle(undefined),
-                    setListImages([]),
-                    setPrice(undefined),
-                    setDescription(undefined)
-                )
         }
     }
 
@@ -314,13 +325,26 @@ const UploadScreen = ({ navigation }) => {
                             }} />
 
                         {/* Button Submit  */}
-                        <Button title={'Upload'}
+                        {uploading == false ? (<Button title={'Upload'}
                             disabled={disableUpload}
                             containerStyle={styles.button}
                             onPress={uploadPost}
                             buttonStyle={{
                                 height: 50,
-                            }} />
+                            }} />)
+                            : (
+                                <View style={{
+                                    justifyContent: 'center',
+                                    alignItems: 'center'
+                                }}>
+                                    <Text style={{
+                                        fontWeight: 'bold',
+                                        fontSize: 20,
+                                        marginTop: 10
+                                    }}>{transferred}% completed</Text>
+                                    <ActivityIndicator size='large' color={colors.primary} />
+                                </View>
+                            )}
                     </View>
                 </ScrollView>
             </KeyboardAvoidingView>

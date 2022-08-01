@@ -1,7 +1,6 @@
 import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import colors from '../constants/colors'
-import storage from '@react-native-firebase/storage'
 import firebase from '@react-native-firebase/app'
 
 const CategoryItem = ({ categoryID, categoryName, categoryImage }) => {
@@ -15,7 +14,7 @@ const CategoryItem = ({ categoryID, categoryName, categoryImage }) => {
         setImageURL(url)
       })
     fetchImage()
-  })
+  }, [])
   return (
     <TouchableOpacity key={categoryID} style={{
       flexDirection: 'column',
@@ -29,13 +28,13 @@ const CategoryItem = ({ categoryID, categoryName, categoryImage }) => {
       paddingBottom: 5,
       paddingTop: 5
     }}>
-       <Image source={{uri: imageURL}}
+      <Image source={{ uri: imageURL }}
         style={{
           width: 50,
           height: 50,
           flex: 1
         }}
-        resizeMode='contain'/>
+        resizeMode='contain' />
       <Text style={{
         fontWeight: 'bold'
       }}>{categoryName}</Text>

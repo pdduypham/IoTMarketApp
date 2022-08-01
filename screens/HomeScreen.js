@@ -15,33 +15,33 @@ const HomeScreen = () => {
   const [posts, setPosts] = useState([])
   const [loading, setLoading] = useState(true)
 
-  // //Get Categories Menu
-  // useEffect(() => {
-  //   const fetchCategories = async () => {
-  //     try {
-  //       const listCategories = []
-  //       await firestore().collection('categories').get()
-  //         .then((querySnapshot) => {
-  //           querySnapshot.forEach(doc => {
-  //             const { categoryName, categoryID, categoryImage } = doc.data()
-  //             listCategories.push({
-  //               categoryName,
-  //               categoryID,
-  //               categoryImage
-  //             })
-  //           })
-  //         })
+  //Get Categories Menu
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const listCategories = []
+        await firestore().collection('categories').get()
+          .then((querySnapshot) => {
+            querySnapshot.forEach(doc => {
+              const { categoryName, categoryID, categoryImage } = doc.data()
+              listCategories.push({
+                categoryName,
+                categoryID,
+                categoryImage
+              })
+            })
+          })
 
-  //       setCategories(listCategories)
-  //       if (loading) {
-  //         setLoading(false)
-  //       }
-  //     } catch (error) {
-  //       console.log(error)
-  //     }
-  //   }
-  //   fetchCategories()
-  // })
+        setCategories(listCategories)
+        if (loading) {
+          setLoading(false)
+        }
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    fetchCategories()
+  })
 
   useEffect(() => {
     const subscriber = firestore()
@@ -98,14 +98,14 @@ const HomeScreen = () => {
             marginStart: 10,
             marginTop: 20,
           }}>CATEGORIES</Text>
-          {/* <ScrollView horizontal>
+          <ScrollView horizontal>
             {categories.map(category => (
               <CategoryItem key={category.categoryID}
                 categoryName={category.categoryName}
                 categoryImage={category.categoryImage}
                 categoryID={category.categoryID} />
             ))}
-          </ScrollView> */}
+          </ScrollView>
         </View>
 
         {/* List Product */}

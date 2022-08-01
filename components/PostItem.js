@@ -6,6 +6,8 @@ import storage from '@react-native-firebase/storage'
 
 const PostItem = ({ postTitle, postPrice, postTimestamp, postImages }) => {
   const [time, setTime] = useState('')
+  const [imageURL, setImageURL] = useState('https://i.pinimg.com/564x/64/ba/95/64ba9507533272c92924364a6c451ca2.jpg')
+
   //Convert time
   useEffect(() => {
     let temp = (firebase.firestore.Timestamp.now().seconds - postTimestamp) / 60
@@ -25,12 +27,15 @@ const PostItem = ({ postTitle, postPrice, postTimestamp, postImages }) => {
   //Get Image
   useEffect(() => {
     if (postImages == 'No image') {
-      console.log('aaa')
-    }else{
-      var a = storage().ref(postImages).listAll().then((url) =>{
-        console.log(url)
-      })
-      // console.log(a)
+      setImageURL(require('../assets/logo.jpg'))
+    } else {
+      const fetchImages = async () => {
+        (await firebase.storage().ref(postImages).list())
+          .items.pop().getDownloadURL().then((url) => {
+            setImageURL(url)
+          })
+      }
+      fetchImages()
     }
   }, [])
 
@@ -40,23 +45,28 @@ const PostItem = ({ postTitle, postPrice, postTimestamp, postImages }) => {
       padding: 5
     }}>
       <Card containerStyle={styles.container}>
-        <Image source={require('../assets/logo.jpg')}
-          resizeMode='contain'
+        <Image source={postImages == 'No image' ? imageURL : { uri: imageURL }}
+          resizeMode='cover'
           style={{
             width: '100%',
             height: '55%',
-            borderRadius: 10
+            borderTopLeftRadius: 10,
+            borderTopRightRadius: 10
           }} />
-        <Text style={{
-          fontWeight: 'bold',
-          marginTop: 5
-        }}>{postTitle}</Text>
-        <Text style={{
-          color: 'red'
-        }}>{parseInt(postPrice)} đ</Text>
-        <Text style={{
-          fontSize: 12
-        }}>{time}</Text>
+        <View style={{
+          paddingLeft: 10
+        }}>
+          <Text style={{
+            fontWeight: 'bold',
+            marginTop: 5
+          }}>{postTitle}</Text>
+          <Text style={{
+            color: 'red'
+          }}>{parseInt(postPrice)} đ</Text>
+          <Text style={{
+            fontSize: 12
+          }}>{time}</Text>
+        </View>
       </Card>
     </TouchableOpacity>
   )
@@ -71,6 +81,6 @@ const styles = StyleSheet.create({
     margin: 0,
     borderRadius: 10,
     alignSelf: 'center',
-    padding: 10
+    padding: 0
   },
 })

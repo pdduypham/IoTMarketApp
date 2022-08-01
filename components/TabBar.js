@@ -5,7 +5,7 @@ import ChatsScreen from '../screens/ChatsScreen'
 import PostsScreen from '../screens/PostsScreen'
 import UploadScreen from '../screens/UploadScreen'
 import MoreScreen from '../screens/MoreScreen'
-import { createBottomTabNavigator  } from '@react-navigation/bottom-tabs'
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import colors from '../constants/colors'
 
 const Tab = createBottomTabNavigator()
@@ -28,14 +28,14 @@ const screenOptions = ({ navigation }) => ({
   tabBarHideOnKeyboard: true
 })
 
-const CustomTabBarButton = ({children, onPress}) => (
+const CustomTabBarButton = ({ children, onPress }) => (
   <TouchableOpacity style={{
-    top:-25,
+    top: -25,
     justifyContent: 'center',
     alignItems: 'center',
     ...styles.shadow
   }}
-  onPress={onPress}>
+    onPress={onPress}>
     <View style={{
       width: 24,
       height: 24,
@@ -47,9 +47,9 @@ const CustomTabBarButton = ({children, onPress}) => (
   </TouchableOpacity>
 )
 
-const TabBar = ({navigation}) => {
-return (
-     <Tab.Navigator screenOptions={screenOptions}>
+const TabBar = ({ navigation }) => {
+  return (
+    <Tab.Navigator screenOptions={screenOptions}>
       <Tab.Screen name='Home' component={HomeScreen}
         options={{
           tabBarIcon: ({ focused }) => (
@@ -70,28 +70,28 @@ return (
           )
         }}
       />
-      <Tab.Screen name='Posts' component={PostsScreen} 
-      options={{
-        tabBarIcon: ({ focused }) => (
-          <View style={styles.viewContainer}>
-            <Image source={require('../assets/business.png')}
-              resizeMode='contain'
-              style={{
-                width: 24,
-                height: 24,
-                tintColor: focused ? colors.primary : 'black'
-              }} />
-            <Text style={{
-              color: focused ? colors.primary : 'black',
-              fontSize: 12,
-              width: '100%'
-            }}>POSTS</Text>
-          </View>
-        )
-      }}/>
+      <Tab.Screen name='Posts' component={PostsScreen}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <View style={styles.viewContainer}>
+              <Image source={require('../assets/business.png')}
+                resizeMode='contain'
+                style={{
+                  width: 24,
+                  height: 24,
+                  tintColor: focused ? colors.primary : 'black'
+                }} />
+              <Text style={{
+                color: focused ? colors.primary : 'black',
+                fontSize: 12,
+                width: '100%'
+              }}>POSTS</Text>
+            </View>
+          )
+        }} />
       <Tab.Screen name='Upload' component={UploadScreen}
-      options={{
-        tabBarIcon: ({ focused }) => (
+        options={{
+          tabBarIcon: ({ focused }) => (
             <Image source={require('../assets/add.png')}
               resizeMode='contain'
               style={{
@@ -99,49 +99,49 @@ return (
                 height: 64,
                 tintColor: focused ? colors.primary : '#B5D6F0',
               }} />
-        ), 
-        tabBarButton: (props) => (
-          <CustomTabBarButton {...props}/>
-        )
-      }} />
+          ),
+          tabBarButton: (props) => (
+            <CustomTabBarButton {...props} />
+          )
+        }} />
       <Tab.Screen name='Chats' component={ChatsScreen}
-      options={{
-        tabBarIcon: ({ focused }) => (
-          <View style={styles.viewContainer}>
-            <Image source={require('../assets/chat.png')}
-              resizeMode='contain'
-              style={{
-                width: 24,
-                height: 24,
-                tintColor: focused ? colors.primary : 'black'
-              }} />
-            <Text style={{
-              color: focused ? colors.primary : 'black',
-              fontSize: 12,
-              width: '100%'
-            }}>CHATS</Text>
-          </View>
-        )
-      }}  />
-      <Tab.Screen name='More' component={MoreScreen} 
-       options={{
-        tabBarIcon: ({ focused }) => (
-          <View style={styles.viewContainer}>
-            <Image source={require('../assets/more.png')}
-              resizeMode='contain'
-              style={{
-                width: 24,
-                height: 24,
-                tintColor: focused ? colors.primary : 'black'
-              }} />
-            <Text style={{
-              color: focused ? colors.primary : 'black',
-              fontSize: 12,
-              width: '100%'
-            }}>MORE</Text>
-          </View>
-        )
-      }} />
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <View style={styles.viewContainer}>
+              <Image source={require('../assets/chat.png')}
+                resizeMode='contain'
+                style={{
+                  width: 24,
+                  height: 24,
+                  tintColor: focused ? colors.primary : 'black'
+                }} />
+              <Text style={{
+                color: focused ? colors.primary : 'black',
+                fontSize: 12,
+                width: '100%'
+              }}>CHATS</Text>
+            </View>
+          )
+        }} />
+      <Tab.Screen name='More' component={MoreScreen}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <View style={styles.viewContainer}>
+              <Image source={require('../assets/more.png')}
+                resizeMode='contain'
+                style={{
+                  width: 24,
+                  height: 24,
+                  tintColor: focused ? colors.primary : 'black'
+                }} />
+              <Text style={{
+                color: focused ? colors.primary : 'black',
+                fontSize: 12,
+                width: '100%'
+              }}>MORE</Text>
+            </View>
+          )
+        }} />
 
     </Tab.Navigator>
   )
@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
   viewContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    
+
   },
   hideTabNavigation: {
     display: 'none'
