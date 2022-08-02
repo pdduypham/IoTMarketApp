@@ -24,7 +24,7 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator
         screenOptions={globalSreenOptions}
-        initialRouteName='TabBar'
+        initialRouteName='Login'
       >
         <Stack.Screen name='Login' component={LoginScreen} />
         <Stack.Screen name='SignUp' component={SignUpScreen} />

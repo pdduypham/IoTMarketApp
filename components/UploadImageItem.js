@@ -1,6 +1,5 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import Icon from 'react-native-vector-icons/FontAwesome';
 
 const UploadImageItem = (props) => {
     let deleteImage = () => {
@@ -12,6 +11,7 @@ const UploadImageItem = (props) => {
             <Image source={{ uri: props.imageURI }} style={{
                 width: 100,
                 height: 80,
+                borderRadius: 10,
             }} />
             <TouchableOpacity onPress={deleteImage}>
                 <Image source={require('../assets/close.png')}
@@ -29,8 +29,8 @@ export default UploadImageItem
 
 const styles = StyleSheet.create({
     container: {
-        margin: 2,
-        flex: 1,
-        flexDirection: 'row'
+        flexDirection: 'row',
+        width: 100,
+        marginRight:5
     }
 })

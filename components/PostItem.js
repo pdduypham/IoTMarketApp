@@ -30,13 +30,14 @@ const PostItem = ({ postTitle, postPrice, postTimestamp, postImages, postID, onP
   useEffect(() => {
     if (postImages == 'No image') {
       setImageURL(require('../assets/logo.jpg'))
+      setTotalImages(0)
     } else {
       const fetchImages = async () => {
-        (await firebase.storage().ref(postImages).list())
-          .items.pop().getDownloadURL().then((url) => {
-            setImageURL(url)
-          })
-          console.log('asdafsd')
+        const storageRef = await firebase.storage().ref(postImages).listAll()
+        storageRef.items.pop().getDownloadURL().then((url) => {
+          setImageURL(url)
+          setTotalImages(storageRef.items.length + 1)
+        })
       }
       fetchImages()
     }
@@ -49,14 +50,35 @@ const PostItem = ({ postTitle, postPrice, postTimestamp, postImages, postID, onP
         padding: 2
       }}>
       <Card containerStyle={styles.container}>
+        <Image source={require('../assets/camera_mini.png')}
+          style={{
+            width: 32,
+            height: 32,
+            position: 'absolute',
+            top: 5,
+            left: 10,
+            zIndex: 1,
+          }}
+          resizeMethod='resize'
+          resizeMode='contain' />
+        <Text style={{
+          zIndex: 2,
+          position: 'absolute',
+          top: 12,
+          left: 22,
+          color: 'white',
+          fontFamily: fonts.bold,
+        }}>{totalImages}</Text>
         <Image source={postImages == 'No image' ? imageURL : { uri: imageURL }}
           resizeMode='cover'
+          resizeMethod='resize'
           style={{
             width: '100%',
             height: 140,
             borderTopLeftRadius: 10,
             borderTopRightRadius: 10,
-            padding: 5
+            padding: 5,
+            zIndex: 0
           }} />
         <View style={{
           paddingLeft: 10

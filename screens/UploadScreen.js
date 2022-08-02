@@ -22,12 +22,12 @@ const UploadScreen = ({ navigation }) => {
     let stringPath = 'postsImages/' + auth().currentUser.uid + '/'
     let [disableUpload, setDisableUpload] = useState(true)
     let storageRef
-    const [timestamp, setTimestamp] = useState(firebase.firestore.Timestamp.now().seconds)
     const [transferred, setTransferred] = useState(0)
     const [uploading, setUploading] = useState(false)
     const dropdownCategoryRef = useRef({})
     const dropdownBranchRef = useRef({})
     const dropdownStatusRef = useRef({})
+    const time = firebase.firestore.Timestamp.now().seconds
 
     //Get Categories from db.
     useEffect(() => {
@@ -69,12 +69,11 @@ const UploadScreen = ({ navigation }) => {
     }, [description, price, selectedStatus, title, selectedCategory, selectedBranch])
 
     //Upload post.
-    const uploadPost = async () => {
-        setTimestamp(firebase.firestore.Timestamp.now().seconds)
+    const uploadPost = () => {
         price = parseFloat(price)
         if (listImages.length == 0) {
             stringPath = "No image"
-            await firestore().collection('posts').add({
+            firestore().collection('posts').add({
                 postTitle: title,
                 postCategory: selectedCategory,
                 postBranch: selectedBranch,
@@ -82,15 +81,15 @@ const UploadScreen = ({ navigation }) => {
                 postStatus: 0,
                 postPrice: price,
                 postDescription: description,
-                postTimestamp: timestamp,
+                postTimestamp: time,
                 postImages: stringPath,
                 postOwner: auth().currentUser.uid,
-                postID: auth().currentUser.uid + '_' + timestamp
+                postID: auth().currentUser.uid + '_' + time
             }).catch(error => alert(error.meesage))
                 .then(
                     setUploading(false),
                     Alert.alert("Success", "Your post is uploaded!"),
-                    console.log('Update post successful with no image'),
+                    console.log('Update post successful with no image: ', time),
                     //Reset field
                     setTitle(undefined),
                     setListImages([]),
@@ -106,7 +105,7 @@ const UploadScreen = ({ navigation }) => {
         } else {
             //Upload Images
             setUploading(true)
-            stringPath += timestamp + '/'
+            stringPath += time + '/'
             listImages.forEach((item, index) => {
                 let uploadUri = item
                 let fileName = uploadUri.substring(uploadUri.lastIndexOf('/') + 1)
@@ -129,10 +128,10 @@ const UploadScreen = ({ navigation }) => {
                                 postStatus: 0,
                                 postPrice: price,
                                 postDescription: description,
-                                postTimestamp: timestamp,
+                                postTimestamp: time,
                                 postImages: stringPath,
                                 postOwner: auth().currentUser.uid,
-                                postID: auth().currentUser.uid + '_' + timestamp,
+                                postID: auth().currentUser.uid + '_' + time,
                             }).catch(error => alert(error.meesage))
                                 .then(
                                     setUploading(false),
@@ -209,7 +208,7 @@ const UploadScreen = ({ navigation }) => {
                                     width: 64,
                                     height: 64,
                                     alignSelf: 'center',
-                                    marginTop: 10
+                                    marginTop: 5
                                 }} />
                             <Text style={{
                                 fontSize: 16,
@@ -219,7 +218,8 @@ const UploadScreen = ({ navigation }) => {
                         </TouchableOpacity>
                         {listImages.length > 0 && <View style={{
                             height: 80,
-                            marginTop: 20
+                            marginTop: 5,
+                            marginLeft: 10,
                         }}>
                             <ScrollView horizontal>
                                 {listImages.map(item => <UploadImageItem onPress={getData} key={item} imageURI={item} />)}
@@ -229,7 +229,7 @@ const UploadScreen = ({ navigation }) => {
                         {/* Select category */}
                         <View style={{
                             marginHorizontal: 20,
-                            marginTop: 20,
+                            marginTop: 10,
                             backgroundColor: colors.primaryBackground,
                             borderRadius: 10
                         }}>
@@ -256,7 +256,7 @@ const UploadScreen = ({ navigation }) => {
                         {/* Select branch */}
                         <View style={{
                             marginHorizontal: 20,
-                            marginTop: 20,
+                            marginTop: 10,
                             backgroundColor: colors.primaryBackground,
                             borderRadius: 10
                         }}>
@@ -314,19 +314,17 @@ const UploadScreen = ({ navigation }) => {
                                 value={price}
                                 onChangeText={(text) => setPrice(text)}
                                 style={{
-                                    marginStart: 15
+                                    marginLeft: 10,
                                 }} />
                         </View>
                     </View>
 
                     {/* Title and Description */}
-                    <View style={{
-                        marginTop: 20,
-                    }}>
+                    <View>
                         <Text style={{
                             fontWeight: 'bold',
                             fontSize: 18,
-                            marginStart: 10
+                            marginLeft: 10,
                         }}>TITLE AND DESCRIPTION</Text>
 
                         {/* Input Title  */}
@@ -335,7 +333,7 @@ const UploadScreen = ({ navigation }) => {
                                 value={title}
                                 onChangeText={(text) => setTitle(text)}
                                 style={{
-                                    marginStart: 15,
+                                    marginLeft: 10,
                                 }} />
                         </View>
 
@@ -364,7 +362,8 @@ const UploadScreen = ({ navigation }) => {
                             : (
                                 <View style={{
                                     justifyContent: 'center',
-                                    alignItems: 'center'
+                                    alignItems: 'center',
+                                    marginBottom: 100
                                 }}>
                                     <Text style={{
                                         fontWeight: 'bold',
@@ -399,7 +398,6 @@ const styles = StyleSheet.create({
     },
     inputContainer: {
         marginHorizontal: 10,
-        marginTop: 10
     },
     button: {
         width: 200,
