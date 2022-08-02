@@ -15,6 +15,8 @@ const styles = StyleSheet.create({
     container: {
         width: '100%',
         height: 70,
-        backgroundColor: 'white'
+        backgroundColor: 'white',
+        position: 'absolute',
+        bottom: 0,
     }
 })

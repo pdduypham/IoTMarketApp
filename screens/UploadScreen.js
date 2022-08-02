@@ -9,6 +9,7 @@ import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
 import UploadImageItem from '../components/UploadImageItem'
 import firebase from '@react-native-firebase/app'
+import ViewHide from '../components/ViewHide'
 
 const UploadScreen = ({ navigation }) => {
 
@@ -187,15 +188,16 @@ const UploadScreen = ({ navigation }) => {
     return (
         <SafeAreaView style={styles.container}>
             <KeyboardAvoidingView>
-                <ScrollView>
+                <ScrollView style={{
+                }}>
                     {/* Detail Infomation */}
                     <View style={{
-                        marginTop: 20,
+                        marginTop: 10,
                     }}>
                         <Text style={{
                             fontWeight: 'bold',
                             fontSize: 18,
-                            marginStart: 10
+                            marginLeft: 10
                         }}>DETAIL INFOMATION</Text>
 
                         {/* Take a photo */}
@@ -374,6 +376,7 @@ const UploadScreen = ({ navigation }) => {
                             )}
                     </View>
                 </ScrollView>
+                <ViewHide />
             </KeyboardAvoidingView>
         </SafeAreaView>
     )
@@ -385,7 +388,6 @@ const styles = StyleSheet.create({
     container: {
         backgroundColor: 'white',
         flex: 1,
-        paddingBottom: 130
     },
     touchable: {
         borderColor: 'red',
@@ -403,5 +405,6 @@ const styles = StyleSheet.create({
         width: 200,
         marginTop: 10,
         alignSelf: 'center',
+        marginBottom: 100
     }
 })

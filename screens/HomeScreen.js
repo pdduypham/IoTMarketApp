@@ -10,7 +10,7 @@ import firebase from '@react-native-firebase/app'
 import PostItem from '../components/PostItem'
 import ViewHide from '../components/ViewHide'
 import fonts from '../constants/fonts'
-const HomeScreen = ({navigation}) => {
+const HomeScreen = ({ navigation }) => {
 
   const [categories, setCategories] = useState([])
   const [posts, setPosts] = useState([])
@@ -58,8 +58,8 @@ const HomeScreen = ({navigation}) => {
     return subscriber
   }, [])
 
-  const detailPost = (postTitle,postPrice) => {
-    navigation.navigate("PostDetail",{postTitle,postPrice})
+  const detailPost = (postTitle, postPrice) => {
+    navigation.navigate("PostDetail", { postTitle, postPrice })
   }
 
   return (
@@ -141,12 +141,11 @@ const HomeScreen = ({navigation}) => {
                 postPrice={postPrice}
                 postTimestamp={postTimestamp}
                 postImages={postImages}
-                postID = {postID}
-                onPress = {detailPost} />
+                postID={postID}
+                onPress={detailPost} />
             ))}
           </ScrollView>
         </View>
-
       </ScrollView>
       <ViewHide />
     </SafeAreaView>
