@@ -16,7 +16,6 @@ const HomeScreen = ({ navigation }) => {
   const [posts, setPosts] = useState([])
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = React.useState(false);
-
   //Refresh
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
@@ -67,8 +66,8 @@ const HomeScreen = ({ navigation }) => {
     return subscriber
   }, [])
 
-  const detailPost = (postTitle, postPrice) => {
-    navigation.navigate("PostDetail", { postTitle, postPrice })
+  const detailPost = (postTitle, postPrice, postOwner, postImages) => {
+    navigation.navigate("PostDetail", { postTitle, postPrice, postOwner,postImages })
   }
 
   return (
@@ -150,14 +149,16 @@ const HomeScreen = ({ navigation }) => {
               postPrice,
               postTimestamp,
               postImages,
-              postID } }) => (
+              postID,
+              postOwner } }) => (
               <PostItem key={id}
                 postTitle={postTitle}
                 postPrice={postPrice}
                 postTimestamp={postTimestamp}
                 postImages={postImages}
                 postID={postID}
-                onPress={detailPost} />
+                onPress={detailPost}
+                postOwner = {postOwner} />
             ))}
           </ScrollView>
         </View>

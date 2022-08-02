@@ -5,7 +5,6 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import SignUpScreen from './screens/SignUpScreen';
 import TabBar from './components/TabBar';
-import colors from './constants/colors';
 import HomeScreen from './screens/HomeScreen';
 import PostDetail from './components/PostDetail';
 

@@ -2,10 +2,9 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { Card } from 'react-native-elements'
 import firebase from '@react-native-firebase/app'
-import storage from '@react-native-firebase/storage'
 import fonts from '../constants/fonts'
 
-const PostItem = ({ postTitle, postPrice, postTimestamp, postImages, postID, onPress }) => {
+const PostItem = ({ postTitle, postPrice, postTimestamp, postImages, postID, onPress, postOwner }) => {
   const [time, setTime] = useState('')
   const [imageURL, setImageURL] = useState('https://i.pinimg.com/564x/64/ba/95/64ba9507533272c92924364a6c451ca2.jpg')
   const [totalImages, setTotalImages] = useState(0)
@@ -44,7 +43,7 @@ const PostItem = ({ postTitle, postPrice, postTimestamp, postImages, postID, onP
   }, [])
 
   return (
-    <TouchableOpacity onPress={() => onPress(postTitle, postPrice)}
+    <TouchableOpacity onPress={() => onPress(postTitle, postPrice, postOwner,postImages)}
       style={{
         width: '50%',
         padding: 2

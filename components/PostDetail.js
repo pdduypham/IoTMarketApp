@@ -1,38 +1,12 @@
 import { StyleSheet, Text, View } from 'react-native'
-import React, { useLayoutEffect } from 'react'
+import React, { useEffect, useLayoutEffect } from 'react'
 import colors from '../constants/colors'
 import fonts from '../constants/fonts'
 import { Avatar } from 'react-native-elements'
+import  firebase  from '@react-native-firebase/app'
+import storage from '@react-native-firebase/storage'
 
 const PostDetail = ({ navigation, route }) => {
-
-    // //Get Categories Menu
-    // useEffect(() => {
-    //     const fetchCategories = async () => {
-    //         try {
-    //             const listCategories = []
-    //             await firestore().collection('categories').get()
-    //                 .then((querySnapshot) => {
-    //                     querySnapshot.forEach(doc => {
-    //                         const { categoryName, categoryID, categoryImage } = doc.data()
-    //                         listCategories.push({
-    //                             categoryName,
-    //                             categoryID,
-    //                             categoryImage
-    //                         })
-    //                     })
-    //                 })
-
-    //             setCategories(listCategories)
-    //             if (loading) {
-    //                 setLoading(false)
-    //             }
-    //         } catch (error) {
-    //             console.log(error)
-    //         }
-    //     }
-    //     fetchCategories()
-    // })
 
     useLayoutEffect(() => {
         navigation.setOptions({
@@ -43,6 +17,13 @@ const PostDetail = ({ navigation, route }) => {
             headerTitleAlign: 'center',
             headerShown: true,
         })
+    })
+
+    useEffect(()=> {
+        console.log(await firebase.storage().ref(postImages).listAll()
+            .items.pop().getDownloadURL().then((url) => {
+                url
+        }))
     })
 
     return (
@@ -60,7 +41,9 @@ const PostDetail = ({ navigation, route }) => {
             <View>
                 <Avatar rounded size={50}
                     source={require('../assets/logo.jpg')} />
+                
             </View>
+            <Text >{route.params.postImages}</Text>
         </View>
 
     )
