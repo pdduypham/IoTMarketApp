@@ -1,5 +1,5 @@
-import { StyleSheet, Text, View, Image, KeyboardAvoidingView, StatusBar, SafeAreaView, TextInput, ScrollView, FlatList } from 'react-native'
-import React, { useState, useEffect, useLayoutEffect } from 'react'
+import { StyleSheet, Text, View, Image, KeyboardAvoidingView, StatusBar, SafeAreaView, TextInput, ScrollView, FlatList, RefreshControl, DevSettings } from 'react-native'
+import React, { useState, useEffect, useLayoutEffect, useRef } from 'react'
 import { color } from 'react-native-elements/dist/helpers'
 import { Button, Input } from 'react-native-elements'
 import colors from '../constants/colors'
@@ -15,6 +15,14 @@ const HomeScreen = ({ navigation }) => {
   const [categories, setCategories] = useState([])
   const [posts, setPosts] = useState([])
   const [loading, setLoading] = useState(true)
+  const [refreshing, setRefreshing] = React.useState(false);
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => {
+      setRefreshing(false)
+    }, 1000);
+  }, []);
 
   //Get Categories Menu
   useEffect(() => {
@@ -68,7 +76,13 @@ const HomeScreen = ({ navigation }) => {
         backgroundColor: 'white',
         flex: 1
       }}>
-      <ScrollView stickyHeaderIndices={[0]}>
+      <ScrollView stickyHeaderIndices={[0]}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+          />
+        }>
         <View style={{
           flexDirection: 'row',
           justifyContent: 'center',
