@@ -1,5 +1,5 @@
 import { SafeAreaView, ScrollView, TextInput, StyleSheet, Text, View, Image, TouchableOpacity, KeyboardAvoidingView, ActivityIndicator, Alert } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import SelectDropdown from 'react-native-select-dropdown'
 import colors from '../constants/colors'
 import { Button, Input } from 'react-native-elements'
@@ -24,7 +24,9 @@ const UploadScreen = ({ navigation }) => {
     const [timestamp, setTimestamp] = useState(firebase.firestore.Timestamp.now().seconds)
     const [transferred, setTransferred] = useState(0)
     const [uploading, setUploading] = useState(false)
-    const [open, setOpen] = useState(false)
+    const dropdownCategoryRef = useRef({})
+    const dropdownBranchRef = useRef({})
+    const dropdownStatusRef = useRef({})
 
     //Get Categories from db.
     useEffect(() => {
@@ -92,7 +94,13 @@ const UploadScreen = ({ navigation }) => {
                     setTitle(undefined),
                     setListImages([]),
                     setPrice(undefined),
-                    setDescription(undefined)
+                    setDescription(undefined),
+                    setSelectedBranch(undefined),
+                    setSelectedStatus(undefined),
+                    setSelectedCategory(undefined),
+                    dropdownCategoryRef.current.reset(),
+                    dropdownBranchRef.current.reset(),
+                    dropdownStatusRef.current.reset(),
                 )
         } else {
             //Upload Images
@@ -133,7 +141,13 @@ const UploadScreen = ({ navigation }) => {
                                     setTitle(undefined),
                                     setListImages([]),
                                     setPrice(undefined),
-                                    setDescription(undefined)
+                                    setDescription(undefined),
+                                    setSelectedBranch(undefined),
+                                    setSelectedStatus(undefined),
+                                    setSelectedCategory(undefined),
+                                    dropdownCategoryRef.current.reset(),
+                                    dropdownBranchRef.current.reset(),
+                                    dropdownStatusRef.current.reset(),
                                 )
                         }
                     })
@@ -219,6 +233,7 @@ const UploadScreen = ({ navigation }) => {
                         }}>
                             <SelectDropdown data={categories}
                                 defaultButtonText='Category'
+                                ref={dropdownCategoryRef}
                                 buttonStyle={{
                                     width: '100%',
                                     alignSelf: 'center',
@@ -245,6 +260,7 @@ const UploadScreen = ({ navigation }) => {
                         }}>
                             <SelectDropdown data={dataBranch}
                                 defaultButtonText='Branch'
+                                ref={dropdownBranchRef}
                                 buttonStyle={{
                                     width: '100%',
                                     alignSelf: 'center',
@@ -271,6 +287,7 @@ const UploadScreen = ({ navigation }) => {
                         }}>
                             <SelectDropdown data={dataStatus}
                                 defaultButtonText='Status'
+                                ref={dropdownStatusRef}
                                 buttonStyle={{
                                     width: '100%',
                                     alignSelf: 'center',
