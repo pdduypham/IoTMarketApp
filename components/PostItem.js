@@ -8,6 +8,7 @@ import fonts from '../constants/fonts'
 const PostItem = ({ postTitle, postPrice, postTimestamp, postImages, postID, onPress }) => {
   const [time, setTime] = useState('')
   const [imageURL, setImageURL] = useState('https://i.pinimg.com/564x/64/ba/95/64ba9507533272c92924364a6c451ca2.jpg')
+  const [totalImages, setTotalImages] = useState(0)
 
   //Convert time
   useEffect(() => {
@@ -35,6 +36,7 @@ const PostItem = ({ postTitle, postPrice, postTimestamp, postImages, postID, onP
           .items.pop().getDownloadURL().then((url) => {
             setImageURL(url)
           })
+          console.log('asdafsd')
       }
       fetchImages()
     }
@@ -60,7 +62,6 @@ const PostItem = ({ postTitle, postPrice, postTimestamp, postImages, postID, onP
           paddingLeft: 10
         }}>
           <Text style={{
-            marginTop: 5,
             fontFamily: fonts.bold
           }}>{postTitle}</Text>
           <Text style={{

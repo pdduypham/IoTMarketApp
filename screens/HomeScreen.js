@@ -17,11 +17,12 @@ const HomeScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = React.useState(false);
 
+  //Refresh
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
     setTimeout(() => {
       setRefreshing(false)
-    }, 1000);
+    }, 100);
   }, []);
 
   //Get Categories Menu
