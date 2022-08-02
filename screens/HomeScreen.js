@@ -85,15 +85,16 @@ const HomeScreen = ({navigation}) => {
               borderRadius: 10,
               paddingLeft: 10,
               flex: 1,
-              marginLeft: 24,
-              marginTop: 20,
-              fontFamily: fonts.normal
+              fontFamily: fonts.normal,
+              height: 40,
+              justifyContent: 'center'
             }} />
           <Image source={require('../assets/search.png')}
             resizeMode='cover'
             style={{
-              top: 10,
-              right: 45
+              top: 22,
+              right: 30,
+              position: 'absolute'
             }} />
         </View>
 
@@ -101,10 +102,12 @@ const HomeScreen = ({navigation}) => {
         <View>
           <Text style={{
             fontSize: 18,
-            marginStart: 10,
+            marginLeft: 10,
             fontFamily: fonts.bold
           }}>CATEGORIES</Text>
-          <ScrollView horizontal>
+          <ScrollView horizontal style={{
+            marginLeft: 10
+          }}>
             {categories.map(category => (
               <CategoryItem key={category.categoryID}
                 categoryName={category.categoryName}
@@ -119,15 +122,14 @@ const HomeScreen = ({navigation}) => {
           <Text style={{
             fontSize: 18,
             marginStart: 10,
-            marginTop: 10,
+            marginTop: 5,
             fontFamily: 'OpenSans-Bold'
           }}>RECOMMEND FOR YOU</Text>
           <ScrollView
             contentContainerStyle={{
               flexDirection: 'row',
               flexWrap: 'wrap',
-              paddingHorizontal: 20,
-              paddingTop: 10,
+              paddingHorizontal: 10,
             }}>
             {posts.map(({ id, data: { postTitle,
               postPrice,

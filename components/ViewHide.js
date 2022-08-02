@@ -14,7 +14,7 @@ export default ViewHide
 const styles = StyleSheet.create({
     container: {
         width: '100%',
-        height: 110,
+        height: 70,
         backgroundColor: 'white'
     }
 })

@@ -40,25 +40,21 @@ const PostItem = ({ postTitle, postPrice, postTimestamp, postImages, postID, onP
     }
   }, [])
 
-  //Handle Click
-  // const detailPost = () => {
-  //   alert(postID)
-  // }
-
   return (
-    <TouchableOpacity onPress={()=> onPress(postTitle,postPrice)} 
-    style={{
-      width: '50%',
-      padding: 5
-    }}>
+    <TouchableOpacity onPress={() => onPress(postTitle, postPrice)}
+      style={{
+        width: '50%',
+        padding: 2
+      }}>
       <Card containerStyle={styles.container}>
         <Image source={postImages == 'No image' ? imageURL : { uri: imageURL }}
           resizeMode='cover'
           style={{
             width: '100%',
-            height: '55%',
+            height: 140,
             borderTopLeftRadius: 10,
-            borderTopRightRadius: 10
+            borderTopRightRadius: 10,
+            padding: 5
           }} />
         <View style={{
           paddingLeft: 10
@@ -73,7 +69,8 @@ const PostItem = ({ postTitle, postPrice, postTimestamp, postImages, postID, onP
           }}>{parseInt(postPrice)} đ</Text>
           <Text style={{
             fontSize: 12,
-            fontFamily: fonts.light
+            fontFamily: fonts.light,
+            marginBottom: 5
           }}>{time}</Text>
         </View>
       </Card>
@@ -85,7 +82,6 @@ export default PostItem
 
 const styles = StyleSheet.create({
   container: {
-    height: 162,
     width: '100%',
     margin: 0,
     borderRadius: 10,

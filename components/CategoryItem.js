@@ -19,15 +19,14 @@ const CategoryItem = ({ categoryID, categoryName, categoryImage }) => {
   return (
     <TouchableOpacity key={categoryID} style={{
       flexDirection: 'column',
-      margin: 1,
+      marginLeft: 5,
       width: 50,
       height: 50,
       justifyContent: 'center',
       alignItems: 'center',
       backgroundColor: colors.primaryBackground,
       borderRadius: 10,
-      paddingBottom: 5,
-      paddingTop: 5
+      padding: 3
     }}>
       <Image source={{ uri: imageURL }}
         style={{

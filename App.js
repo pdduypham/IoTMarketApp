@@ -12,17 +12,18 @@ import PostDetail from './components/PostDetail';
 
 const Stack = createNativeStackNavigator();
 const globalSreenOptions = {
-  headerStyle: { backgroundColor: colors.primary },
-  headerTitleStyle: { color: "white" },
-  hearderTintColor: "white",
-  headerTitleAlign: 'center'
+  // headerStyle: { backgroundColor: colors.primary },
+  // headerTitleStyle: { color: "white" },
+  // hearderTintColor: "white",
+  // headerTitleAlign: 'center',
+  headerShown: false
 }
 
 export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        screenOptions={Stack.Screen == 'TabBar' ? globalSreenOptions : { headerShown: false }}
+        screenOptions={globalSreenOptions}
         initialRouteName='TabBar'
       >
         <Stack.Screen name='Login' component={LoginScreen} />

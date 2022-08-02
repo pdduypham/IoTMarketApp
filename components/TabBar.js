@@ -20,7 +20,7 @@ const screenOptions = ({ navigation }) => ({
     right: 20,
     backgroundColor: colors.primaryBackground,
     borderRadius: 15,
-    height: 70,
+    height: 50,
     justifyContent: 'center',
     ...styles.shadow,
   },
@@ -33,11 +33,12 @@ const screenOptions = ({ navigation }) => ({
   },
   hearderTintColor: "white",
   headerTitleAlign: 'center',
+  headerShown: false
 })
 
 const CustomTabBarButton = ({ children, onPress }) => (
   <TouchableOpacity style={{
-    top: -25,
+    top: -15,
     justifyContent: 'center',
     alignItems: 'center',
     ...styles.shadow
@@ -68,12 +69,6 @@ const TabBar = ({ navigation }) => {
                   height: 24,
                   tintColor: focused ? colors.primary : 'black',
                 }} />
-              <Text style={{
-                color: focused ? colors.primary : 'black',
-                fontSize: 12,
-                width: '100%',
-                fontFamily: fonts.normal
-              }}>HOME</Text>
             </View>
           )
         }}
@@ -89,12 +84,6 @@ const TabBar = ({ navigation }) => {
                   height: 24,
                   tintColor: focused ? colors.primary : 'black'
                 }} />
-              <Text style={{
-                color: focused ? colors.primary : 'black',
-                fontSize: 12,
-                width: '100%',
-                fontFamily: fonts.normal
-              }}>POSTS</Text>
             </View>
           )
         }} />
@@ -124,12 +113,6 @@ const TabBar = ({ navigation }) => {
                   height: 24,
                   tintColor: focused ? colors.primary : 'black'
                 }} />
-              <Text style={{
-                color: focused ? colors.primary : 'black',
-                fontSize: 12,
-                width: '100%',
-                fontFamily: fonts.normal
-              }}>CHATS</Text>
             </View>
           )
         }} />
@@ -144,12 +127,6 @@ const TabBar = ({ navigation }) => {
                   height: 24,
                   tintColor: focused ? colors.primary : 'black'
                 }} />
-              <Text style={{
-                color: focused ? colors.primary : 'black',
-                fontSize: 12,
-                width: '100%',
-                fontFamily: fonts.normal
-              }}>MORE</Text>
             </View>
           )
         }} />
