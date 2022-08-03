@@ -28,6 +28,7 @@ const UploadScreen = ({ navigation }) => {
     const dropdownBranchRef = useRef({})
     const dropdownStatusRef = useRef({})
     const time = firebase.firestore.Timestamp.now().seconds
+    const displayName = firebase.auth().currentUser.displayName
 
     //Get Categories from db.
     useEffect(() => {
@@ -84,7 +85,8 @@ const UploadScreen = ({ navigation }) => {
                 postTimestamp: time,
                 postImages: stringPath,
                 postOwner: auth().currentUser.uid,
-                postID: auth().currentUser.uid + '_' + time
+                postID: auth().currentUser.uid + '_' + time,
+                postDisplayName: displayName
             }).catch(error => alert(error.meesage))
                 .then(
                     setUploading(false),
@@ -132,6 +134,7 @@ const UploadScreen = ({ navigation }) => {
                                 postImages: stringPath,
                                 postOwner: auth().currentUser.uid,
                                 postID: auth().currentUser.uid + '_' + time,
+                                postDisplayName: displayName
                             }).catch(error => alert(error.meesage))
                                 .then(
                                     setUploading(false),

@@ -66,8 +66,8 @@ const HomeScreen = ({ navigation }) => {
     return subscriber
   }, [])
 
-  const detailPost = (postTitle, postPrice, postOwner, postImages) => {
-    navigation.navigate("PostDetail", { postTitle, postPrice, postOwner,postImages })
+  const detailPost = (postDisplayName,postTitle, postPrice, postOwner, postImages) => {
+    navigation.navigate("PostDetail", { postDisplayName, postTitle, postPrice, postOwner,postImages })
   }
 
   return (
@@ -150,7 +150,8 @@ const HomeScreen = ({ navigation }) => {
               postTimestamp,
               postImages,
               postID,
-              postOwner } }) => (
+              postOwner,
+              postDisplayName } }) => (
               <PostItem key={id}
                 postTitle={postTitle}
                 postPrice={postPrice}
@@ -158,7 +159,8 @@ const HomeScreen = ({ navigation }) => {
                 postImages={postImages}
                 postID={postID}
                 onPress={detailPost}
-                postOwner = {postOwner} />
+                postOwner = {postOwner}
+                postDisplayName = {postDisplayName} />
             ))}
           </ScrollView>
         </View>
