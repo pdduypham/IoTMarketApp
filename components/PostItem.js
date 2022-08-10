@@ -4,7 +4,7 @@ import { Card } from 'react-native-elements'
 import firebase from '@react-native-firebase/app'
 import fonts from '../constants/fonts'
 
-const PostItem = ({ postDisplayName, postTitle, postPrice, postTimestamp, postImages, postID, onPress, postOwner }) => {
+const PostItem = ({ postStatusOfProduct, postDescription, postCategory, postBranch, postDisplayName, postTitle, postPrice, postTimestamp, postImages, postID, onPress, postOwner }) => {
   const [time, setTime] = useState('')
   const [imageURL, setImageURL] = useState('https://i.pinimg.com/564x/64/ba/95/64ba9507533272c92924364a6c451ca2.jpg')
   const [totalImages, setTotalImages] = useState(0)
@@ -43,10 +43,10 @@ const PostItem = ({ postDisplayName, postTitle, postPrice, postTimestamp, postIm
   }, [])
 
   return (
-    <TouchableOpacity onPress={() => onPress(postDisplayName, postTitle, postPrice, postOwner, postImages)}
+    <TouchableOpacity onPress={() => onPress(postBranch, postCategory, postDescription, postStatusOfProduct, postDisplayName, postTitle, postPrice, postOwner, postImages)}
       style={{
         width: '50%',
-        padding: 2
+        padding: 5
       }}>
       <Card containerStyle={styles.container}>
         <Image source={require('../assets/camera_mini.png')}

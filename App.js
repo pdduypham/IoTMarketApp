@@ -7,6 +7,7 @@ import SignUpScreen from './screens/SignUpScreen';
 import TabBar from './components/TabBar';
 import HomeScreen from './screens/HomeScreen';
 import PostDetail from './components/PostDetail';
+import ImageViewScreen from './screens/ImageViewScreen'
 
 
 const Stack = createNativeStackNavigator();
@@ -30,6 +31,7 @@ export default function App() {
         <Stack.Screen name='TabBar' component={TabBar} />
         <Stack.Screen name='Home' component={HomeScreen} />
         <Stack.Screen name='PostDetail' component={PostDetail} />
+        <Stack.Screen name='ImageView' component={ImageViewScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

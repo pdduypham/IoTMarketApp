@@ -66,8 +66,8 @@ const HomeScreen = ({ navigation }) => {
     return subscriber
   }, [])
 
-  const detailPost = (postDisplayName,postTitle, postPrice, postOwner, postImages) => {
-    navigation.navigate("PostDetail", { postDisplayName, postTitle, postPrice, postOwner,postImages })
+  const detailPost = (postBranch, postCategory, postDescription, postStatusOfProduct, postDisplayName, postTitle, postPrice, postOwner, postImages) => {
+    navigation.navigate("PostDetail", { postBranch, postCategory, postDescription, postStatusOfProduct, postDisplayName, postTitle, postPrice, postOwner, postImages })
   }
 
   return (
@@ -117,10 +117,12 @@ const HomeScreen = ({ navigation }) => {
           <Text style={{
             fontSize: 18,
             marginLeft: 10,
-            fontFamily: fonts.bold
+            fontFamily: fonts.bold,
+            marginTop: 10
           }}>CATEGORIES</Text>
           <ScrollView horizontal style={{
-            marginLeft: 10
+            marginLeft: 10,
+            marginTop: 5
           }}>
             {categories.map(category => (
               <CategoryItem key={category.categoryID}
@@ -136,7 +138,7 @@ const HomeScreen = ({ navigation }) => {
           <Text style={{
             fontSize: 18,
             marginStart: 10,
-            marginTop: 5,
+            marginTop: 10,
             fontFamily: 'OpenSans-Bold'
           }}>RECOMMEND FOR YOU</Text>
           <ScrollView
@@ -151,7 +153,11 @@ const HomeScreen = ({ navigation }) => {
               postImages,
               postID,
               postOwner,
-              postDisplayName } }) => (
+              postDisplayName,
+              postBranch,
+              postCategory,
+              postDescription,
+              postStatusOfProduct } }) => (
               <PostItem key={id}
                 postTitle={postTitle}
                 postPrice={postPrice}
@@ -159,8 +165,12 @@ const HomeScreen = ({ navigation }) => {
                 postImages={postImages}
                 postID={postID}
                 onPress={detailPost}
-                postOwner = {postOwner}
-                postDisplayName = {postDisplayName} />
+                postOwner={postOwner}
+                postDisplayName={postDisplayName}
+                postBranch={postBranch}
+                postCategory={postCategory}
+                postDescription={postDescription}
+                postStatusOfProduct={postStatusOfProduct} />
             ))}
           </ScrollView>
         </View>
