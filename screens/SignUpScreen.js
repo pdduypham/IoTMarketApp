@@ -18,13 +18,19 @@ const SignUpScreen = ({ navigation }) => {
                     authUser.user.updateProfile({
                         displayName: name,
                     })
-                    firestore().collection('users').add({
-                        userUID: authUser.user.uid,
-                        userIsAdmin: 0
+                    const userUID = authUser.user.uid
+                    firestore().collection('users').doc(userUID).set({
+                        userUID: userUID,
+                        userIsAdmin: 0,
+                        onlineStatus: 'online'
                     })
-                        .catch(error => alert(error))
+                        .catch(error => alert('Error: ',error))
                 })
-                .catch(error => alert(error.meesage))
+                .catch(error => alert('Error: ', error.meesage))
+                .then(()=>{
+                    alert('Sign up successful!!!')
+                    navigation.replace('TabBar')
+                })
             : alert('Password is not match!!!')
     }
 

@@ -43,7 +43,7 @@ const PostItem = ({ postStatusOfProduct, postDescription, postCategory, postBran
   }, [])
 
   return (
-    <TouchableOpacity onPress={() => onPress(postBranch, postCategory, postDescription, postStatusOfProduct, postDisplayName, postTitle, postPrice, postOwner, postImages)}
+    <TouchableOpacity onPress={() => onPress(postTimestamp,postBranch, postCategory, postDescription, postStatusOfProduct, postDisplayName, postTitle, postPrice, postOwner, postImages)}
       style={{
         width: '50%',
         padding: 5
