@@ -1,8 +1,8 @@
 import { StyleSheet, Text, View, Image, KeyboardAvoidingView, StatusBar } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { color } from 'react-native-elements/dist/helpers'
 import { Button, Input } from 'react-native-elements'
 import auth from '@react-native-firebase/auth';
+import firebase from '@react-native-firebase/app';
 
 const LoginScreen = ({ navigation }) => {
 
@@ -13,6 +13,12 @@ const LoginScreen = ({ navigation }) => {
     const unsubscribe = auth().onAuthStateChanged((authUser) => {
       if (authUser) {
         navigation.replace('TabBar')
+        firebase.firestore()
+          .collection('users')
+          .doc(authUser.uid)
+          .update({
+            onlineStatus: 'online'
+          })
       }
     })
     return unsubscribe
@@ -41,12 +47,12 @@ const LoginScreen = ({ navigation }) => {
           secureTextEntry
           textContentType='password'
           value={password}
-          onChangeText={(text) => setPassword(text)} 
-          onSubmitEditing={signIn}/>
+          onChangeText={(text) => setPassword(text)}
+          onSubmitEditing={signIn} />
       </View>
-      <Button title={'Log In'} 
-      containerStyle={styles.button}
-      onPress={signIn} />
+      <Button title={'Log In'}
+        containerStyle={styles.button}
+        onPress={signIn} />
       <Button title={'Sign Up'} containerStyle={styles.button} type='outline'
         onPress={() => navigation.navigate('SignUp')} />
     </KeyboardAvoidingView>

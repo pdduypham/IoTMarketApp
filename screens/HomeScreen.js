@@ -66,8 +66,8 @@ const HomeScreen = ({ navigation }) => {
     return subscriber
   }, [])
 
-  const detailPost = (postTimestamp, postBranch, postCategory, postDescription, postStatusOfProduct, postDisplayName, postTitle, postPrice, postOwner, postImages) => {
-    navigation.navigate("PostDetail", { postTimestamp, postBranch, postCategory, postDescription, postStatusOfProduct, postDisplayName, postTitle, postPrice, postOwner, postImages })
+  const detailPost = (postID, postTimestamp, postBranch, postCategory, postDescription, postStatusOfProduct, postDisplayName, postTitle, postPrice, postOwner, postImages) => {
+    navigation.navigate("PostDetail", { postID, postTimestamp, postBranch, postCategory, postDescription, postStatusOfProduct, postDisplayName, postTitle, postPrice, postOwner, postImages })
   }
 
   return (

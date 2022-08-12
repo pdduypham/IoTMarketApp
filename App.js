@@ -9,6 +9,8 @@ import HomeScreen from './screens/HomeScreen';
 import PostDetail from './components/PostDetail';
 import ImageViewScreen from './screens/ImageViewScreen'
 import firebase from '@react-native-firebase/app';
+import BottomMenu from './components/BottomMenu';
+import ChatsScreen from './screens/ChatsScreen';
 
 
 const Stack = createNativeStackNavigator();
@@ -17,7 +19,6 @@ const globalSreenOptions = {
 }
 
 export default function App() {
-  const appState = useRef(AppState.currentState);
 
   useEffect(() => {
     AppState.addEventListener("change", _handleAppStateChange);
@@ -29,20 +30,22 @@ export default function App() {
 
   const _handleAppStateChange = () => {
     const uid = firebase.auth().currentUser.uid
-    if (AppState.currentState == 'active') {
-      firebase.firestore()
-        .collection('users')
-        .doc(uid)
-        .update({
-          onlineStatus: 'online'
-        })
-    } else {
-      firebase.firestore()
-        .collection('users')
-        .doc(uid)
-        .update({
-          onlineStatus: firebase.firestore.Timestamp.now().seconds
-        })
+    if (uid != null) {
+      if (AppState.currentState == 'active') {
+        firebase.firestore()
+          .collection('users')
+          .doc(uid)
+          .update({
+            onlineStatus: 'online'
+          })
+      } else {
+        firebase.firestore()
+          .collection('users')
+          .doc(uid)
+          .update({
+            onlineStatus: firebase.firestore.Timestamp.now().seconds
+          })
+      }
     }
   };
 
@@ -56,9 +59,9 @@ export default function App() {
         <Stack.Screen name='Login' component={LoginScreen} />
         <Stack.Screen name='SignUp' component={SignUpScreen} />
         <Stack.Screen name='TabBar' component={TabBar} />
-        <Stack.Screen name='Home' component={HomeScreen} />
         <Stack.Screen name='PostDetail' component={PostDetail} />
-        <Stack.Screen name='ImageView' component={ImageViewScreen} />
+        <Stack.Screen name='BottomMenu' component={BottomMenu} />
+        <Stack.Screen name='Chats' component={ChatsScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

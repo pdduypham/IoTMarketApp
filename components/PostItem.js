@@ -1,4 +1,4 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { Card } from 'react-native-elements'
 import firebase from '@react-native-firebase/app'
@@ -43,9 +43,9 @@ const PostItem = ({ postStatusOfProduct, postDescription, postCategory, postBran
   }, [])
 
   return (
-    <TouchableOpacity onPress={() => onPress(postTimestamp,postBranch, postCategory, postDescription, postStatusOfProduct, postDisplayName, postTitle, postPrice, postOwner, postImages)}
+    <TouchableOpacity onPress={() => onPress(postID, postTimestamp, postBranch, postCategory, postDescription, postStatusOfProduct, postDisplayName, postTitle, postPrice, postOwner, postImages)}
       style={{
-        width: '50%',
+        width: Dimensions.get('window').width * 0.474,
         padding: 5
       }}>
       <Card containerStyle={styles.container}>

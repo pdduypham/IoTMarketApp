@@ -1,18 +1,55 @@
-import { ScrollView, StyleSheet, Text, View, Image, Dimensions, TouchableOpacity } from 'react-native'
+import { ScrollView, StyleSheet, Text, View, Image, Dimensions, TouchableOpacity, Modal, Animated, Easing } from 'react-native'
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import colors from '../constants/colors'
 import fonts from '../constants/fonts'
-import { Avatar } from 'react-native-elements'
+import { Avatar, Card } from 'react-native-elements'
 import firebase from '@react-native-firebase/app'
 import storage from '@react-native-firebase/storage'
 import Carousel from 'react-native-anchor-carousel';
+import BottomMenu from './BottomMenu'
+import ViewHide from './ViewHide'
+import PostItem from './PostItem'
+import Toast from 'react-native-simple-toast';
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 const PostDetail = ({ navigation, route }) => {
 
     const [listImages, setListImages] = useState([])
     const [loading, setLoading] = useState(true)
     const [time, setTime] = useState('')
-    const [online, setOnline] = useState(false)
+    const [timeOnline, setTimeOnline] = useState('')
+    const [online, setOnline] = useState('')
+    const [posts, setPosts] = useState([])
+    const [like, setLike] = useState(false)
+    const [visible, setVisible] = useState(false)
+
+    const curUserUID = firebase.auth().currentUser.uid
+    const scale = useRef(new Animated.Value(0)).current
+    const optionsOwner = [
+        {
+            title: 'Edit',
+            icon: require('../assets/edit.png'),
+            action: () => alert('edit')
+        },
+        {
+            title: 'Sold/Hide',
+            icon: require('../assets/hide.png'),
+            action: () => alert('sold/hide')
+        },
+        {
+            title: 'Delete',
+            icon: require('../assets/delete.png'),
+            action: () => alert('delete')
+        },
+    ]
+
+    const optionsViewer = [
+        {
+            title: 'Report',
+            icon: require('../assets/warning.png'),
+            action: () => alert('report')
+        },
+    ]
 
     //Convert time
     useEffect(() => {
@@ -30,17 +67,117 @@ const PostDetail = ({ navigation, route }) => {
         }
     })
 
+    useEffect(() => {
+        let temp = (firebase.firestore.Timestamp.now().seconds - online) / 60
+        if (temp < 60) {
+            setTimeOnline(temp.toFixed(0) + ' munites ago')
+        } else {
+            if (temp > 60 && (temp / 60) < 24) {
+                setTimeOnline((temp / 60).toFixed(0) + ' hours ago')
+            } else {
+                if ((temp / 60) > 24) {
+                    setTimeOnline((temp / 60 / 24).toFixed(0) + ' days ago')
+                }
+            }
+        }
+    })
+
+    //Add or Remove Favourite Post
+    const favouriteFucntion = () => {
+        setLike(!like)
+        const addToDB = async () =>
+            !like ?
+                await firebase.firestore()
+                    .collection('users')
+                    .doc(curUserUID)
+                    .collection('favourites')
+                    .doc(route.params.postID)
+                    .set({
+                        postID: route.params.postID
+                    })
+                    .then(() => {
+                        Toast.show('Added to your favourite!', Toast.SHORT)
+
+                    })
+                : await firebase.firestore()
+                    .collection('users')
+                    .doc(curUserUID)
+                    .collection('favourites')
+                    .doc(route.params.postID)
+                    .delete()
+                    .then(() => {
+                        Toast.show('Removed from your favourite!', Toast.SHORT)
+                    })
+        addToDB()
+    }
+
+    //Fetch Favourite
+    useEffect(() => {
+        const fetchFavourite = async () =>
+            await firebase.firestore()
+                .collection('users')
+                .doc(curUserUID)
+                .collection('favourites')
+                .doc(route.params.postID)
+                .get()
+                .then((data) => {
+                    if (data.get('postID') != undefined) {
+                        setLike(true)
+                    } else {
+                        setLike(false)
+                    }
+                })
+        fetchFavourite()
+    }, [route, like])
+
     //Navigation header
     useLayoutEffect(() => {
         navigation.setOptions({
-            title: 'Detail',
+            title: '',
             headerStyle: { backgroundColor: colors.primary },
-            headerTitleStyle: { color: "white" },
-            hearderTintColor: "white",
-            headerTitleAlign: 'center',
+            headerTintColor: 'white',
             headerShown: true,
+            headerRight: () => (
+                <View style={{
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    marginRight: 5,
+                }}>
+                    <TouchableOpacity
+                        onPress={favouriteFucntion}
+                        style={styles.topMenu}>
+                        <Image source={require('../assets/heart.png')}
+                            resizeMethod='resize'
+                            resizeMode='contain'
+                            style={{
+                                width: 24,
+                                height: 24,
+                                tintColor: like ? 'red' : 'white',
+                            }} />
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                        onPress={() => resizeBox(1)}
+                        style={styles.topMenu}>
+                        <Image source={require('../assets/more_vertical.png')}
+                            resizeMethod='resize'
+                            resizeMode='contain'
+                            style={{
+                                width: 24,
+                                height: 24,
+                                tintColor: 'white'
+                            }} />
+                    </TouchableOpacity>
+
+
+                </View>
+            ),
+            headerBackTitleStyle: {
+                color: 'white'
+            }
         })
-    })
+    }, [navigation, like])
 
     //Fetch Image
     useEffect(() => {
@@ -76,144 +213,326 @@ const PostDetail = ({ navigation, route }) => {
         checkOnlineStatus()
     })
 
+    //Fetch Product Same Category
+    useEffect(() => {
+        const fetchProduct = async () =>
+            await firebase.firestore()
+                .collection('posts')
+                .where('postCategory', '==', route.params.postCategory)
+                .where('postID', '!=', route.params.postID)
+                .limit(15)
+                .get()
+                .then(dataDocs => {
+                    setPosts(dataDocs.docs.map((doc) => ({
+                        id: doc.id,
+                        data: doc.data()
+                    })))
+                })
+        fetchProduct()
+    }, [route])
+
+    const detailPost = (postID, postTimestamp, postBranch, postCategory, postDescription, postStatusOfProduct, postDisplayName, postTitle, postPrice, postOwner, postImages) => {
+        navigation.navigate("PostDetail", { postID, postTimestamp, postBranch, postCategory, postDescription, postStatusOfProduct, postDisplayName, postTitle, postPrice, postOwner, postImages })
+    }
+
+    //Animated for Popup Menu
+    function resizeBox(to) {
+        to === 1 && setVisible(true)
+        Animated.timing(scale, {
+            toValue: to,
+            useNativeDriver: true,
+            duration: 150,
+            easing: Easing.linear,
+        }).start(() => to === 0 && setVisible(false))
+    }
+
     return (
-        <View style={styles.container}>
-            {loading ? <Image source={require('../assets/logo.jpg')}
-                resizeMethod='scale'
-                resizeMode='contain'
-                style={{
-                    width: '100%',
-                    height: 300
-                }} />
-                : <View>
-                    <Carousel data={listImages}
-                        initialIndex={0}
-                        itemWidth={Dimensions.get('window').width * 0.9}
-                        separatorWidth={2}
-                        inActiveOpacity={0.5}
-                        onSnapToItem={index => setIndex(index)}
-                        renderItem={({ item }) =>
-                            <Image source={{ uri: item }}
-                                resizeMethod='scale'
+        <SafeAreaView style={styles.container}>
+            <Modal transparent visible={visible}>
+                <SafeAreaView style={{
+                    flex: 1
+                }} onTouchStart={() => resizeBox(0)}>
+                    <Animated.View style={[styles.popupMenu, {
+                        transform: [{ scale }]
+                    }]}>
+                        {curUserUID == route.params.postOwner ? optionsOwner.map((op, i) => (
+                            <TouchableOpacity
+                                key={i}
+                                style={{
+                                    flexDirection: 'row',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                    paddingVertical: 5,
+                                    borderBottomWidth: i === optionsOwner.length - 1 ? 0 : 1
+                                }}
+                                onPress={op.action}>
+                                <Text style={{
+                                    fontFamily: fonts.normal
+                                }}>{op.title}</Text>
+                                <Image source={op.icon}
+                                    resizeMethod='resize'
+                                    resizeMode='contain'
+                                    style={{
+                                        width: 24,
+                                        height: 24,
+                                        marginLeft: 10
+                                    }} />
+                            </TouchableOpacity>
+                        ))
+                            : optionsViewer.map((op, i) => (
+                                <TouchableOpacity
+                                    key={i}
+                                    style={{
+                                        flexDirection: 'row',
+                                        justifyContent: 'space-between',
+                                        alignItems: 'center',
+                                        paddingVertical: 5,
+                                        borderBottomWidth: i === optionsViewer.length - 1 ? 0 : 1
+                                    }}
+                                    onPress={op.action}>
+                                    <Text style={{
+                                        fontFamily: fonts.normal
+                                    }}>{op.title}</Text>
+                                    <Image source={op.icon}
+                                        resizeMethod='resize'
+                                        resizeMode='contain'
+                                        style={{
+                                            width: 24,
+                                            height: 24,
+                                            marginLeft: 10
+                                        }} />
+                                </TouchableOpacity>
+                            ))}
+                    </Animated.View>
+                </SafeAreaView>
+            </Modal>
+
+            <ScrollView>
+                {loading ? <Image source={require('../assets/logo.jpg')}
+                    resizeMethod='scale'
+                    resizeMode='contain'
+                    style={{
+                        width: '100%',
+                        height: 250
+                    }} />
+                    : <View>
+                        <Carousel data={listImages}
+                            initialIndex={0}
+                            itemWidth={Dimensions.get('window').width * 0.9}
+                            separatorWidth={2}
+                            inActiveOpacity={0.5}
+                            onSnapToItem={index => setIndex(index)}
+                            renderItem={({ item }) =>
+                                <Image source={{ uri: item }}
+                                    resizeMethod='scale'
+                                    resizeMode='contain'
+                                    style={{
+                                        width: '100%',
+                                        height: 250,
+                                        borderRadius: 10
+                                    }} />
+                            } />
+                    </View>
+                }
+
+                <Card containerStyle={styles.cardContainer}>
+                    <View style={{
+                        flexDirection: 'row',
+                        alignItems: 'center'
+                    }}>
+                        <Avatar rounded size={64}
+                            source={require('../assets/logo.jpg')}
+                            avatarStyle={{
+                                borderWidth: 1,
+                                borderColor: colors.primaryBackground
+                            }}
+                        />
+
+                        {online == 'online' ? <Image
+                            source={require('../assets/online.png')}
+                            style={{
+                                width: 16,
+                                height: 16,
+                                position: 'absolute',
+                                left: 45,
+                                top: 45
+                            }} />
+                            : <Image source={require('../assets/offline.png')}
+                                style={{
+                                    width: 16,
+                                    height: 16,
+                                    position: 'absolute',
+                                    left: 45,
+                                    top: 45
+                                }} />}
+
+                        <View style={{
+                            flexDirection: 'column'
+                        }}>
+                            <Text style={{
+                                fontFamily: fonts.bold,
+                                fontSize: 16,
+                                marginLeft: 5
+                            }}>{route.params.postDisplayName}</Text>
+
+                            {online == 'online' ? <Text
+                                style={{
+                                    marginLeft: 5,
+                                }}>Online</Text>
+                                : <Text style={{
+                                    marginLeft: 5
+                                }}>{timeOnline}</Text>}
+                        </View>
+                        <View style={{
+                            flex: 1
+                        }} />
+                        <TouchableOpacity
+                            onPress={favouriteFucntion}
+                            style={{
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                marginRight: 10,
+                                borderWidth: 2,
+                                padding: 5,
+                                borderRadius: 10,
+                                borderColor: like ? 'red' : colors.primary
+                            }}>
+                            {!like ? <Text>Add  </Text>
+                                : <Text>Remove  </Text>}
+                            <Image source={require('../assets/heart.png')}
+                                resizeMethod='resize'
                                 resizeMode='contain'
                                 style={{
-                                    width: '100%',
-                                    height: 250,
-                                    borderRadius: 10
+                                    width: 20,
+                                    height: 20,
+                                    tintColor: like ? 'red' : colors.primary
                                 }} />
-                        } />
-                </View>
-            }
-
-            <View style={{
-                flexDirection: 'row',
-                marginTop: 10,
-                alignItems: 'center',
-            }}>
-                <Avatar rounded size={64}
-                    source={require('../assets/logo.jpg')}
-                    avatarStyle={{
-                        borderWidth: 1,
-                        borderColor: colors.primaryBackground
-                    }}
-                />
-
-                {online ? <Image
-                    source={require('../assets/online.png')}
-                    style={{
-                        width: 16,
-                        height: 16,
-                        position: 'absolute',
-                        left: 45,
-                        top: 45
-                    }} />
-                    : <Image source={require('../assets/offline.png')}
-                        style={{
-                            width: 16,
-                            height: 16,
-                            position: 'absolute',
-                            left: 45,
-                            top: 45
-                        }} />}
+                        </TouchableOpacity>
+                    </View>
+                </Card>
 
                 <View style={{
-                    flexDirection: 'column'
+                    flex: 1,
+                    marginBottom: 80
                 }}>
-                    <Text style={{
-                        fontFamily: fonts.bold,
-                        fontSize: 16,
-                        marginLeft: 5
-                    }}>{route.params.postDisplayName}</Text>
+                    <Card containerStyle={styles.cardContainer}>
+                        <View style={{
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                        }}>
+                            <Text style={{
+                                fontFamily: fonts.bold,
+                                fontSize: 20,
+                                marginTop: 5
+                            }}>{route.params.postTitle}</Text>
+                            <View style={{
+                                flex: 1
+                            }} />
+                            <Image source={require('../assets/clock.png')}
+                                style={{
+                                    width: 14,
+                                    height: 14,
+                                    marginRight: 5
+                                }} />
+                            <Text style={{
+                                marginRight: 10
+                            }}>{time}</Text>
+                        </View>
 
-                    {online ? <Text
-                    style={{
-                        marginLeft: 5,
-                    }}>Online</Text>
-                        : <Text></Text>}
-                </View>
-            </View>
+                        <Text style={{
+                            fontFamily: fonts.normal,
+                            fontSize: 16,
+                            color: 'red'
+                        }}>{route.params.postPrice} đ</Text>
+                    </Card>
 
-            <View style={{
-                flex: 1
-            }}>
-                <View style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                }}>
-                    <Text style={{
-                        fontFamily: fonts.bold,
-                        fontSize: 20,
-                        marginTop: 5
-                    }}>{route.params.postTitle}</Text>
+                    <Card containerStyle={styles.cardContainer}>
+                        <View style={{
+                            flexDirection: 'row'
+                        }}>
+                            <Text style={styles.textContainer}>Category: </Text>
+                            <Text>{route.params.postCategory}</Text>
+                        </View>
+
+                        <View style={{
+                            flexDirection: 'row'
+                        }}>
+                            <View style={{
+                                flexDirection: 'row'
+                            }}>
+                                <Text style={styles.textContainer}>Branch: </Text>
+                                <Text>{route.params.postBranch}</Text>
+                            </View>
+
+                            <View style={{
+                                flex: 1
+                            }} />
+
+                            <View style={{
+                                flexDirection: 'row'
+                            }}>
+                                <Text style={styles.textContainer}>Status: </Text>
+                                <Text style={{
+                                    marginRight: 10
+                                }}>{route.params.postStatusOfProduct}</Text>
+                            </View>
+                        </View>
+                    </Card>
+                    <Card containerStyle={styles.cardContainer}>
+                        <View style={{
+                            flexDirection: 'row'
+                        }}>
+                            <Text style={{
+                            }}>{route.params.postDescription}</Text>
+                        </View>
+                    </Card>
+
                     <View style={{
-                        flex: 1
-                    }} />
-                    <Image source={require('../assets/clock.png')}
-                        style={{
-                            width: 14,
-                            height: 14,
-                            marginRight: 5
-                        }} />
-                    <Text style={{
-                        marginRight: 10
-                    }}>{time}</Text>
+                        marginTop: 10
+                    }}>
+                        <Text style={{
+                            fontFamily: fonts.bold
+                        }}>Same Category</Text>
+
+                        <ScrollView
+                            horizontal
+                            showsHorizontalScrollIndicator={false}>
+                            {posts.map(({ id, data: { postTitle,
+                                postPrice,
+                                postTimestamp,
+                                postImages,
+                                postID,
+                                postOwner,
+                                postDisplayName,
+                                postBranch,
+                                postCategory,
+                                postDescription,
+                                postStatusOfProduct } }) => (
+                                <PostItem key={id}
+                                    postTitle={postTitle}
+                                    postPrice={postPrice}
+                                    postTimestamp={postTimestamp}
+                                    postImages={postImages}
+                                    postID={postID}
+                                    onPress={detailPost}
+                                    postOwner={postOwner}
+                                    postDisplayName={postDisplayName}
+                                    postBranch={postBranch}
+                                    postCategory={postCategory}
+                                    postDescription={postDescription}
+                                    postStatusOfProduct={postStatusOfProduct} />
+                            ))}
+                        </ScrollView>
+                    </View>
                 </View>
 
-                <Text style={{
-                    fontFamily: fonts.normal,
-                    fontSize: 16,
-                    color: 'red'
-                }}>{route.params.postPrice} đ</Text>
+            </ScrollView>
 
-                <View style={{
-                    flexDirection: 'row'
-                }}>
-                    <Text style={styles.textContainer}>Category: </Text>
-                    <Text>{route.params.postCategory}</Text>
-                </View>
+            <ViewHide />
 
-                <View style={{
-                    flexDirection: 'row'
-                }}>
-                    <Text style={styles.textContainer}>Branch: </Text>
-                    <Text>{route.params.postBranch}</Text>
-                </View>
+            <BottomMenu navigation={navigation} />
 
-                <View style={{
-                    flexDirection: 'row'
-                }}>
-                    <Text style={styles.textContainer}>Status: </Text>
-                    <Text>{route.params.postStatusOfProduct}</Text>
-                </View>
-
-                <View style={{
-                    flexDirection: 'row'
-                }}>
-                    <Text style={styles.textContainer}>Description: </Text>
-                    <Text>{route.params.postDescription}</Text>
-                </View>
-            </View>
-        </View>
+        </SafeAreaView>
 
     )
 }
@@ -230,5 +549,27 @@ const styles = StyleSheet.create({
 
     textContainer: {
         fontFamily: fonts.normal
+    },
+    cardContainer: {
+        marginTop: 10,
+        marginLeft: 0,
+        marginRight: 10,
+        borderRadius: 10,
+        padding: 10
+    },
+    topMenu: {
+        width: 50,
+        height: '100%',
+        alignItems: 'flex-end'
+    },
+    popupMenu: {
+        borderRadius: 10,
+        borderColor: colors.primaryBackground,
+        borderWidth: 1,
+        backgroundColor: 'white',
+        paddingHorizontal: 10,
+        position: 'absolute',
+        top: 55,
+        right: 10
     }
 })
