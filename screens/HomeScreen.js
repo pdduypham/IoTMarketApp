@@ -157,8 +157,9 @@ const HomeScreen = ({ navigation }) => {
               postBranch,
               postCategory,
               postDescription,
-              postStatusOfProduct } }) => (
-              <PostItem key={id}
+              postStatusOfProduct,
+              postStatus } }) => (
+              postStatus == 1 && <PostItem key={id}
                 postTitle={postTitle}
                 postPrice={postPrice}
                 postTimestamp={postTimestamp}

@@ -9,15 +9,16 @@ import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
 import UploadImageItem from '../components/UploadImageItem'
 import firebase from '@react-native-firebase/app'
-import ViewHide from '../components/ViewHide'
+import RNFS from 'react-native-fs';
 
-const UploadScreen = ({ navigation, route }) => {
+const UpdateScreen = ({ navigation, route }) => {
 
-    const [categories, setCategories] = useState()
+    const { postID, postBranch, postCategory, postDescription, postImages, postPrice, postStatusOfProduct, postTitle } = route.params.dataPost
+    const [categories, setCategories] = useState('')
     const [loading, setLoading] = useState(true)
-    let [price, setPrice] = useState()
-    let [title, setTitle] = useState()
-    let [description, setDescription] = useState()
+    let [price, setPrice] = useState('')
+    let [title, setTitle] = useState('')
+    let [description, setDescription] = useState('')
     const [listImages, setListImages] = useState([])
     let stringPath = 'postsImages/' + auth().currentUser.uid + '/'
     let [disableUpload, setDisableUpload] = useState(true)
@@ -29,6 +30,36 @@ const UploadScreen = ({ navigation, route }) => {
     const dropdownStatusRef = useRef({})
     const time = firebase.firestore.Timestamp.now().seconds
     const displayName = firebase.auth().currentUser.displayName
+
+    //Navigation Header
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            title: 'Update',
+            headerTitleAlign: 'center',
+            headerStyle: { backgroundColor: colors.primary },
+            headerTintColor: 'white',
+            headerShown: true,
+            headerBackTitleStyle: {
+                color: 'white'
+            }
+        })
+    }, [navigation])
+
+    //Set Init Value
+    useEffect(() => {
+        // let image = 'https://firebasestorage.googleapis.com/v0/b/iotmarket.appspot.com/o/postsImages%2Fegxs2TjXYkgRFFI0rRlf2gBe8fu2%2F1660555772%2F815ff340-c17b-4105-9c07-fac2445672be.jpg?alt=media&token=f8d8caa0-ae13-4d1b-b550-7b410e6d95ff'
+        // RNFS.readFile(image, 'base64')
+        //     .then(res => {
+        //         console.log(res);
+        //     });
+
+        setPrice(postPrice)
+        setTitle(postTitle)
+        setDescription(postDescription)
+        setSelectedBranch(postBranch)
+        setSelectedCategory(postCategory)
+        setSelectedStatus(postStatusOfProduct)
+    }, [navigation, route])
 
     //Get Categories from db.
     useEffect(() => {
@@ -55,6 +86,23 @@ const UploadScreen = ({ navigation, route }) => {
         fetchCategories()
     }, [])
 
+    //Fetch Imgaes
+    useEffect(() => {
+        const fetchImages = async () => {
+            if (postImages != 'No image') {
+                const imageRef = await firebase.storage().ref(postImages).listAll()
+                const urls = await Promise.all(imageRef.items.map(ref => ref.getDownloadURL()))
+                return urls
+            }
+        }
+
+        const loadImages = async () => {
+            const urls = await fetchImages();
+            setListImages(urls);
+        }
+        loadImages();
+    }, [route])
+
     //Disable Upload when field is empty.
     useEffect(() => {
         setDisableUpload((
@@ -69,14 +117,30 @@ const UploadScreen = ({ navigation, route }) => {
             description == ''))
     }, [description, price, selectedStatus, title, selectedCategory, selectedBranch])
 
-    //Upload post.
-    const uploadPost = () => {
+    //Update post.
+    const uploadPost = async () => {
+        // await firebase.storage()
+        //     .ref(postImages)
+        //     .listAll()
+        //     .then((docs) => {
+        //         docs.items.forEach((doc) => {
+        //             firebase.storage()
+        //                 .ref(postImages + '/' + doc.name)
+        //                 .delete()
+        //         })
+
+        //         firebase.firestore()
+        //             .collection('posts')
+        //             .doc(postID)
+        //             .delete()
+        //     })
+
         price = parseFloat(price)
         if (listImages.length == 0) {
             stringPath = "No image"
             firestore()
                 .collection('posts')
-                .doc(auth().currentUser.uid + '_' + time)
+                .doc(postID)
                 .set({
                     postTitle: title,
                     postCategory: selectedCategory,
@@ -93,8 +157,8 @@ const UploadScreen = ({ navigation, route }) => {
                 }).catch(error => alert(error.meesage))
                 .then(
                     setUploading(false),
-                    Alert.alert("Success", "Your post is uploaded!"),
-                    console.log('Upload post successful with no image: ', time),
+                    Alert.alert("Success", "Your post is updated!"),
+                    console.log('Update post successful with no image: ', time),
                     //Reset field
                     setTitle(undefined),
                     setListImages([]),
@@ -108,7 +172,7 @@ const UploadScreen = ({ navigation, route }) => {
                     dropdownStatusRef.current.reset(),
                 )
         } else {
-            //Upload Images
+            //Update Images
             setUploading(true)
             stringPath += time + '/'
             listImages.forEach((item, index) => {
@@ -185,9 +249,9 @@ const UploadScreen = ({ navigation, route }) => {
         setListImages(new_arr)
     }
 
-    const [selectedCategory, setSelectedCategory] = useState()
-    const [selectedBranch, setSelectedBranch] = useState()
-    const [selectedStatus, setSelectedStatus] = useState()
+    const [selectedCategory, setSelectedCategory] = useState('')
+    const [selectedBranch, setSelectedBranch] = useState('')
+    const [selectedStatus, setSelectedStatus] = useState('')
 
     //Data.
     const dataStatus = ['New', 'Used (Not maintained yet)', 'Used (Maintained)']
@@ -243,7 +307,8 @@ const UploadScreen = ({ navigation, route }) => {
                             borderRadius: 10
                         }}>
                             <SelectDropdown data={categories}
-                                defaultButtonText='Category'
+                                defaultButtonText={postCategory}
+                                defaultValue={postCategory}
                                 ref={dropdownCategoryRef}
                                 buttonStyle={{
                                     width: '100%',
@@ -270,7 +335,8 @@ const UploadScreen = ({ navigation, route }) => {
                             borderRadius: 10
                         }}>
                             <SelectDropdown data={dataBranch}
-                                defaultButtonText='Branch'
+                                defaultButtonText={postBranch}
+                                defaultValue={postBranch}
                                 ref={dropdownBranchRef}
                                 buttonStyle={{
                                     width: '100%',
@@ -297,7 +363,8 @@ const UploadScreen = ({ navigation, route }) => {
                             borderRadius: 10
                         }}>
                             <SelectDropdown data={dataStatus}
-                                defaultButtonText='Status'
+                                defaultButtonText={postStatusOfProduct}
+                                defaultValue={postStatusOfProduct}
                                 ref={dropdownStatusRef}
                                 buttonStyle={{
                                     width: '100%',
@@ -320,11 +387,12 @@ const UploadScreen = ({ navigation, route }) => {
                         <View style={styles.inputContainer}>
                             <Input placeholder='Price'
                                 keyboardType='number-pad'
-                                value={price}
+                                value={price.toString()}
                                 onChangeText={(text) => setPrice(text)}
                                 style={{
                                     marginLeft: 10,
-                                }} />
+                                }}
+                            />
                         </View>
                     </View>
 
@@ -361,7 +429,7 @@ const UploadScreen = ({ navigation, route }) => {
                             }} />
 
                         {/* Button Submit  */}
-                        {uploading == false ? (<Button title={'Upload'}
+                        {uploading == false ? (<Button title={'Update'}
                             disabled={disableUpload}
                             containerStyle={styles.button}
                             onPress={uploadPost}
@@ -384,13 +452,12 @@ const UploadScreen = ({ navigation, route }) => {
                             )}
                     </View>
                 </ScrollView>
-                <ViewHide />
             </KeyboardAvoidingView>
         </SafeAreaView>
     )
 }
 
-export default UploadScreen
+export default UpdateScreen
 
 const styles = StyleSheet.create({
     container: {
@@ -412,6 +479,6 @@ const styles = StyleSheet.create({
         width: 200,
         marginTop: 10,
         alignSelf: 'center',
-        marginBottom: 100
+        marginBottom: 20
     }
 })

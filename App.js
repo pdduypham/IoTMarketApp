@@ -11,6 +11,7 @@ import ImageViewScreen from './screens/ImageViewScreen'
 import firebase from '@react-native-firebase/app';
 import BottomMenu from './components/BottomMenu';
 import ChatsScreen from './screens/ChatsScreen';
+import UpdateScreen from './screens/UpdateScreen';
 
 
 const Stack = createNativeStackNavigator();
@@ -62,6 +63,7 @@ export default function App() {
         <Stack.Screen name='PostDetail' component={PostDetail} />
         <Stack.Screen name='BottomMenu' component={BottomMenu} />
         <Stack.Screen name='Chats' component={ChatsScreen} />
+        <Stack.Screen name='Update' component={UpdateScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

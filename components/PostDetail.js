@@ -1,5 +1,5 @@
-import { ScrollView, StyleSheet, Text, View, Image, Dimensions, TouchableOpacity, Modal, Animated, Easing } from 'react-native'
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { ScrollView, StyleSheet, Text, View, Image, Dimensions, TouchableOpacity, Modal, Animated, Easing, Alert } from 'react-native'
+import React, { forwardRef, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import colors from '../constants/colors'
 import fonts from '../constants/fonts'
 import { Avatar, Card } from 'react-native-elements'
@@ -23,23 +23,76 @@ const PostDetail = ({ navigation, route }) => {
     const [like, setLike] = useState(false)
     const [visible, setVisible] = useState(false)
 
+    const dataPost = {
+        postID: route.params.postID,
+        postBranch: route.params.postBranch,
+        postCategory: route.params.postCategory,
+        postDescription: route.params.postDescription,
+        postImages: route.params.postImages,
+        postPrice: route.params.postPrice,
+        postStatusOfProduct: route.params.postStatusOfProduct,
+        postTitle: route.params.postTitle
+    }
+
     const curUserUID = firebase.auth().currentUser.uid
     const scale = useRef(new Animated.Value(0)).current
     const optionsOwner = [
         {
             title: 'Edit',
             icon: require('../assets/edit.png'),
-            action: () => alert('edit')
+            action: () => {
+                navigation.navigate('Update', { dataPost })
+            }
         },
         {
             title: 'Sold/Hide',
             icon: require('../assets/hide.png'),
-            action: () => alert('sold/hide')
+            action: async () => {
+                await firebase.firestore()
+                    .collection('posts')
+                    .doc(route.params.postID)
+                    .update({
+                        postStatus: 3
+                    })
+                    .then(() => {
+                        navigation.navigate('TabBar')
+                    })
+            }
         },
         {
             title: 'Delete',
             icon: require('../assets/delete.png'),
-            action: () => alert('delete')
+            action: () => {
+                Alert.alert('Delete', 'Are you sure you want to delete this post?', [
+                    {
+                        text: 'Cancel',
+                        style: 'cancel'
+                    },
+                    {
+                        text: 'Delete',
+                        style: 'default',
+                        onPress: async () => {
+                            await firebase.storage()
+                                .ref(route.params.postImages)
+                                .listAll()
+                                .then((docs) => {
+                                    docs.items.forEach((doc) => {
+                                        firebase.storage()
+                                            .ref(route.params.postImages + '/' + doc.name)
+                                            .delete()
+                                    })
+                                    firebase.firestore()
+                                        .collection('posts')
+                                        .doc(route.params.postID)
+                                        .delete()
+                                        .then(() => {
+                                            navigation.navigate('TabBar')
+                                        })
+                                })
+                        }
+                    }
+                ])
+            }
         },
     ]
 
@@ -179,15 +232,13 @@ const PostDetail = ({ navigation, route }) => {
         })
     }, [navigation, like])
 
-    //Fetch Image
+    //Fetch Images
     useEffect(() => {
         const fetchImages = async () => {
             if (route.params.postImages != 'No image') {
                 const imageRef = await firebase.storage().ref(route.params.postImages).listAll()
                 const urls = await Promise.all(imageRef.items.map(ref => ref.getDownloadURL()))
                 return urls
-            } else {
-                console.log('blo')
             }
         }
 
@@ -507,8 +558,9 @@ const PostDetail = ({ navigation, route }) => {
                                 postBranch,
                                 postCategory,
                                 postDescription,
-                                postStatusOfProduct } }) => (
-                                <PostItem key={id}
+                                postStatusOfProduct,
+                                postStatus } }) => (
+                                postStatus == 1 && <PostItem key={id}
                                     postTitle={postTitle}
                                     postPrice={postPrice}
                                     postTimestamp={postTimestamp}
