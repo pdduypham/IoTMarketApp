@@ -11,6 +11,7 @@ import ViewHide from './ViewHide'
 import PostItem from './PostItem'
 import Toast from 'react-native-simple-toast';
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { SimplePaginationDot } from './SimplePaginationDot';
 
 const PostDetail = ({ navigation, route }) => {
 
@@ -22,6 +23,12 @@ const PostDetail = ({ navigation, route }) => {
     const [posts, setPosts] = useState([])
     const [like, setLike] = useState(false)
     const [visible, setVisible] = useState(false)
+    const carouselRef = useRef(null);
+    const [currentIndex, setCurrentIndex] = useState(0);
+
+    function handleCarouselScrollEnd(item, index) {
+        setCurrentIndex(index);
+    }
 
     const dataPost = {
         postID: route.params.postID,
@@ -72,23 +79,33 @@ const PostDetail = ({ navigation, route }) => {
                         text: 'Delete',
                         style: 'default',
                         onPress: async () => {
-                            await firebase.storage()
-                                .ref(route.params.postImages)
-                                .listAll()
-                                .then((docs) => {
-                                    docs.items.forEach((doc) => {
-                                        firebase.storage()
-                                            .ref(route.params.postImages + '/' + doc.name)
-                                            .delete()
-                                    })
-                                    firebase.firestore()
-                                        .collection('posts')
-                                        .doc(route.params.postID)
-                                        .delete()
-                                        .then(() => {
-                                            navigation.navigate('TabBar')
+                            if (route.params.postImages != 'No image') {
+                                await firebase.storage()
+                                    .ref(route.params.postImages)
+                                    .listAll()
+                                    .then((docs) => {
+                                        docs.items.forEach((doc) => {
+                                            firebase.storage()
+                                                .ref(route.params.postImages + '/' + doc.name)
+                                                .delete()
                                         })
-                                })
+                                        firebase.firestore()
+                                            .collection('posts')
+                                            .doc(route.params.postID)
+                                            .delete()
+                                            .then(() => {
+                                                navigation.navigate('TabBar')
+                                            })
+                                    })
+                            } else {
+                                firebase.firestore()
+                                    .collection('posts')
+                                    .doc(route.params.postID)
+                                    .delete()
+                                    .then(() => {
+                                        navigation.navigate('TabBar')
+                                    })
+                            }
                         }
                     }
                 ])
@@ -106,32 +123,36 @@ const PostDetail = ({ navigation, route }) => {
 
     //Convert time
     useEffect(() => {
-        let temp = (firebase.firestore.Timestamp.now().seconds - route.params.postTimestamp) / 60
-        if (temp < 60) {
-            setTime(temp.toFixed(0) + ' munites ago')
+        let temp = (firebase.firestore.Timestamp.now().seconds - route.params.postTimestamp)
+        if (temp < 120) {
+            setTime('Just now')
+        } else if (temp >= 120 && (temp / 60 / 60) < 1) {
+            setTime((temp / 60).toFixed(0) + ' minutes ago')
+        } else if ((temp / 60 / 60) >= 1 && (temp / 60 / 60) < 2) {
+            setTime('1 hour ago')
+        } else if ((temp / 60 / 60) >= 2 && (temp / 60 / 60 / 24) < 1) {
+            setTime((temp / 60 / 60).toFixed(0) + ' hours ago')
+        } else if ((temp / 60 / 60 / 24) >= 1 && (temp / 60 / 60 / 24) < 2) {
+            setTime('1 day ago')
         } else {
-            if (temp > 60 && (temp / 60) < 24) {
-                setTime((temp / 60).toFixed(0) + ' hours ago')
-            } else {
-                if ((temp / 60) > 24) {
-                    setTime((temp / 60 / 24).toFixed(0) + ' days ago')
-                }
-            }
+            setTime((temp / 60 / 60 / 24).toFixed(0) + ' days ago')
         }
     })
 
     useEffect(() => {
-        let temp = (firebase.firestore.Timestamp.now().seconds - online) / 60
-        if (temp < 60) {
-            setTimeOnline(temp.toFixed(0) + ' munites ago')
+        let temp = (firebase.firestore.Timestamp.now().seconds - online)
+        if (temp < 120) {
+            setTimeOnline('Just now')
+        } else if (temp >= 120 && (temp / 60 / 60) < 1) {
+            setTimeOnline((temp / 60).toFixed(0) + ' minutes ago')
+        } else if ((temp / 60 / 60) >= 1 && (temp / 60 / 60) < 2) {
+            setTimeOnline('1 hour ago')
+        } else if ((temp / 60 / 60) >= 2 && (temp / 60 / 60 / 24) < 1) {
+            setTimeOnline((temp / 60 / 60).toFixed(0) + ' hours ago')
+        } else if ((temp / 60 / 60 / 24) >= 1 && (temp / 60 / 60 / 24) < 2) {
+            setTimeOnline('1 day ago')
         } else {
-            if (temp > 60 && (temp / 60) < 24) {
-                setTimeOnline((temp / 60).toFixed(0) + ' hours ago')
-            } else {
-                if ((temp / 60) > 24) {
-                    setTimeOnline((temp / 60 / 24).toFixed(0) + ' days ago')
-                }
-            }
+            setTimeOnline((temp / 60 / 60 / 24).toFixed(0) + ' days ago')
         }
     })
 
@@ -359,31 +380,66 @@ const PostDetail = ({ navigation, route }) => {
             </Modal>
 
             <ScrollView>
-                {loading ? <Image source={require('../assets/logo.jpg')}
-                    resizeMethod='scale'
-                    resizeMode='contain'
-                    style={{
-                        width: '100%',
-                        height: 250
-                    }} />
-                    : <View>
-                        <Carousel data={listImages}
-                            initialIndex={0}
-                            itemWidth={Dimensions.get('window').width * 0.9}
-                            separatorWidth={2}
-                            inActiveOpacity={0.5}
-                            onSnapToItem={index => setIndex(index)}
-                            renderItem={({ item }) =>
-                                <Image source={{ uri: item }}
-                                    resizeMethod='scale'
-                                    resizeMode='contain'
-                                    style={{
-                                        width: '100%',
-                                        height: 250,
-                                        borderRadius: 10
-                                    }} />
-                            } />
+                {loading || route.params.postImages == 'No image' ?
+                    <View style={{
+                        marginRight: 10
+                    }}>
+                        <Image source={require('../assets/logo.jpg')}
+                            resizeMethod='scale'
+                            resizeMode='contain'
+                            style={{
+                                width: '100%',
+                                height: 250,
+                                flex: 1,
+                                borderRadius: 10,
+                                elevation: 3,
+                            }} />
                     </View>
+                    : listImages.length == 1 ?
+                        <View style={{
+                            marginRight: 10
+                        }}>
+                            <Image source={{ uri: listImages[0] }}
+                                resizeMethod='scale'
+                                resizeMode='contain'
+                                style={{
+                                    width: '100%',
+                                    height: 250,
+                                    flex: 1,
+                                    borderRadius: 10,
+                                    elevation: 3,
+                                }} />
+                        </View>
+                        : <View>
+                            <Carousel
+                                data={listImages}
+                                style={{
+                                    marginBottom: 10
+                                }}
+                                initialIndex={0}
+                                ref={carouselRef}
+                                onScrollEnd={handleCarouselScrollEnd}
+                                itemWidth={Dimensions.get('window').width * 0.88}
+                                containerWidth={Dimensions.get('window').width * 0.95}
+                                separatorWidth={2}
+                                inActiveOpacity={0.5}
+                                onSnapToItem={index => setIndex(index)}
+                                renderItem={({ item }) =>
+                                    <View>
+                                        <Image source={{ uri: item }}
+                                            resizeMethod='scale'
+                                            resizeMode='contain'
+                                            style={{
+                                                width: '100%',
+                                                height: 250,
+                                                flex: 1,
+                                                borderRadius: 10,
+                                                elevation: 3,
+                                            }} />
+                                    </View>
+                                } />
+                            <SimplePaginationDot currentIndex={currentIndex} length={listImages.length} />
+                        </View>
                 }
 
                 <Card containerStyle={styles.cardContainer}>
@@ -623,5 +679,5 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: 55,
         right: 10
-    }
+    },
 })

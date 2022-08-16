@@ -77,6 +77,9 @@ const HomeScreen = ({ navigation }) => {
         flex: 1
       }}>
       <ScrollView stickyHeaderIndices={[0]}
+        style={{
+          marginBottom: 90
+        }}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}

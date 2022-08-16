@@ -11,17 +11,19 @@ const PostItem = ({ postStatusOfProduct, postDescription, postCategory, postBran
 
   //Convert time
   useEffect(() => {
-    let temp = (firebase.firestore.Timestamp.now().seconds - postTimestamp) / 60
-    if (temp < 60) {
-      setTime(temp.toFixed(0) + ' munites ago')
+    let temp = (firebase.firestore.Timestamp.now().seconds - postTimestamp)
+    if (temp < 120) {
+      setTime('Just now')
+    } else if (temp >= 120 && (temp / 60 / 60) < 1) {
+      setTime((temp / 60).toFixed(0) + ' minutes ago')
+    } else if ((temp / 60 / 60) >= 1 && (temp / 60 / 60) < 2) {
+      setTime('1 hour ago')
+    } else if ((temp / 60 / 60) >= 2 && (temp / 60 / 60 / 24) < 1) {
+      setTime((temp / 60 / 60).toFixed(0) + ' hours ago')
+    } else if ((temp / 60 / 60 / 24) >= 1 && (temp / 60 / 60 / 24) < 2) {
+      setTime('1 day ago')
     } else {
-      if (temp > 60 && (temp / 60) < 24) {
-        setTime((temp / 60).toFixed(0) + ' hours ago')
-      } else {
-        if ((temp / 60) > 24) {
-          setTime((temp / 60 / 24).toFixed(0) + ' days ago')
-        }
-      }
+      setTime((temp / 60 / 60 / 24).toFixed(0) + ' days ago')
     }
   })
 
@@ -45,7 +47,7 @@ const PostItem = ({ postStatusOfProduct, postDescription, postCategory, postBran
   return (
     <TouchableOpacity onPress={() => onPress(postID, postTimestamp, postBranch, postCategory, postDescription, postStatusOfProduct, postDisplayName, postTitle, postPrice, postOwner, postImages)}
       style={{
-        width: Dimensions.get('window').width * 0.474,
+        width: Dimensions.get('window').width * 0.473,
         padding: 5
       }}>
       <Card containerStyle={styles.container}>
