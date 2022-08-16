@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image, KeyboardAvoidingView, StatusBar, SafeAreaView, TextInput, ScrollView, FlatList, RefreshControl, DevSettings } from 'react-native'
+import { StyleSheet, Text, View, Image, KeyboardAvoidingView, StatusBar, SafeAreaView, TextInput, ScrollView, FlatList, RefreshControl, DevSettings, TouchableOpacity } from 'react-native'
 import React, { useState, useEffect, useLayoutEffect, useRef } from 'react'
 import { color } from 'react-native-elements/dist/helpers'
 import { Button, Input } from 'react-native-elements'
@@ -115,13 +115,28 @@ const HomeScreen = ({ navigation }) => {
             }} />
         </View>
 
+        {/* Ads view */}
+        <TouchableOpacity style={styles.adsView}>
+          <Text style={{
+            fontFamily: fonts.bold,
+            fontSize: 24,
+            color: 'white'
+          }}>Get discount up to 50%</Text>
+          <Text></Text>
+          <Text style={{
+            fontFamily: fonts.normal,
+            fontSize: 16,
+            color: 'white'
+          }}>Get a big discount with a very limited time, what are you waiting for shop now!</Text>
+        </TouchableOpacity>
+
         {/* Categories Menu */}
         <View>
           <Text style={{
             fontSize: 18,
             marginLeft: 10,
             fontFamily: fonts.bold,
-            marginTop: 10
+            marginTop: 5
           }}>CATEGORIES</Text>
           <ScrollView horizontal style={{
             marginLeft: 10,
@@ -191,4 +206,11 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     marginTop: 10
   },
+  adsView: {
+    backgroundColor: colors.primary,
+    borderRadius: 10,
+    marginHorizontal: 10,
+    marginTop: 10,
+    padding: 10
+  }
 })
