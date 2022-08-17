@@ -40,7 +40,8 @@ const PostDetail = ({ navigation, route }) => {
         postPrice: route.params.postPrice,
         postStatusOfProduct: route.params.postStatusOfProduct,
         postTitle: route.params.postTitle,
-        postStatus: route.params.postStatus
+        postStatus: route.params.postStatus,
+        postReason: route.params.postReason
     }
 
     const curUserUID = firebase.auth().currentUser.uid
@@ -56,16 +57,28 @@ const PostDetail = ({ navigation, route }) => {
         {
             title: 'Sold/Hide',
             icon: require('../assets/hide.png'),
-            action: async () => {
-                await firebase.firestore()
-                    .collection('posts')
-                    .doc(route.params.postID)
-                    .update({
-                        postStatus: 3
-                    })
-                    .then(() => {
-                        navigation.replace('TabBar', { routeName: 'Posts', name: 'Sold' })
-                    })
+            action: () => {
+                Alert.alert('Confirm', 'Would you like to confirm that this product has been sold?', [
+                    {
+                        text: 'Cancel',
+                        style: 'cancel'
+                    },
+                    {
+                        text: 'Yes',
+                        style: 'default',
+                        onPress: async () => {
+                            await firebase.firestore()
+                                .collection('posts')
+                                .doc(route.params.postID)
+                                .update({
+                                    postStatus: 3
+                                })
+                                .then(() => {
+                                    navigation.replace('TabBar', { routeName: 'Posts', name: 'Sold' })
+                                })
+                        }
+                    }
+                ])
             }
         },
         {
@@ -243,8 +256,21 @@ const PostDetail = ({ navigation, route }) => {
                             }} />
                     </TouchableOpacity>}
 
-                    {dataPost.postStatus == 0 ||
-                        dataPost.postStatus == 1 &&
+                    {dataPost.postStatus == 1 &&
+                        <TouchableOpacity
+                            onPress={() => resizeBox(1)}
+                            style={styles.topMenu}>
+                            <Image source={require('../assets/more_vertical.png')}
+                                resizeMethod='resize'
+                                resizeMode='contain'
+                                style={{
+                                    width: 24,
+                                    height: 24,
+                                    tintColor: 'white'
+                                }} />
+                        </TouchableOpacity>}
+
+                    {dataPost.postStatus == 0 &&
                         <TouchableOpacity
                             onPress={() => resizeBox(1)}
                             style={styles.topMenu}>
@@ -330,6 +356,12 @@ const PostDetail = ({ navigation, route }) => {
             easing: Easing.linear,
         }).start(() => to === 0 && setVisible(false))
     }
+
+    //Alert for Rejected Post
+    useEffect(() => {
+        dataPost.postStatus == 2 &&
+            Alert.alert('Warning', `This post was rejected because: \n ${dataPost.postReason}`)
+    }, [route])
 
     return (
         <SafeAreaView style={styles.container}>
@@ -455,6 +487,18 @@ const PostDetail = ({ navigation, route }) => {
                         </View>
                 }
 
+                {dataPost.postStatus == 2 && <Card containerStyle={styles.cardContainer}>
+                    <View>
+                        <Text style={{
+                            fontFamily: fonts.bold
+                        }}>This post was rejected because: </Text>
+                        <Text style={{
+                            fontFamily: fonts.light,
+                            color: 'red'
+                        }}>{dataPost.postReason}</Text>
+                    </View>
+                </Card>}
+
                 <Card containerStyle={styles.cardContainer}>
                     <View style={{
                         flexDirection: 'row',
@@ -513,7 +557,7 @@ const PostDetail = ({ navigation, route }) => {
                                 style={{
                                     flexDirection: 'row',
                                     alignItems: 'center',
-                                    marginRight: 10,
+                                    marginRight: 5,
                                     borderWidth: 2,
                                     padding: 5,
                                     borderRadius: 10,
@@ -557,7 +601,7 @@ const PostDetail = ({ navigation, route }) => {
                                     marginRight: 5
                                 }} />
                             <Text style={{
-                                marginRight: 10
+                                marginRight: 5
                             }}>{time}</Text>
                         </View>
 
@@ -595,7 +639,7 @@ const PostDetail = ({ navigation, route }) => {
                             }}>
                                 <Text style={styles.textContainer}>Status: </Text>
                                 <Text style={{
-                                    marginRight: 10
+                                    marginRight: 5
                                 }}>{route.params.postStatusOfProduct}</Text>
                             </View>
                         </View>

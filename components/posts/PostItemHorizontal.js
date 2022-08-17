@@ -98,7 +98,7 @@ const PostItemHorizontal = ({ data, onPress }) => {
                             color: 'red'
                         }}>{data.postPrice} đ</Text>
                         {data.postStatus == 2 && <Text
-                            numberOfLines={3}
+                            numberOfLines={2}
                             ellipsizeMode='tail'
                             style={{
                                 fontFamily: fonts.light,

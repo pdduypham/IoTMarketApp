@@ -20,6 +20,10 @@ const BottomMenu = ({ navigation }) => {
         Linking.openURL(`sms:${phoneNumber}`)
     }
 
+    const buyFunction = () => {
+        navigation.navigate('Buy')
+    }
+
     return (
         <View style={{
             position: 'absolute',
@@ -89,16 +93,18 @@ const BottomMenu = ({ navigation }) => {
                 }}>Chat</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={{
-                flexDirection: 'row',
-                width: '25%',
-                backgroundColor: colors.primary,
-                height: '100%',
-                justifyContent: 'center',
-                alignItems: 'center',
-                borderTopRightRadius: 10,
-                borderBottomRightRadius: 10,
-            }}>
+            <TouchableOpacity
+                onPress={buyFunction}
+                style={{
+                    flexDirection: 'row',
+                    width: '25%',
+                    backgroundColor: colors.primary,
+                    height: '100%',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    borderTopRightRadius: 10,
+                    borderBottomRightRadius: 10,
+                }}>
                 <Text style={{
                     color: 'white',
                     fontFamily: fonts.bold
