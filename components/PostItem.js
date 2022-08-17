@@ -3,8 +3,9 @@ import React, { useEffect, useState } from 'react'
 import { Card } from 'react-native-elements'
 import firebase from '@react-native-firebase/app'
 import fonts from '../constants/fonts'
+import colors from '../constants/colors'
 
-const PostItem = ({ postStatusOfProduct, postDescription, postCategory, postBranch, postDisplayName, postTitle, postPrice, postTimestamp, postImages, postID, onPress, postOwner }) => {
+const PostItem = ({ postStatus, postStatusOfProduct, postDescription, postCategory, postBranch, postDisplayName, postTitle, postPrice, postTimestamp, postImages, postID, onPress, postOwner }) => {
   const [time, setTime] = useState('')
   const [imageURL, setImageURL] = useState('https://i.pinimg.com/564x/64/ba/95/64ba9507533272c92924364a6c451ca2.jpg')
   const [totalImages, setTotalImages] = useState(0)
@@ -45,7 +46,7 @@ const PostItem = ({ postStatusOfProduct, postDescription, postCategory, postBran
   }, [])
 
   return (
-    <TouchableOpacity onPress={() => onPress(postID, postTimestamp, postBranch, postCategory, postDescription, postStatusOfProduct, postDisplayName, postTitle, postPrice, postOwner, postImages)}
+    <TouchableOpacity onPress={() => onPress(postStatus, postID, postTimestamp, postBranch, postCategory, postDescription, postStatusOfProduct, postDisplayName, postTitle, postPrice, postOwner, postImages)}
       style={{
         width: Dimensions.get('window').width * 0.473,
         padding: 5
@@ -70,17 +71,19 @@ const PostItem = ({ postStatusOfProduct, postDescription, postCategory, postBran
           color: 'white',
           fontFamily: fonts.bold,
         }}>{totalImages}</Text>
-        <Image source={postImages == 'No image' ? imageURL : { uri: imageURL }}
-          resizeMode='cover'
-          resizeMethod='resize'
-          style={{
-            width: '100%',
-            height: 140,
-            borderTopLeftRadius: 10,
-            borderTopRightRadius: 10,
-            padding: 5,
-            zIndex: 0
-          }} />
+        <View>
+          <Image source={postImages == 'No image' ? imageURL : { uri: imageURL }}
+            resizeMode='contain'
+            resizeMethod='resize'
+            style={{
+              width: '100%',
+              height: 140,
+              borderRadius: 10,
+              zIndex: 0,
+              borderWidth: 1,
+              borderColor: colors.primaryBackground
+            }} />
+        </View>
         <View style={{
           paddingLeft: 10
         }}>

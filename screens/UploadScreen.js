@@ -93,7 +93,14 @@ const UploadScreen = ({ navigation, route }) => {
                 }).catch(error => alert(error.meesage))
                 .then(
                     setUploading(false),
-                    Alert.alert("Success", "Your post is uploaded!"),
+                    Alert.alert("Success", "Your post is uploaded!", [
+                        {
+                            text: 'OK',
+                            onPress: () => {
+                                navigation.replace('TabBar', { routeName: 'Posts' })
+                            }
+                        }
+                    ]),
                     console.log('Upload post successful with no image: ', time),
                     //Reset field
                     setTitle(undefined),
@@ -144,7 +151,14 @@ const UploadScreen = ({ navigation, route }) => {
                                 }).catch(error => alert(error.meesage))
                                 .then(
                                     setUploading(false),
-                                    Alert.alert("Success", "Your post is uploaded!"),
+                                    Alert.alert("Success", "Your post is uploaded!", [
+                                        {
+                                            text: 'OK',
+                                            onPress: () => {
+                                                navigation.replace('TabBar', { routeName: 'Posts' })
+                                            }
+                                        }
+                                    ]),
                                     console.log('Update post successful with images'),
                                     //Reset field
                                     setTitle(undefined),

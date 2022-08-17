@@ -66,8 +66,8 @@ const HomeScreen = ({ navigation }) => {
     return subscriber
   }, [])
 
-  const detailPost = (postID, postTimestamp, postBranch, postCategory, postDescription, postStatusOfProduct, postDisplayName, postTitle, postPrice, postOwner, postImages) => {
-    navigation.navigate("PostDetail", { postID, postTimestamp, postBranch, postCategory, postDescription, postStatusOfProduct, postDisplayName, postTitle, postPrice, postOwner, postImages })
+  const detailPost = (postStatus, postID, postTimestamp, postBranch, postCategory, postDescription, postStatusOfProduct, postDisplayName, postTitle, postPrice, postOwner, postImages) => {
+    navigation.navigate("PostDetail", { postStatus, postID, postTimestamp, postBranch, postCategory, postDescription, postStatusOfProduct, postDisplayName, postTitle, postPrice, postOwner, postImages })
   }
 
   return (
@@ -189,7 +189,8 @@ const HomeScreen = ({ navigation }) => {
                 postBranch={postBranch}
                 postCategory={postCategory}
                 postDescription={postDescription}
-                postStatusOfProduct={postStatusOfProduct} />
+                postStatusOfProduct={postStatusOfProduct}
+                postStatus={postStatus} />
             ))}
           </ScrollView>
         </View>

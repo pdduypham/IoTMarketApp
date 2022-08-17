@@ -25,6 +25,7 @@ const PostDetail = ({ navigation, route }) => {
     const [visible, setVisible] = useState(false)
     const carouselRef = useRef(null);
     const [currentIndex, setCurrentIndex] = useState(0);
+    const [stateOptionsOwner, setStateOptionsOwner] = useState([])
 
     function handleCarouselScrollEnd(item, index) {
         setCurrentIndex(index);
@@ -35,15 +36,16 @@ const PostDetail = ({ navigation, route }) => {
         postBranch: route.params.postBranch,
         postCategory: route.params.postCategory,
         postDescription: route.params.postDescription,
-        postImages: route.params.postImages,
+        postStatus: route.params.postImages,
         postPrice: route.params.postPrice,
         postStatusOfProduct: route.params.postStatusOfProduct,
-        postTitle: route.params.postTitle
+        postTitle: route.params.postTitle,
+        postStatus: route.params.postStatus
     }
 
     const curUserUID = firebase.auth().currentUser.uid
     const scale = useRef(new Animated.Value(0)).current
-    const optionsOwner = [
+    let optionsOwner = [
         {
             title: 'Edit',
             icon: require('../assets/edit.png'),
@@ -62,7 +64,7 @@ const PostDetail = ({ navigation, route }) => {
                         postStatus: 3
                     })
                     .then(() => {
-                        navigation.navigate('TabBar')
+                        navigation.replace('TabBar', { routeName: 'Posts', name: 'Sold' })
                     })
             }
         },
@@ -112,6 +114,16 @@ const PostDetail = ({ navigation, route }) => {
             }
         },
     ]
+
+    //Customize Options due to Post Status
+    useEffect(() => {
+        if (dataPost.postStatus == 0) {
+            optionsOwner.splice(1, 1)
+        } else if (dataPost.postStatus == 1) {
+            optionsOwner.splice(0, 1)
+        }
+        setStateOptionsOwner(optionsOwner)
+    }, [route])
 
     const optionsViewer = [
         {
@@ -218,7 +230,7 @@ const PostDetail = ({ navigation, route }) => {
                     alignItems: 'center',
                     marginRight: 5,
                 }}>
-                    <TouchableOpacity
+                    {dataPost.postStatus == 1 && <TouchableOpacity
                         onPress={favouriteFucntion}
                         style={styles.topMenu}>
                         <Image source={require('../assets/heart.png')}
@@ -229,22 +241,22 @@ const PostDetail = ({ navigation, route }) => {
                                 height: 24,
                                 tintColor: like ? 'red' : 'white',
                             }} />
-                    </TouchableOpacity>
+                    </TouchableOpacity>}
 
-                    <TouchableOpacity
-                        onPress={() => resizeBox(1)}
-                        style={styles.topMenu}>
-                        <Image source={require('../assets/more_vertical.png')}
-                            resizeMethod='resize'
-                            resizeMode='contain'
-                            style={{
-                                width: 24,
-                                height: 24,
-                                tintColor: 'white'
-                            }} />
-                    </TouchableOpacity>
-
-
+                    {dataPost.postStatus == 0 ||
+                        dataPost.postStatus == 1 &&
+                        <TouchableOpacity
+                            onPress={() => resizeBox(1)}
+                            style={styles.topMenu}>
+                            <Image source={require('../assets/more_vertical.png')}
+                                resizeMethod='resize'
+                                resizeMode='contain'
+                                style={{
+                                    width: 24,
+                                    height: 24,
+                                    tintColor: 'white'
+                                }} />
+                        </TouchableOpacity>}
                 </View>
             ),
             headerBackTitleStyle: {
@@ -269,7 +281,7 @@ const PostDetail = ({ navigation, route }) => {
             setLoading(false)
         }
         loadImages();
-    }, [route])
+    }, [])
 
     //Check onlineStatus
     useEffect(() => {
@@ -290,9 +302,10 @@ const PostDetail = ({ navigation, route }) => {
         const fetchProduct = async () =>
             await firebase.firestore()
                 .collection('posts')
-                .where('postCategory', '==', route.params.postCategory)
-                .where('postID', '!=', route.params.postID)
-                .limit(15)
+                .where('postCategory', '==', dataPost.postCategory)
+                .where('postID', '!=', dataPost.postID)
+                .where('postStatus', 'in', [1])
+                .limit(10)
                 .get()
                 .then(dataDocs => {
                     setPosts(dataDocs.docs.map((doc) => ({
@@ -303,8 +316,8 @@ const PostDetail = ({ navigation, route }) => {
         fetchProduct()
     }, [route])
 
-    const detailPost = (postID, postTimestamp, postBranch, postCategory, postDescription, postStatusOfProduct, postDisplayName, postTitle, postPrice, postOwner, postImages) => {
-        navigation.navigate("PostDetail", { postID, postTimestamp, postBranch, postCategory, postDescription, postStatusOfProduct, postDisplayName, postTitle, postPrice, postOwner, postImages })
+    const detailPost = (postStatus, postID, postTimestamp, postBranch, postCategory, postDescription, postStatusOfProduct, postDisplayName, postTitle, postPrice, postOwner, postImages) => {
+        navigation.navigate("PostDetail", { postStatus, postID, postTimestamp, postBranch, postCategory, postDescription, postStatusOfProduct, postDisplayName, postTitle, postPrice, postOwner, postImages })
     }
 
     //Animated for Popup Menu
@@ -327,7 +340,7 @@ const PostDetail = ({ navigation, route }) => {
                     <Animated.View style={[styles.popupMenu, {
                         transform: [{ scale }]
                     }]}>
-                        {curUserUID == route.params.postOwner ? optionsOwner.map((op, i) => (
+                        {curUserUID == route.params.postOwner ? stateOptionsOwner.map((op, i) => (
                             <TouchableOpacity
                                 key={i}
                                 style={{
@@ -335,7 +348,7 @@ const PostDetail = ({ navigation, route }) => {
                                     justifyContent: 'space-between',
                                     alignItems: 'center',
                                     paddingVertical: 5,
-                                    borderBottomWidth: i === optionsOwner.length - 1 ? 0 : 1
+                                    borderBottomWidth: i === stateOptionsOwner.length - 1 ? 0 : 1
                                 }}
                                 onPress={op.action}>
                                 <Text style={{
@@ -493,34 +506,36 @@ const PostDetail = ({ navigation, route }) => {
                         <View style={{
                             flex: 1
                         }} />
-                        <TouchableOpacity
-                            onPress={favouriteFucntion}
-                            style={{
-                                flexDirection: 'row',
-                                alignItems: 'center',
-                                marginRight: 10,
-                                borderWidth: 2,
-                                padding: 5,
-                                borderRadius: 10,
-                                borderColor: like ? 'red' : colors.primary
-                            }}>
-                            {!like ? <Text>Add  </Text>
-                                : <Text>Remove  </Text>}
-                            <Image source={require('../assets/heart.png')}
-                                resizeMethod='resize'
-                                resizeMode='contain'
+                        {dataPost.postStatus == 1 ||
+                            dataPost.postStatus == 0 &&
+                            <TouchableOpacity
+                                onPress={favouriteFucntion}
                                 style={{
-                                    width: 20,
-                                    height: 20,
-                                    tintColor: like ? 'red' : colors.primary
-                                }} />
-                        </TouchableOpacity>
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                    marginRight: 10,
+                                    borderWidth: 2,
+                                    padding: 5,
+                                    borderRadius: 10,
+                                    borderColor: like ? 'red' : colors.primary
+                                }}>
+                                {!like ? <Text>Add  </Text>
+                                    : <Text>Remove  </Text>}
+                                <Image source={require('../assets/heart.png')}
+                                    resizeMethod='resize'
+                                    resizeMode='contain'
+                                    style={{
+                                        width: 20,
+                                        height: 20,
+                                        tintColor: like ? 'red' : colors.primary
+                                    }} />
+                            </TouchableOpacity>}
                     </View>
                 </Card>
 
                 <View style={{
                     flex: 1,
-                    marginBottom: 80
+                    marginBottom: route.params.postStatus == 1 ? 80 : 15
                 }}>
                     <Card containerStyle={styles.cardContainer}>
                         <View style={{
@@ -594,7 +609,7 @@ const PostDetail = ({ navigation, route }) => {
                         </View>
                     </Card>
 
-                    <View style={{
+                    {dataPost.postStatus == 1 && <View style={{
                         marginTop: 10
                     }}>
                         <Text style={{
@@ -628,17 +643,18 @@ const PostDetail = ({ navigation, route }) => {
                                     postBranch={postBranch}
                                     postCategory={postCategory}
                                     postDescription={postDescription}
-                                    postStatusOfProduct={postStatusOfProduct} />
+                                    postStatusOfProduct={postStatusOfProduct}
+                                    postStatus={postStatus} />
                             ))}
                         </ScrollView>
-                    </View>
+                    </View>}
                 </View>
 
             </ScrollView>
 
-            <ViewHide />
+            {route.params.postStatus == 1 && <ViewHide />}
 
-            <BottomMenu navigation={navigation} />
+            {route.params.postStatus == 1 && <BottomMenu navigation={navigation} />}
 
         </SafeAreaView>
 

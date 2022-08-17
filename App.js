@@ -12,6 +12,8 @@ import firebase from '@react-native-firebase/app';
 import BottomMenu from './components/BottomMenu';
 import ChatsScreen from './screens/ChatsScreen';
 import UpdateScreen from './screens/UpdateScreen';
+import PostPending from './components/posts/PostPending';
+import PostsScreen from './screens/PostsScreen';
 
 
 const Stack = createNativeStackNavigator();

@@ -12,7 +12,6 @@ import fonts from '../constants/fonts'
 const Tab = createBottomTabNavigator()
 
 const screenOptions = ({ navigation }) => ({
-  tabbarActiveTintColor: 'red',
   tabBarStyle: {
     position: 'absolute',
     bottom: 20,
@@ -55,9 +54,9 @@ const CustomTabBarButton = ({ children, onPress }) => (
   </TouchableOpacity>
 )
 
-const TabBar = ({ navigation }) => {
+const TabBar = ({ navigation, route }) => {
   return (
-    <Tab.Navigator screenOptions={screenOptions}>
+    <Tab.Navigator screenOptions={screenOptions} initialRouteName={route.params.routeName}>
       <Tab.Screen name='Home' component={HomeScreen}
         options={{
           tabBarIcon: ({ focused }) => (
@@ -73,7 +72,7 @@ const TabBar = ({ navigation }) => {
           )
         }}
       />
-      <Tab.Screen name='Posts' component={PostsScreen}
+      <Tab.Screen initialParams={{ name: route.params.name }} name='Posts' component={PostsScreen}
         options={{
           tabBarIcon: ({ focused }) => (
             <View style={styles.viewContainer}>

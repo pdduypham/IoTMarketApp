@@ -12,7 +12,7 @@ const LoginScreen = ({ navigation }) => {
   useEffect(() => {
     const unsubscribe = auth().onAuthStateChanged((authUser) => {
       if (authUser) {
-        navigation.replace('TabBar')
+        navigation.replace('TabBar', {routeName: 'Home'})
         firebase.firestore()
           .collection('users')
           .doc(authUser.uid)

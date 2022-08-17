@@ -5,16 +5,29 @@ import PostApproved from './posts/PostApproved'
 import PostPending from './posts/PostPending'
 import PostRejected from './posts/PostRejected'
 import PostSold from './posts/PostSold'
+import colors from '../constants/colors';
+import fonts from '../constants/fonts';
 
 const Tab = createMaterialTopTabNavigator();
 
 const screenOptions = {
-    title: 'a'
+    tabBarIndicatorStyle: {
+        backgroundColor: colors.primary
+    },
+    tabBarStyle: {
+        backgroundColor: colors.primaryBackground,
+    },
+    tabBarActiveTintColor: colors.primary,
+    tabBarInactiveTintColor: 'black',
+    tabBarLabelStyle: {
+        fontFamily: fonts.normal,
+        fontSize: 13
+    }
 }
 
-const TopTabBar = () => {
+const TopTabBar = ({ routeName }) => {
     return (
-        <Tab.Navigator initialRouteName='PostPending'>
+        <Tab.Navigator initialRouteName={routeName} screenOptions={screenOptions}>
             <Tab.Screen name="Pending" component={PostPending} />
             <Tab.Screen name="Approved" component={PostApproved} />
             <Tab.Screen name="Rejected" component={PostRejected} />
