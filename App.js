@@ -15,6 +15,8 @@ import UpdateScreen from './screens/UpdateScreen';
 import PostPending from './components/posts/PostPending';
 import PostsScreen from './screens/PostsScreen';
 import BuyScreen from './screens/BuyScreen';
+import ListAddressesScreen from './screens/ListAddressesScreen';
+import AddNewAddressScreen from './screens/AddNewAddressScreen';
 
 
 const Stack = createNativeStackNavigator();
@@ -68,6 +70,8 @@ export default function App() {
         <Stack.Screen name='Chats' component={ChatsScreen} />
         <Stack.Screen name='Update' component={UpdateScreen} />
         <Stack.Screen name='Buy' component={BuyScreen} />
+        <Stack.Screen name='ListAddresses' component={ListAddressesScreen} />
+        <Stack.Screen name='AddNewAddress' component={AddNewAddressScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

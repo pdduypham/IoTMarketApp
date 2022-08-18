@@ -360,7 +360,7 @@ const PostDetail = ({ navigation, route }) => {
     //Alert for Rejected Post
     useEffect(() => {
         dataPost.postStatus == 2 &&
-            Alert.alert('Warning', `This post was rejected because: \n ${dataPost.postReason}`)
+            Alert.alert('Warning', `This post was rejected because:\n${dataPost.postReason}`)
     }, [route])
 
     return (

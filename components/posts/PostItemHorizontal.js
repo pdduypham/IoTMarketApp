@@ -46,10 +46,6 @@ const PostItemHorizontal = ({ data, onPress }) => {
         }
     }, [])
 
-    useLayoutEffect(() => {
-
-    })
-
     return (
         <TouchableOpacity onPress={() => onPress(data)}>
             <Card containerStyle={styles.cardContainer}>
