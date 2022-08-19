@@ -21,7 +21,7 @@ const BottomMenu = ({ navigation }) => {
     }
 
     const buyFunction = () => {
-        navigation.navigate('Buy',{navigation: navigation})
+        navigation.navigate('Buy')
     }
 
     return (

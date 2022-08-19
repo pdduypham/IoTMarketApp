@@ -39,7 +39,6 @@ const BuyScreen = ({ navigation, route }) => {
                 })
         }
         fetchAddress()
-        console.log(address)
     }, [route, navigation])
 
     const chooseAddress = () => {

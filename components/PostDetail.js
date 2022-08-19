@@ -392,7 +392,9 @@ const PostDetail = ({ navigation, route }) => {
                                     style={{
                                         width: 24,
                                         height: 24,
-                                        marginLeft: 10
+                                        marginLeft: 10,
+                                        tintColor: op.title == 'Delete' ? 'red' :
+                                            op.title == 'Edit' ? 'orange' : 'green'
                                     }} />
                             </TouchableOpacity>
                         ))
@@ -550,8 +552,7 @@ const PostDetail = ({ navigation, route }) => {
                         <View style={{
                             flex: 1
                         }} />
-                        {dataPost.postStatus == 1 ||
-                            dataPost.postStatus == 0 &&
+                        {dataPost.postStatus == 1 &&
                             <TouchableOpacity
                                 onPress={favouriteFucntion}
                                 style={{

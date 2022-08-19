@@ -210,8 +210,7 @@ const UploadScreen = ({ navigation, route }) => {
     return (
         <SafeAreaView style={styles.container}>
             <KeyboardAvoidingView>
-                <ScrollView style={{
-                }}>
+                <ScrollView>
                     {/* Detail Infomation */}
                     <View style={{
                         marginTop: 10,
@@ -335,6 +334,7 @@ const UploadScreen = ({ navigation, route }) => {
                             <Input placeholder='Price'
                                 keyboardType='number-pad'
                                 value={price}
+                                renderErrorMessage={false}
                                 onChangeText={(text) => setPrice(text)}
                                 style={{
                                     marginLeft: 10,
@@ -355,8 +355,9 @@ const UploadScreen = ({ navigation, route }) => {
                             <Input placeholder='Title'
                                 value={title}
                                 onChangeText={(text) => setTitle(text)}
+                                renderErrorMessage={false}
                                 style={{
-                                    marginLeft: 10,
+                                    marginLeft: 10
                                 }} />
                         </View>
 
@@ -421,6 +422,7 @@ const styles = StyleSheet.create({
     },
     inputContainer: {
         marginHorizontal: 10,
+        marginBottom: 10
     },
     button: {
         width: 200,

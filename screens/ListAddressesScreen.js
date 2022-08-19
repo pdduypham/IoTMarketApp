@@ -1,9 +1,13 @@
 import { Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React, { useLayoutEffect } from 'react'
+import React, { useEffect, useLayoutEffect, useState } from 'react'
 import colors from '../constants/colors'
 import fonts from '../constants/fonts'
+import firebase from '@react-native-firebase/app'
 
 const ListAddressesScreen = ({ navigation, route }) => {
+
+  const curUser = firebase.auth().currentUser.uid
+  const [address, setAddress] = useState([])
 
   //Navigation Header
   useLayoutEffect(() => {
@@ -22,11 +26,38 @@ const ListAddressesScreen = ({ navigation, route }) => {
     navigation.navigate('AddNewAddress')
   }
 
+  const chooseAddress = () => {
+    alert('alo')
+  }
+
+  //Fetch Receiver's Address
+  useEffect(() => {
+    const fetchAddress = async () => {
+      await firebase.firestore()
+        .collection('users')
+        .doc(curUser)
+        .collection('receiveAddress')
+        .get()
+        .then((addresses) => {
+          setAddress(addresses.docs.map((doc) => ({
+            id: doc.id,
+            data: doc.data()
+          })))
+        })
+    }
+    fetchAddress()
+    address.length == 0 && navigation.navigate('AddNewAddress')
+  }, [route, navigation])
+
   return (
     <SafeAreaView style={styles.container}>
       <TouchableOpacity
         onPress={addNewAddress}
-        style={styles.touchContainer}>
+        style={{
+          ...styles.touchContainer,
+          borderWidth: 1,
+          borderColor: 'orange',
+        }}>
         <Image source={require('../assets/plus.png')}
           resizeMethod='resize'
           resizeMode='contain'
@@ -40,7 +71,22 @@ const ListAddressesScreen = ({ navigation, route }) => {
           fontFamily: fonts.normal,
         }}>Add New Address</Text>
       </TouchableOpacity>
-    </SafeAreaView>
+      <View style={{
+        flex: 1
+      }} />
+      <TouchableOpacity
+        onPress={chooseAddress}
+        style={{
+          ...styles.touchContainer,
+          backgroundColor: colors.primary,
+          marginBottom: 20
+        }}>
+        <Text style={{
+          color: 'white',
+          fontFamily: fonts.bold,
+        }}>Choose</Text>
+      </TouchableOpacity>
+    </SafeAreaView >
   )
 }
 
@@ -58,8 +104,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 10,
-    borderWidth: 1,
-    borderColor: 'orange',
     flexDirection: 'row',
     marginTop: 10
   }
