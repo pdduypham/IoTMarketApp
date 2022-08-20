@@ -1,19 +1,19 @@
-import { KeyboardAvoidingView, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Alert, KeyboardAvoidingView, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import colors from '../constants/colors'
 import fonts from '../constants/fonts'
 import SelectDropdown from 'react-native-select-dropdown'
-import { Card, Input } from 'react-native-elements'
+import { Card, CheckBox, Input } from 'react-native-elements'
 import firebase from '@react-native-firebase/app'
 import axios from 'axios';
 import { Image } from 'react-native'
-import QueryString from 'query-string'
+import { onPress } from 'deprecated-react-native-prop-types/DeprecatedTextPropTypes'
 
 const AddNewAddressScreen = ({ navigation, route }) => {
 
     const [receiverName, setReceiverName] = useState('')
     const [receiverPhoneNumber, setReceiverPhoneNumber] = useState('')
-    const [curUserInfor, setCurUserInfo] = useState('')
+    const curUserInfor = firebase.auth().currentUser
     const token = '9c452848-1ec3-11ed-8730-6627a1705dca'
     const type = 'application/json'
     const [provinceName, setProvinceName] = useState([])
@@ -32,6 +32,8 @@ const AddNewAddressScreen = ({ navigation, route }) => {
     const districtRef = useRef({})
     const wardRef = useRef({})
     const [receiverAddress, setReceiverAddress] = useState('')
+    const [disableButton, setDisableButton] = useState(true)
+    const [checkBox, setCheckBox] = useState(false)
 
     //Navigation Header
     useLayoutEffect(() => {
@@ -44,18 +46,6 @@ const AddNewAddressScreen = ({ navigation, route }) => {
                 color: 'white'
             }
         })
-    })
-
-    //Get Default Information of User
-    useLayoutEffect(() => {
-        setCurUserInfo(firebase.auth()
-            .currentUser.toJSON())
-    }, [])
-
-    //Set Initial Value
-    useEffect(() => {
-        curUserInfor.displayName != undefined && setReceiverName(curUserInfor.displayName)
-        curUserInfor.phoneNumber != undefined && setReceiverPhoneNumber(curUserInfor.phoneNumber)
     })
 
     //API Get Province
@@ -145,8 +135,47 @@ const AddNewAddressScreen = ({ navigation, route }) => {
         }
     }, [selectedDistrictIndex])
 
+    //Set Initial Value
+    useLayoutEffect(() => {
+        curUserInfor.displayName != undefined && setReceiverName(curUserInfor.displayName)
+        curUserInfor.phoneNumber != undefined && setReceiverPhoneNumber(curUserInfor.phoneNumber)
+    }, [])
+
+    //Validate data
+    useEffect(() => {
+        receiverName != '' && receiverPhoneNumber != '' &&
+            selectedProvince != '' && selectedDistrict != ''
+            && selectedWard != '' && receiverAddress != '' ?
+            setDisableButton(false) : setDisableButton(true)
+    }, [receiverName, receiverPhoneNumber, selectedProvince, selectedDistrict, selectedWard, receiverAddress])
+
     const addAddress = () => {
-        alert('hello')
+        const addDB = async () =>
+            await firebase.firestore()
+                .collection('users')
+                .doc(curUserInfor.uid)
+                .collection('receiveAddresses')
+                .doc(firebase.firestore.Timestamp.now().seconds.toString())
+                .set({
+                    receiverName: receiverName,
+                    receiverPhoneNumber: receiverPhoneNumber,
+                    receiverProvince: selectedProvince,
+                    receiverDistrict: selectedDistrict,
+                    receiverWard: selectedWard,
+                    receiverAddress: receiverAddress,
+                    addressType: checkBox ? 0 : 1
+                }).then(() => {
+                    Alert.alert('Success', 'Add address successfuly', [
+                        {
+                            title: 'OK',
+                            onPress: () => {
+                                navigation.goBack()
+                            }
+                        }
+                    ])
+                })
+
+        addDB()
     }
 
     return (
@@ -199,6 +228,7 @@ const AddNewAddressScreen = ({ navigation, route }) => {
                                     districtRef.current.reset()
                                     wardRef.current.reset()
                                     setSelectedDistrictIndex(-1)
+                                    setSelectedDistrict('')
                                 }}
                                 dropdownStyle={{
                                     borderRadius: 10,
@@ -232,6 +262,7 @@ const AddNewAddressScreen = ({ navigation, route }) => {
                                     setSelectedDistrict(selectedItem)
                                     setSelectedDistrictIndex(index)
                                     wardRef.current.reset()
+                                    setSelectedWard('')
                                 }}
                                 dropdownStyle={{
                                     borderRadius: 10,
@@ -276,14 +307,40 @@ const AddNewAddressScreen = ({ navigation, route }) => {
                             containerStyle={styles.input}
                             renderErrorMessage={false}
                         />
+                        <CheckBox
+                            containerStyle={{
+                                marginTop: 10,
+                                backgroundColor: 'white',
+                                borderWidth: 0,
+                                padding: 0
+                            }}
+                            checked={checkBox}
+                            title='Set this address to default address.'
+                            onPress={() => setCheckBox(!checkBox)}
+                            uncheckedIcon={<Image source={require('../assets/uncheck.png')}
+                                resizeMethod='resize'
+                                resizeMode='contain'
+                                style={{
+                                    width: 24,
+                                    height: 24
+                                }} />}
+                            checkedIcon={<Image source={require('../assets/check.png')}
+                                resizeMethod='resize'
+                                resizeMode='contain'
+                                style={{
+                                    width: 24,
+                                    height: 24
+                                }} />}
+                        />
                     </Card>
                 </ScrollView>
             </KeyboardAvoidingView>
             <TouchableOpacity
                 onPress={addAddress}
+                disabled={disableButton}
                 style={{
                     ...styles.touchContainer,
-                    backgroundColor: colors.primary,
+                    backgroundColor: disableButton ? colors.primaryBackground : colors.primary
                 }}>
                 <Text style={{
                     color: 'white',
@@ -313,7 +370,7 @@ const styles = StyleSheet.create({
         marginTop: 10,
         paddingHorizontal: 0,
         paddingTop: 0,
-        paddingBottom: 20,
+        paddingBottom: 15,
         borderRadius: 10
     },
 

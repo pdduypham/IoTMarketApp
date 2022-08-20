@@ -3,6 +3,8 @@ import React, { useEffect, useLayoutEffect, useState } from 'react'
 import colors from '../constants/colors'
 import fonts from '../constants/fonts'
 import firebase from '@react-native-firebase/app'
+import AddressItem from '../components/AddressItem'
+import { CheckBox } from 'react-native-elements'
 
 const ListAddressesScreen = ({ navigation, route }) => {
 
@@ -22,10 +24,6 @@ const ListAddressesScreen = ({ navigation, route }) => {
     })
   })
 
-  const addNewAddress = () => {
-    navigation.navigate('AddNewAddress')
-  }
-
   const chooseAddress = () => {
     alert('alo')
   }
@@ -36,7 +34,7 @@ const ListAddressesScreen = ({ navigation, route }) => {
       await firebase.firestore()
         .collection('users')
         .doc(curUser)
-        .collection('receiveAddress')
+        .collection('receiveAddresses')
         .get()
         .then((addresses) => {
           setAddress(addresses.docs.map((doc) => ({
@@ -46,13 +44,18 @@ const ListAddressesScreen = ({ navigation, route }) => {
         })
     }
     fetchAddress()
-    address.length == 0 && navigation.navigate('AddNewAddress')
+    // address.length == 0 && navigation.navigate('AddNewAddress')
   }, [route, navigation])
 
   return (
     <SafeAreaView style={styles.container}>
+      {address.map((data, index) => (
+        <AddressItem key={index} data={data} />
+      ))}
       <TouchableOpacity
-        onPress={addNewAddress}
+        onPress={() => {
+          navigation.navigate('AddNewAddress')
+        }}
         style={{
           ...styles.touchContainer,
           borderWidth: 1,
