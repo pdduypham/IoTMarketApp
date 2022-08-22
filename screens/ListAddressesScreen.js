@@ -46,7 +46,7 @@ const ListAddressesScreen = ({ navigation, route }) => {
     fetchAddress()
   }, [route, navigation])
 
-  //Get and Delete image from child component.
+  //Get data from child component.
   let getData = (childData) => {
     route.params.onPress(childData)
     navigation.goBack()
