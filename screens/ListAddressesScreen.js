@@ -1,10 +1,11 @@
-import { Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useLayoutEffect, useState } from 'react'
 import colors from '../constants/colors'
 import fonts from '../constants/fonts'
 import firebase from '@react-native-firebase/app'
 import AddressItem from '../components/AddressItem'
 import { CheckBox } from 'react-native-elements'
+import { LogBox } from 'react-native'
 
 const ListAddressesScreen = ({ navigation, route }) => {
 
@@ -23,35 +24,41 @@ const ListAddressesScreen = ({ navigation, route }) => {
       }
     })
   })
-
-  const chooseAddress = () => {
-    alert('alo')
-  }
+  LogBox.ignoreLogs([
+    'Non-serializable values were found in the navigation state',
+  ])
 
   //Fetch Receiver's Address
   useEffect(() => {
     const fetchAddress = async () => {
-      await firebase.firestore()
+      firebase.firestore()
         .collection('users')
         .doc(curUser)
         .collection('receiveAddresses')
-        .get()
-        .then((addresses) => {
-          setAddress(addresses.docs.map((doc) => ({
+        .orderBy('addressType', 'desc')
+        .onSnapshot((dataSnapshot) => {
+          setAddress(dataSnapshot.docs.map((doc) => ({
             id: doc.id,
             data: doc.data()
           })))
         })
     }
     fetchAddress()
-    // address.length == 0 && navigation.navigate('AddNewAddress')
   }, [route, navigation])
+
+  //Get and Delete image from child component.
+  let getData = (childData) => {
+    route.params.onPress(childData)
+    navigation.goBack()
+  }
 
   return (
     <SafeAreaView style={styles.container}>
-      {address.map((data, index) => (
-        <AddressItem key={index} data={data} />
-      ))}
+      <ScrollView>
+        {address.map((data, index) => (
+          <AddressItem key={index} data={data.data} onPress={getData} />
+        ))}
+      </ScrollView>
       <TouchableOpacity
         onPress={() => {
           navigation.navigate('AddNewAddress')
@@ -74,21 +81,6 @@ const ListAddressesScreen = ({ navigation, route }) => {
           fontFamily: fonts.normal,
         }}>Add New Address</Text>
       </TouchableOpacity>
-      <View style={{
-        flex: 1
-      }} />
-      <TouchableOpacity
-        onPress={chooseAddress}
-        style={{
-          ...styles.touchContainer,
-          backgroundColor: colors.primary,
-          marginBottom: 20
-        }}>
-        <Text style={{
-          color: 'white',
-          fontFamily: fonts.bold,
-        }}>Choose</Text>
-      </TouchableOpacity>
     </SafeAreaView >
   )
 }
@@ -103,11 +95,12 @@ const styles = StyleSheet.create({
     paddingRight: 10
   },
   touchContainer: {
-    padding: 15,
+    padding: 10,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 10,
     flexDirection: 'row',
-    marginTop: 10
+    marginTop: 10,
+    marginBottom: 20
   }
 })

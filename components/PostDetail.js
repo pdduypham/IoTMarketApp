@@ -41,7 +41,9 @@ const PostDetail = ({ navigation, route }) => {
         postStatusOfProduct: route.params.postStatusOfProduct,
         postTitle: route.params.postTitle,
         postStatus: route.params.postStatus,
-        postReason: route.params.postReason
+        postReason: route.params.postReason,
+        postImages: route.params.postImages,
+        postDisplayName: route.params.postDisplayName
     }
 
     const curUserUID = firebase.auth().currentUser.uid
@@ -196,7 +198,6 @@ const PostDetail = ({ navigation, route }) => {
                     })
                     .then(() => {
                         Toast.show('Added to your favourite!', Toast.SHORT)
-
                     })
                 : await firebase.firestore()
                     .collection('users')
@@ -699,7 +700,7 @@ const PostDetail = ({ navigation, route }) => {
 
             {route.params.postStatus == 1 && <ViewHide />}
 
-            {route.params.postStatus == 1 && <BottomMenu navigation={navigation} />}
+            {route.params.postStatus == 1 && <BottomMenu navigation={navigation} data={dataPost} />}
 
         </SafeAreaView>
 

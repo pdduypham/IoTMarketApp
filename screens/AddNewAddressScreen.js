@@ -151,30 +151,78 @@ const AddNewAddressScreen = ({ navigation, route }) => {
     }, [receiverName, receiverPhoneNumber, selectedProvince, selectedDistrict, selectedWard, receiverAddress])
 
     const addAddress = () => {
-        const addDB = async () =>
-            await firebase.firestore()
-                .collection('users')
-                .doc(curUserInfor.uid)
-                .collection('receiveAddresses')
-                .doc(firebase.firestore.Timestamp.now().seconds.toString())
-                .set({
-                    receiverName: receiverName,
-                    receiverPhoneNumber: receiverPhoneNumber,
-                    receiverProvince: selectedProvince,
-                    receiverDistrict: selectedDistrict,
-                    receiverWard: selectedWard,
-                    receiverAddress: receiverAddress,
-                    addressType: checkBox ? 0 : 1
-                }).then(() => {
-                    Alert.alert('Success', 'Add address successfuly', [
-                        {
-                            title: 'OK',
-                            onPress: () => {
-                                navigation.goBack()
+        const addDB = async () => {
+            let id = firebase.firestore.Timestamp.now().seconds.toString()
+
+            checkBox ?
+                await firebase.firestore()
+                    .collection('users')
+                    .doc(curUserInfor.uid)
+                    .collection('receiveAddresses')
+                    .get()
+                    .then((address) => {
+                        address.docs.map((doc) => {
+                            doc.data().addressType &&
+                                firebase.firestore()
+                                    .collection('users')
+                                    .doc(curUserInfor.uid)
+                                    .collection('receiveAddresses')
+                                    .doc(doc.data().createAt)
+                                    .update({
+                                        addressType: false
+                                    })
+                        })
+
+                        firebase.firestore()
+                            .collection('users')
+                            .doc(curUserInfor.uid)
+                            .collection('receiveAddresses')
+                            .doc(id)
+                            .set({
+                                receiverName: receiverName,
+                                receiverPhoneNumber: receiverPhoneNumber,
+                                receiverProvince: selectedProvince,
+                                receiverDistrict: selectedDistrict,
+                                receiverWard: selectedWard,
+                                receiverAddress: receiverAddress,
+                                addressType: checkBox,
+                                createAt: id
+                            }).then(() => {
+                                Alert.alert('Success', 'Add address successfuly', [
+                                    {
+                                        title: 'OK',
+                                        onPress: () => {
+                                            navigation.goBack()
+                                        }
+                                    }
+                                ])
+                            })
+                    }) :
+                await firebase.firestore()
+                    .collection('users')
+                    .doc(curUserInfor.uid)
+                    .collection('receiveAddresses')
+                    .doc(id)
+                    .set({
+                        receiverName: receiverName,
+                        receiverPhoneNumber: receiverPhoneNumber,
+                        receiverProvince: selectedProvince,
+                        receiverDistrict: selectedDistrict,
+                        receiverWard: selectedWard,
+                        receiverAddress: receiverAddress,
+                        addressType: checkBox,
+                        createAt: id
+                    }).then(() => {
+                        Alert.alert('Success', 'Add address successfuly', [
+                            {
+                                title: 'OK',
+                                onPress: () => {
+                                    navigation.goBack()
+                                }
                             }
-                        }
-                    ])
-                })
+                        ])
+                    })
+        }
 
         addDB()
     }

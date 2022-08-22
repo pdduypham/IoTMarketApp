@@ -4,7 +4,7 @@ import colors from '../constants/colors'
 import { Image } from 'react-native-elements'
 import fonts from '../constants/fonts'
 
-const BottomMenu = ({ navigation }) => {
+const BottomMenu = ({ navigation, data }) => {
 
     const directMessage = () => {
         navigation.navigate('Chats')
@@ -21,7 +21,7 @@ const BottomMenu = ({ navigation }) => {
     }
 
     const buyFunction = () => {
-        navigation.navigate('Buy')
+        navigation.navigate('Buy', { data })
     }
 
     return (
