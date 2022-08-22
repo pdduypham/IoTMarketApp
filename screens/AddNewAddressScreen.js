@@ -144,6 +144,7 @@ const AddNewAddressScreen = ({ navigation, route }) => {
     //Validate data
     useEffect(() => {
         receiverName != '' && receiverPhoneNumber != '' &&
+            /([\+84|84|0]+(3|5|7|8|9|1[2|6|8|9]))+([0-9]{8})\b/.test(receiverPhoneNumber) &&
             selectedProvince != '' && selectedDistrict != ''
             && selectedWard != '' && receiverAddress != '' ?
             setDisableButton(false) : setDisableButton(true)
@@ -192,14 +193,23 @@ const AddNewAddressScreen = ({ navigation, route }) => {
                             defaultValue={curUserInfor.displayName}
                             onChangeText={(text) => setReceiverName(text)}
                             containerStyle={styles.input}
-                            renderErrorMessage={false}
+                            renderErrorMessage={receiverName == '' ? true : false}
+                            errorMessage='This field must not empty.'
+                            errorStyle={{
+                                display: receiverName == '' ? 'flex' : 'none'
+                            }}
                         />
                         <Input label={`Phone Number`}
                             placeholder={'Phone Number'}
                             defaultValue={curUserInfor.phoneNumber}
                             onChangeText={(text) => setReceiverPhoneNumber(text)}
                             containerStyle={styles.input}
-                            renderErrorMessage={false}
+                            renderErrorMessage={receiverPhoneNumber == '' ? true : false}
+                            errorMessage='Please input valid phone number.'
+                            errorStyle={{
+                                display: /([\+84|84|0]+(3|5|7|8|9|1[2|6|8|9]))+([0-9]{8})\b/.test(receiverPhoneNumber) ? 'none' : 'flex'
+                            }}
+                            keyboardType='phone-pad'
                         />
                         <View style={{
                             marginTop: 10,
@@ -305,7 +315,11 @@ const AddNewAddressScreen = ({ navigation, route }) => {
                             placeholder={'Address'}
                             onChangeText={(text) => setReceiverAddress(text)}
                             containerStyle={styles.input}
-                            renderErrorMessage={false}
+                            renderErrorMessage={receiverAddress == '' ? true : false}
+                            errorMessage='This field must not empty.'
+                            errorStyle={{
+                                display: receiverAddress == '' ? 'flex' : 'none'
+                            }}
                         />
                         <CheckBox
                             containerStyle={{
