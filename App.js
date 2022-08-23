@@ -19,6 +19,7 @@ import ListAddressesScreen from './screens/ListAddressesScreen';
 import AddNewAddressScreen from './screens/AddNewAddressScreen';
 import PostOrdering from './components/posts/PostOrdering';
 import NotificationScreen from './screens/NotificationScreen';
+import UpdateUserInfoScreen from './screens/UpdateUserInfoScreen';
 
 
 const Stack = createNativeStackNavigator();
@@ -76,6 +77,7 @@ export default function App() {
         <Stack.Screen name='AddNewAddress' component={AddNewAddressScreen} />
         <Stack.Screen name='Ordering' component={PostOrdering} />
         <Stack.Screen name='Notify' component={NotificationScreen} />
+        <Stack.Screen name='UpdateUser' component={UpdateUserInfoScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
