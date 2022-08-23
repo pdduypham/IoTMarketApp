@@ -1,4 +1,4 @@
-import { Image, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { Alert, Image, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useLayoutEffect, useState } from 'react'
 import { Avatar, Card } from 'react-native-elements'
 import fonts from '../constants/fonts'
@@ -9,7 +9,7 @@ import { useIsFocused } from '@react-navigation/native'
 const BuyScreen = ({ navigation, route }) => {
 
     const [addresses, setAddresses] = useState([])
-    const curUser = firebase.auth().currentUser.uid
+    const curUser = firebase.auth().currentUser
     const [name, setName] = useState('')
     const [phone, setPhone] = useState('')
     const [address, setAddress] = useState('')
@@ -23,6 +23,7 @@ const BuyScreen = ({ navigation, route }) => {
     const [imageURL, setImageURL] = useState('https://i.pinimg.com/564x/64/ba/95/64ba9507533272c92924364a6c451ca2.jpg')
     const [check, setCheck] = useState(true)
     let despoit = (parseFloat(route.params.data.postPrice) / 10).toFixed(0)
+    const [note, setNote] = useState('')
 
     //Navigation Header
     useLayoutEffect(() => {
@@ -42,7 +43,7 @@ const BuyScreen = ({ navigation, route }) => {
         const fetchAddress = async () => {
             firebase.firestore()
                 .collection('users')
-                .doc(curUser)
+                .doc(curUser.uid)
                 .collection('receiveAddresses')
                 .get()
                 .then((addresses) => {
@@ -90,6 +91,64 @@ const BuyScreen = ({ navigation, route }) => {
             fetchImages()
         }
     }, [])
+
+    const buyFunction = () => {
+        Alert.alert('Confirm', 'Are you sure you want to buy this product?', [
+            {
+                text: 'Cancel'
+            },
+
+            {
+                text: 'Yes',
+                onPress: async () => {
+                    let createAt = firebase.firestore.Timestamp.now().seconds
+                    await firebase.firestore()
+                        .collection('orders')
+                        .doc(route.params.data.postID + '_' + createAt)
+                        .set({
+                            sellerID: route.params.data.postOwner,
+                            buyerID: curUser.uid,
+                            createAt: createAt,
+                            orderStatus: 0,
+                            postID: route.params.data.postID,
+                            receiverName: name,
+                            receiverPhoneNumber: phone,
+                            receiverAddress: address + ', ' + ward + ', ' + district + ', ' + province + '.',
+                            paymentType: check,
+                            paymentAmount: check ? route.params.data.postPrice : despoit,
+                            paymentMethod: 'momo',
+                            noteForSeller: note
+                        })
+                        .then(async () => {
+                            navigation.replace('Ordering')
+                            await firebase.firestore()
+                                .collection('posts')
+                                .doc(route.params.data.postID)
+                                .update({
+                                    postStatus: 4
+                                })
+
+                            await firebase.firestore()
+                                .collection('users')
+                                .doc(route.params.data.postOwner)
+                                .collection('notifies')
+                                .doc(createAt.toString())
+                                .set({
+                                    notifyType: true,
+                                    paymentType: check,
+                                    buyerID: curUser.uid,
+                                    createAt: createAt,
+                                    postID: route.params.data.postID,
+                                    postTitle: route.params.data.postTitle,
+                                    buyerDisplayName: curUser.displayName,
+                                    postImages: route.params.data.postImages
+                                })
+                        })
+                }
+            },
+        ])
+
+    }
 
     return (
         <SafeAreaView style={styles.container}>
@@ -513,14 +572,16 @@ const BuyScreen = ({ navigation, route }) => {
                         }}>Note for Seller</Text>
                     </View>
                     <TextInput
+                        height={70}
                         multiline
                         placeholder='Note for Seller.'
+                        value={note}
+                        onChangeText={(text) => setNote(text)}
                         style={{
                             borderColor: colors.primaryBackground,
                             borderWidth: 1,
                             borderRadius: 10,
                             marginTop: 5,
-                            height: 70
                         }} />
 
                     <Text>By clicking order, you have read, understood, and agreed </Text>
@@ -554,15 +615,17 @@ const BuyScreen = ({ navigation, route }) => {
                         fontSize: 26
                     }}>{check ? route.params.data.postPrice : despoit}</Text>
                 </View>
-                <TouchableOpacity style={{
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: '60%',
-                    backgroundColor: colors.primary,
-                    borderRadius: 10,
-                    paddingVertical: 5,
-                    marginVertical: 10,
-                }}>
+                <TouchableOpacity
+                    onPress={buyFunction}
+                    style={{
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: '60%',
+                        backgroundColor: colors.primary,
+                        borderRadius: 10,
+                        paddingVertical: 5,
+                        marginVertical: 10,
+                    }}>
                     <Text style={{
                         fontFamily: fonts.bold,
                         fontSize: 26,

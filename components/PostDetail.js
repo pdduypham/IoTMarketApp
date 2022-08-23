@@ -43,7 +43,8 @@ const PostDetail = ({ navigation, route }) => {
         postStatus: route.params.postStatus,
         postReason: route.params.postReason,
         postImages: route.params.postImages,
-        postDisplayName: route.params.postDisplayName
+        postDisplayName: route.params.postDisplayName,
+        postOwner: route.params.postOwner
     }
 
     const curUserUID = firebase.auth().currentUser.uid

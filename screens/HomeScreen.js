@@ -16,6 +16,9 @@ const HomeScreen = ({ navigation }) => {
   const [posts, setPosts] = useState([])
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = React.useState(false);
+  const [countNotify, setCountNotify] = useState(0)
+  const curUserInfo = firebase.auth().currentUser
+
   //Refresh
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
@@ -70,6 +73,23 @@ const HomeScreen = ({ navigation }) => {
     navigation.navigate("PostDetail", { postStatus, postID, postTimestamp, postBranch, postCategory, postDescription, postStatusOfProduct, postDisplayName, postTitle, postPrice, postOwner, postImages })
   }
 
+  //Count notifies
+  useEffect(() => {
+    const countNotifies = async () =>
+      firebase.firestore()
+        .collection('users')
+        .doc(curUserInfo.uid)
+        .collection('notifies')
+        .onSnapshot((documentSnapshot) => {
+          let total = documentSnapshot.size
+          documentSnapshot.docs.map((doc) => {
+            !doc.data().notifyStatus ? total : total--
+          })
+          setCountNotify(total)
+        })
+    countNotifies()
+  }, [])
+
   return (
     <SafeAreaView
       style={{
@@ -87,32 +107,48 @@ const HomeScreen = ({ navigation }) => {
           />
         }>
         <View style={{
-          flexDirection: 'row',
-          justifyContent: 'center',
-          alignItems: 'center',
-          backgroundColor: 'white'
+          backgroundColor: colors.primary
         }}>
+          <View style={{
+            flexDirection: 'row',
+            alignItems: 'center'
+          }}>
+            {/* Search bar */}
+            <TextInput placeholder='Search...'
+              rightIcon={require('../assets/home.png')}
+              style={{
+                ...styles.inputContainer,
+                backgroundColor: colors.primaryBackground,
+                borderRadius: 10,
+                paddingLeft: 10,
+                flex: 1,
+                fontFamily: fonts.normal,
+                height: 40,
+                justifyContent: 'center',
+                marginBottom: 10
+              }} />
 
-          {/* Search bar */}
-          <TextInput placeholder='Search...'
-            rightIcon={require('../assets/home.png')}
-            style={{
-              ...styles.inputContainer,
-              backgroundColor: colors.primaryBackground,
-              borderRadius: 10,
-              paddingLeft: 10,
-              flex: 1,
-              fontFamily: fonts.normal,
-              height: 40,
-              justifyContent: 'center'
-            }} />
-          <Image source={require('../assets/search.png')}
-            resizeMode='cover'
-            style={{
-              top: 22,
-              right: 30,
-              position: 'absolute'
-            }} />
+            <TouchableOpacity onPress={() => navigation.navigate('Notify')}>
+              <Image source={require('../assets/bell.png')}
+                resizeMethod='resize'
+                resizeMode='contain'
+                style={{
+                  width: 34,
+                  height: 34,
+                  marginRight: 15,
+                  zIndex: 1
+                }} />
+              {countNotify != 0 && <Text style={{
+                color: 'red',
+                zIndex: 0,
+                position: 'absolute',
+                top: 5,
+                right: 27,
+                fontFamily: fonts.normal,
+                fontSize: 18
+              }}>{countNotify}</Text>}
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* Ads view */}
