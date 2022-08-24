@@ -5,15 +5,32 @@ import firebase from '@react-native-firebase/app'
 import fonts from '../constants/fonts'
 import { Avatar } from 'react-native-elements/dist/avatar/Avatar'
 import colors from '../constants/colors'
+import { useIsFocused } from '@react-navigation/native'
 
 const MoreScreen = ({ navigation }) => {
 
-  const curUserInfo = firebase.auth().currentUser
+  const user = firebase.auth().currentUser
   const [curUser, setCurUser] = useState()
+  const isFocused = useIsFocused()
+  const [fullName, setFullName] = useState('')
+  const [phoneNumber, setPhoneNumber] = useState('')
 
   useEffect(() => {
-    const subs = firebase.auth().onAuthStateChanged
-  })
+    const getCurUser = async () => {
+      await firebase.firestore()
+        .collection('users')
+        .doc(user.uid)
+        .get()
+        .then((user) => {
+          setCurUser(user.data())
+          setFullName(user.data().displayName)
+          setPhoneNumber(user.data().phoneNumber)
+        })
+    }
+
+    getCurUser()
+
+  }, [navigation, isFocused])
 
   return (
     <SafeAreaView style={styles.container}>
@@ -38,7 +55,7 @@ const MoreScreen = ({ navigation }) => {
                 fontFamily: fonts.bold,
                 fontSize: 24,
                 marginLeft: 10
-              }}>{curUserInfo.displayName}</Text>
+              }}>{fullName}</Text>
               <View style={{
                 width: '95%',
                 borderWidth: 0.5,
@@ -49,7 +66,7 @@ const MoreScreen = ({ navigation }) => {
                 fontFamily: fonts.normal,
                 marginLeft: 10,
                 marginTop: 5
-              }}>{curUserInfo.phoneNumber}0383676158</Text>
+              }}>{phoneNumber}</Text>
             </View>
           </View>
         </TouchableOpacity>

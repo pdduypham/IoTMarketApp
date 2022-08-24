@@ -11,7 +11,7 @@ const UpdateUserInfoScreen = ({ navigation }) => {
 
     const curUserInfo = firebase.auth().currentUser
     const [fullName, setFullName] = useState(curUserInfo.displayName)
-    const [phoneNumber, setPhoneNumber] = useState('')
+    const [phoneNumber, setPhoneNumber] = useState('0')
     const [gender, setGender] = useState('')
     const [modalVisible, setModalVisible] = useState(false)
     const [user, setUser] = useState([])
@@ -40,9 +40,9 @@ const UpdateUserInfoScreen = ({ navigation }) => {
         })
     })
 
-    //Get User
+    //Listen Realtime Update User
     useEffect(() => {
-        const getUser = async () => {
+        const getUser = () => {
             firebase.firestore()
                 .collection('users')
                 .doc(curUserInfo.uid)
@@ -51,15 +51,46 @@ const UpdateUserInfoScreen = ({ navigation }) => {
                 })
         }
         getUser()
+    }, [])
 
-        setGender(user.gender)
-        setPhoneNumber(user.phoneNumber)
+    //Get User once
+    useEffect(() => {
+        const getUserOnce = async () => {
+            await firebase.firestore()
+                .collection('users')
+                .doc(curUserInfo.uid)
+                .get()
+                .then((user) => {
+                    setPhoneNumber(user.data().phoneNumber)
+                    console.log(user.data().phoneNumber)
+                })
+        }
+
+        getUserOnce()
     }, [navigation])
 
+    //Logout
     const logoutFunction = async () => {
-        alert('alo')
+        Alert.alert('Confirm', 'Do you want to log out?', [
+            {
+                text: 'Cancel'
+            },
+
+            {
+                text: 'Yes',
+                onPress: () => {
+                    firebase.auth()
+                        .signOut()
+                        .then(() => {
+                            navigation.navigate('Login')
+                        })
+                }
+            },
+        ])
     }
 
+
+    //Update Gender
     const updateGender = async (data) => {
         setModalVisible(false)
         setGender(data)
@@ -74,6 +105,7 @@ const UpdateUserInfoScreen = ({ navigation }) => {
             })
     }
 
+    //Update Name
     const updateName = async () => {
         await curUserInfo.updateProfile({
             displayName: fullName,
@@ -91,19 +123,17 @@ const UpdateUserInfoScreen = ({ navigation }) => {
             })
     }
 
+    //Update Phone Number
     const updatePhoneNumber = async () => {
-        // await curUserInfo.updatePhoneNumber(phoneNumber)
-        //     .then(() => {
-        //         firebase.firestore()
-        //             .collection('users')
-        //             .doc(curUserInfo.uid)
-        //             .update({
-        //                 phoneNumber: phoneNumber
-        //             })
-        //             .then(() => {
-        //                 Alert.alert('Update successed.', 'Your display name is updated.')
-        //             })
-        //     })
+        await firebase.firestore()
+            .collection('users')
+            .doc(curUserInfo.uid)
+            .update({
+                phoneNumber: phoneNumber
+            })
+            .then(() => {
+                Alert.alert('Update successed.', 'Your display name is updated.')
+            })
     }
 
     return (
