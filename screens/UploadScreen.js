@@ -250,7 +250,7 @@ const UploadScreen = ({ navigation, route }) => {
 
                         {/* Select category */}
                         <View style={{
-                            marginHorizontal: 20,
+                            marginHorizontal: 10,
                             marginTop: 10,
                             backgroundColor: colors.primaryBackground,
                             borderRadius: 10
@@ -277,7 +277,7 @@ const UploadScreen = ({ navigation, route }) => {
 
                         {/* Select branch */}
                         <View style={{
-                            marginHorizontal: 20,
+                            marginHorizontal: 10,
                             marginTop: 10,
                             backgroundColor: colors.primaryBackground,
                             borderRadius: 10
@@ -304,7 +304,7 @@ const UploadScreen = ({ navigation, route }) => {
 
                         {/* Select Status */}
                         <View style={{
-                            marginHorizontal: 20,
+                            marginHorizontal: 10,
                             marginTop: 10,
                             backgroundColor: colors.primaryBackground,
                             borderRadius: 10
@@ -330,14 +330,18 @@ const UploadScreen = ({ navigation, route }) => {
                         </View>
 
                         {/* Input Price */}
-                        <View style={styles.inputContainer}>
+                        <View>
                             <Input placeholder='Price'
                                 keyboardType='number-pad'
                                 value={price}
                                 renderErrorMessage={false}
                                 onChangeText={(text) => setPrice(text)}
-                                style={{
-                                    marginLeft: 10,
+                                inputContainerStyle={{
+                                    paddingLeft: 10,
+                                    borderWidth: 2,
+                                    borderColor: colors.primaryBackground,
+                                    borderRadius: 10,
+                                    marginTop: 10
                                 }} />
                         </View>
                     </View>
@@ -351,28 +355,31 @@ const UploadScreen = ({ navigation, route }) => {
                         }}>TITLE AND DESCRIPTION</Text>
 
                         {/* Input Title  */}
-                        <View style={styles.inputContainer}>
+                        <View>
                             <Input placeholder='Title'
                                 value={title}
                                 onChangeText={(text) => setTitle(text)}
                                 renderErrorMessage={false}
-                                style={{
-                                    marginLeft: 10
+                                inputContainerStyle={{
+                                    paddingLeft: 10,
+                                    borderWidth: 2,
+                                    borderColor: colors.primaryBackground,
+                                    borderRadius: 10,
+                                    marginBottom: 10
                                 }} />
                         </View>
 
                         {/* Input Description */}
-                        <TextInput multiline placeholder='Detail Description'
+                        <Input multiline placeholder='Detail Description'
                             height={200}
                             value={description}
                             onChangeText={(text) => setDescription(text)}
-                            style={{
+                            inputContainerStyle={{
                                 borderRadius: 10,
                                 borderWidth: 2,
                                 borderColor: colors.primaryBackground,
-                                ...styles.inputContainer,
-                                paddingStart: 15,
-                                textAlignVertical: 'top'
+                                textAlignVertical: 'top',
+                                paddingLeft: 10
                             }} />
 
                         {/* Button Submit  */}
@@ -417,7 +424,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderStyle: 'dashed',
         marginTop: 10,
-        marginHorizontal: 20,
+        marginHorizontal: 10,
         borderRadius: 10
     },
     inputContainer: {
@@ -428,6 +435,7 @@ const styles = StyleSheet.create({
         width: 200,
         marginTop: 10,
         alignSelf: 'center',
-        marginBottom: 100
+        marginBottom: 100,
+        borderRadius: 10
     }
 })

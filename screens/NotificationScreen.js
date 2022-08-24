@@ -5,6 +5,7 @@ import colors from '../constants/colors'
 
 const NotificationScreen = ({ navigation }) => {
 
+    //Navigation Header
     useLayoutEffect(() => {
         navigation.setOptions({
             title: '',
@@ -16,6 +17,7 @@ const NotificationScreen = ({ navigation }) => {
             }
         })
     })
+
     return (
         <SafeAreaView style={styles.container}>
             <TopTabNotification />

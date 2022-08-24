@@ -1,5 +1,5 @@
 import { Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Card } from 'react-native-elements'
 import firebase from '@react-native-firebase/app'
 import fonts from '../constants/fonts'
@@ -9,11 +9,16 @@ import colors from '../constants/colors'
 const MoreScreen = ({ navigation }) => {
 
   const curUserInfo = firebase.auth().currentUser
+  const [curUser, setCurUser] = useState()
+
+  useEffect(() => {
+    const subs = firebase.auth().onAuthStateChanged
+  })
 
   return (
     <SafeAreaView style={styles.container}>
       <Card containerStyle={styles.cardContainer}>
-        <TouchableOpacity onPress={()=> navigation.navigate('UpdateUser')}>
+        <TouchableOpacity onPress={() => navigation.navigate('UpdateUser')}>
           <View style={{
             flexDirection: 'row',
             alignItems: 'center'

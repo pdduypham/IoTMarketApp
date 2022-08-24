@@ -20,6 +20,7 @@ import AddNewAddressScreen from './screens/AddNewAddressScreen';
 import PostOrdering from './components/posts/PostOrdering';
 import NotificationScreen from './screens/NotificationScreen';
 import UpdateUserInfoScreen from './screens/UpdateUserInfoScreen';
+import ChangePasswordScreen from './screens/ChangePasswordScreen';
 
 
 const Stack = createNativeStackNavigator();
@@ -78,6 +79,7 @@ export default function App() {
         <Stack.Screen name='Ordering' component={PostOrdering} />
         <Stack.Screen name='Notify' component={NotificationScreen} />
         <Stack.Screen name='UpdateUser' component={UpdateUserInfoScreen} />
+        <Stack.Screen name='ChangePassword' component={ChangePasswordScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
