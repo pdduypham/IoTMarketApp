@@ -78,17 +78,24 @@ const UpdateUserInfoScreen = ({ navigation }) => {
 
             {
                 text: 'Yes',
-                onPress: () => {
-                    firebase.auth()
-                        .signOut()
+                onPress: async () => {
+                    await firebase.firestore()
+                        .collection('users')
+                        .doc(curUserInfo.uid)
+                        .update({
+                            onlineStatus: firebase.firestore.Timestamp.now().seconds
+                        })
                         .then(() => {
-                            navigation.navigate('Login')
+                            firebase.auth()
+                                .signOut()
+                                .then(() => {
+                                    navigation.navigate('Login')
+                                })
                         })
                 }
             },
         ])
     }
-
 
     //Update Gender
     const updateGender = async (data) => {

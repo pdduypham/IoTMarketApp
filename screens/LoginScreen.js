@@ -12,7 +12,7 @@ const LoginScreen = ({ navigation }) => {
   useEffect(() => {
     const unsubscribe = auth().onAuthStateChanged((authUser) => {
       if (authUser) {
-        navigation.replace('TabBar', {routeName: 'Home'})
+        navigation.replace('TabBar', { routeName: 'Home' })
         firebase.firestore()
           .collection('users')
           .doc(authUser.uid)
@@ -26,6 +26,14 @@ const LoginScreen = ({ navigation }) => {
 
   const signIn = () => {
     auth().signInWithEmailAndPassword(email, password)
+      .then(async () => {
+        await firebase.firestore()
+          .collection('users')
+          .doc(firebase.auth().currentUser.uid)
+          .update({
+            onlineStatus: 'online'
+          })
+      })
       .catch((error) => alert(error))
   }
 

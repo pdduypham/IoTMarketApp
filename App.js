@@ -21,6 +21,8 @@ import PostOrdering from './components/posts/PostOrdering';
 import NotificationScreen from './screens/NotificationScreen';
 import UpdateUserInfoScreen from './screens/UpdateUserInfoScreen';
 import ChangePasswordScreen from './screens/ChangePasswordScreen';
+import FavouritePostsScreen from './screens/FavouritePostsScreen';
+import ProductsSellScreen from './screens/ProductsSellScreen';
 
 
 const Stack = createNativeStackNavigator();
@@ -80,6 +82,8 @@ export default function App() {
         <Stack.Screen name='Notify' component={NotificationScreen} />
         <Stack.Screen name='UpdateUser' component={UpdateUserInfoScreen} />
         <Stack.Screen name='ChangePassword' component={ChangePasswordScreen} />
+        <Stack.Screen name='FavouritePosts' component={FavouritePostsScreen} />
+        <Stack.Screen name='ProductsSell' component={ProductsSellScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

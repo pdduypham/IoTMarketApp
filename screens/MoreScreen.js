@@ -71,6 +71,42 @@ const MoreScreen = ({ navigation }) => {
           </View>
         </TouchableOpacity>
       </Card>
+
+      <Card containerStyle={{
+        ...styles.cardContainer,
+        marginTop: 5
+      }}>
+        <TouchableOpacity onPress={() => navigation.navigate('ProductsSell')}>
+          <Image />
+          <Text style={{
+            fontFamily: fonts.bold
+          }}>Product for Sell</Text>
+        </TouchableOpacity>
+      </Card>
+
+      <Card containerStyle={{
+        ...styles.cardContainer,
+        marginTop: 5
+      }}>
+        <TouchableOpacity>
+          <Image />
+          <Text style={{
+            fontFamily: fonts.bold
+          }}>Product for Buy</Text>
+        </TouchableOpacity>
+      </Card>
+
+      <Card containerStyle={{
+        ...styles.cardContainer,
+        marginTop: 5
+      }}>
+        <TouchableOpacity onPress={() => navigation.navigate('FavouritePosts')}>
+          <Image />
+          <Text style={{
+            fontFamily: fonts.bold
+          }}>Favourite Posts</Text>
+        </TouchableOpacity>
+      </Card>
     </SafeAreaView>
   )
 }
