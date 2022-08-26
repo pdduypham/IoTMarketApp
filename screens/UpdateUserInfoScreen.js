@@ -62,7 +62,6 @@ const UpdateUserInfoScreen = ({ navigation }) => {
                 .get()
                 .then((user) => {
                     setPhoneNumber(user.data().phoneNumber)
-                    console.log(user.data().phoneNumber)
                 })
         }
 

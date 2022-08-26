@@ -76,8 +76,21 @@ const MoreScreen = ({ navigation }) => {
         ...styles.cardContainer,
         marginTop: 5
       }}>
-        <TouchableOpacity onPress={() => navigation.navigate('ProductsSell')}>
-          <Image />
+        <TouchableOpacity
+          style={{
+            flexDirection: 'row'
+          }}
+          onPress={() => navigation.navigate('ProductsSell')}>
+          <Image source={require('../assets/sell.png')}
+            resizeMethod='resize'
+            resizeMode='contain'
+            style={{
+              width: 24,
+              height: 24,
+              marginRight: 10,
+              tintColor: 'orange'
+            }}
+          />
           <Text style={{
             fontFamily: fonts.bold
           }}>Product for Sell</Text>
@@ -88,8 +101,18 @@ const MoreScreen = ({ navigation }) => {
         ...styles.cardContainer,
         marginTop: 5
       }}>
-        <TouchableOpacity>
-          <Image />
+        <TouchableOpacity style={{
+          flexDirection: 'row'
+        }}>
+          <Image source={require('../assets/buy.png')}
+            resizeMethod='resize'
+            resizeMode='contain'
+            style={{
+              width: 24,
+              height: 24,
+              marginRight: 10,
+              tintColor: colors.primary
+            }} />
           <Text style={{
             fontFamily: fonts.bold
           }}>Product for Buy</Text>
@@ -100,8 +123,20 @@ const MoreScreen = ({ navigation }) => {
         ...styles.cardContainer,
         marginTop: 5
       }}>
-        <TouchableOpacity onPress={() => navigation.navigate('FavouritePosts')}>
-          <Image />
+        <TouchableOpacity
+          style={{
+            flexDirection: 'row'
+          }}
+          onPress={() => navigation.navigate('FavouritePosts')}>
+          <Image source={require('../assets/heart.png')}
+            resizeMethod='resize'
+            resizeMode='contain'
+            style={{
+              width: 24,
+              height: 24,
+              marginRight: 10,
+              tintColor: 'red'
+            }} />
           <Text style={{
             fontFamily: fonts.bold
           }}>Favourite Posts</Text>
