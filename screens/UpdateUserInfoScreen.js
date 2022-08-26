@@ -138,7 +138,7 @@ const UpdateUserInfoScreen = ({ navigation }) => {
                 phoneNumber: phoneNumber
             })
             .then(() => {
-                Alert.alert('Update successed.', 'Your display name is updated.')
+                Alert.alert('Update successed.', 'Your phone number is updated.')
             })
     }
 

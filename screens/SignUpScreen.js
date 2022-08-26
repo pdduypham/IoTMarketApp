@@ -22,14 +22,15 @@ const SignUpScreen = ({ navigation }) => {
                     firestore().collection('users').doc(userUID).set({
                         userUID: userUID,
                         userIsAdmin: 0,
-                        onlineStatus: 'online'
+                        onlineStatus: 'online',
+                        displayName: name,
                     })
-                        .catch(error => alert('Error: ',error))
+                        .catch(error => alert('Error: ', error))
                 })
                 .catch(error => alert('Error: ', error.meesage))
-                .then(()=>{
+                .then(() => {
                     alert('Sign up successful!!!')
-                    navigation.replace('TabBar')
+                    navigation.replace('TabBar', { routeName: 'Home' })
                 })
             : alert('Password is not match!!!')
     }

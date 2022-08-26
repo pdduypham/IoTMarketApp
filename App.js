@@ -41,24 +41,28 @@ export default function App() {
   }, []);
 
   const _handleAppStateChange = () => {
-    const uid = firebase.auth().currentUser.uid
-    if (uid != null) {
-      if (AppState.currentState == 'active') {
-        firebase.firestore()
-          .collection('users')
-          .doc(uid)
-          .update({
-            onlineStatus: 'online'
-          })
-      } else {
-        firebase.firestore()
-          .collection('users')
-          .doc(uid)
-          .update({
-            onlineStatus: firebase.firestore.Timestamp.now().seconds
-          })
+    const user = firebase.auth().currentUser
+    if (user != null) {
+      const uid = user.uid
+      if (uid != null) {
+        if (AppState.currentState == 'active') {
+          firebase.firestore()
+            .collection('users')
+            .doc(uid)
+            .update({
+              onlineStatus: 'online'
+            })
+        } else {
+          firebase.firestore()
+            .collection('users')
+            .doc(uid)
+            .update({
+              onlineStatus: firebase.firestore.Timestamp.now().seconds
+            })
+        }
       }
     }
+
   };
 
 
@@ -67,7 +71,7 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator
         screenOptions={globalSreenOptions}
-        initialRouteName='Login'>
+        initialRouteName='SignUp'>
         <Stack.Screen name='Login' component={LoginScreen} />
         <Stack.Screen name='SignUp' component={SignUpScreen} />
         <Stack.Screen name='TabBar' component={TabBar} />
