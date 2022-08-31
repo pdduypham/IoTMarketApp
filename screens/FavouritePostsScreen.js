@@ -7,8 +7,6 @@ import PostItemHorizontal from '../components/posts/PostItemHorizontal'
 const FavouritePostsScreen = ({ navigation }) => {
 
     const [favouritePosts, setFavouritePosts] = useState([])
-    let list = []
-    let list1 = []
 
     //Navigation Header
     useLayoutEffect(() => {
@@ -25,35 +23,26 @@ const FavouritePostsScreen = ({ navigation }) => {
 
     //Get Favourite Posts
     useEffect(() => {
-        const getPostID = async () => {
-            await firebase.firestore()
-                .collection('users')
-                .doc(firebase.auth().currentUser.uid)
-                .collection('favourites')
-                .get()
-                .then((docs) => {
-                    docs.docs.map(data => list.push(data.data().postID))
+        let list = []
+        let list2 = []
+        firebase.firestore()
+            .collection('users')
+            .doc(firebase.auth().currentUser.uid.toString())
+            .collection('favourites')
+            .get()
+            .then((postID) => {
+                postID.docs.forEach((doc) => {
+                    list.push(doc.data().postID)
                 })
-        }
 
-        const getPostData = () => {
-            list.forEach((item) => {
                 firebase.firestore()
                     .collection('posts')
-                    .doc(item)
+                    .where('postID', 'in', list)
                     .get()
                     .then((data) => {
-                        list1.push(data.data())
+                        setFavouritePosts(data.docs.map((doc) => doc.data()))
                     })
             })
-
-            setFavouritePosts(list1)
-        }
-
-        getPostID().then(() => {
-            getPostData()
-            console.log(favouritePosts)
-        })
     }, [navigation])
 
     const detailPost = (data) => {
@@ -75,10 +64,12 @@ const FavouritePostsScreen = ({ navigation }) => {
 
     return (
         <SafeAreaView style={styles.container}>
-            <ScrollView>
-                {/* {favouritePosts.map((data) =>
-                    <PostItemHorizontal data={data} key={data.postId} onPress={detailPost} />
-                )} */}
+            <ScrollView style={{
+                flex: 1
+            }}>
+                {favouritePosts.map((data) =>
+                    <PostItemHorizontal data={data} key={data.postID} onPress={detailPost} />
+                )}
             </ScrollView>
         </SafeAreaView>
     )
