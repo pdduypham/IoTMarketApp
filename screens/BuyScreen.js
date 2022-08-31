@@ -24,6 +24,7 @@ const BuyScreen = ({ navigation, route }) => {
     const [check, setCheck] = useState(true)
     let despoit = (parseFloat(route.params.data.postPrice) / 10).toFixed(0)
     const [note, setNote] = useState('')
+    const [deliveryMethod, setDeliveryMethod] = useState(0)
 
     //Navigation Header
     useLayoutEffect(() => {
@@ -117,7 +118,8 @@ const BuyScreen = ({ navigation, route }) => {
                             paymentType: check,
                             paymentAmount: check ? route.params.data.postPrice : despoit,
                             paymentMethod: 'momo',
-                            noteForSeller: note
+                            noteForSeller: note,
+                            deliveryMethod: deliveryMethod
                         })
                         .then(async () => {
                             navigation.replace('Ordering')
@@ -185,7 +187,7 @@ const BuyScreen = ({ navigation, route }) => {
 
                     {chosenAddress[0] == undefined ?
                         <View>
-                            <View style={{
+                            {name != '' && <View style={{
                                 flexDirection: 'row',
                                 alignItems: 'center',
                                 paddingLeft: 29
@@ -195,12 +197,12 @@ const BuyScreen = ({ navigation, route }) => {
                                     fontSize: 16
                                 }}>{name}</Text>
                                 <Text> | {phone}</Text>
-                            </View>
-                            <View style={{
+                            </View>}
+                            {address != '' && <View style={{
                                 paddingLeft: 29
                             }}>
                                 <Text>{address}, {ward}, {district}, {province}</Text>
-                            </View>
+                            </View>}
                         </View> :
                         <View>
                             <View style={{
@@ -251,7 +253,7 @@ const BuyScreen = ({ navigation, route }) => {
                     }}>
                         <Avatar
                             rounded
-                            source={require('../assets/logo.jpg')}
+                            source={curUser.photoURL == null ? require('../assets/logo.jpg') : { uri: curUser.photoURL }}
                             size={50}
                             avatarStyle={{
                                 borderWidth: 1,

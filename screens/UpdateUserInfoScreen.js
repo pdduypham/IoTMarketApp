@@ -1,11 +1,12 @@
-import { Alert, Image, Modal, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Alert, Image, Keyboard, Modal, SafeAreaView, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native'
 import React, { useEffect, useLayoutEffect, useState } from 'react'
-import { Card, Input } from 'react-native-elements'
+import { Button, Card, Input } from 'react-native-elements'
 import { Avatar } from 'react-native-elements/dist/avatar/Avatar'
 import firebase from '@react-native-firebase/app'
 import colors from '../constants/colors'
 import { KeyboardAvoidingView } from 'react-native'
 import fonts from '../constants/fonts'
+import ImagePicker from 'react-native-image-crop-picker';
 
 const UpdateUserInfoScreen = ({ navigation }) => {
 
@@ -15,6 +16,11 @@ const UpdateUserInfoScreen = ({ navigation }) => {
     const [gender, setGender] = useState('')
     const [modalVisible, setModalVisible] = useState(false)
     const [user, setUser] = useState([])
+    const [change, setChange] = useState(false)
+    const [changeName, setChangeName] = useState(false)
+    const [changePhone, setChangePhone] = useState(false)
+    const [changeAvatar, setChangeAvatar] = useState(false)
+    const [imageURL, setImageURL] = useState(curUserInfo.photoURL)
 
     //Navigation Header
     useLayoutEffect(() => {
@@ -26,17 +32,6 @@ const UpdateUserInfoScreen = ({ navigation }) => {
             headerBackTitleStyle: {
                 color: 'white'
             },
-            headerRight: () => (
-                <TouchableOpacity onPress={logoutFunction}>
-                    <Image source={require('../assets/logout.png')}
-                        resizeMethod='resize'
-                        resizeMode='contain'
-                        style={{
-                            width: 24,
-                            height: 24
-                        }} />
-                </TouchableOpacity>
-            )
         })
     })
 
@@ -68,6 +63,19 @@ const UpdateUserInfoScreen = ({ navigation }) => {
         getUserOnce()
     }, [navigation])
 
+    //Pick Image from Camera.
+    const pickImages = () => {
+        ImagePicker.openCamera({
+            width: 300,
+            height: 400,
+            cropping: true,
+            includeBase64: true
+        }).then(item => {
+            setImageURL(item.path)
+            setChangeAvatar(true)
+        });
+    }
+
     //Logout
     const logoutFunction = async () => {
         Alert.alert('Confirm', 'Do you want to log out?', [
@@ -97,18 +105,20 @@ const UpdateUserInfoScreen = ({ navigation }) => {
     }
 
     //Update Gender
-    const updateGender = async (data) => {
+    const updateGender = (data) => {
         setModalVisible(false)
         setGender(data)
+    }
+
+    const setGenderToDB = async () => {
         await firebase.firestore()
             .collection('users')
             .doc(curUserInfo.uid)
             .update({
-                gender: data
+                gender: gender
             })
-            .then(() => {
-                Alert.alert('Update successed.', 'Your gender is updated.')
-            })
+
+        setGender('')
     }
 
     //Update Name
@@ -123,10 +133,9 @@ const UpdateUserInfoScreen = ({ navigation }) => {
                     .update({
                         displayName: fullName
                     })
-                    .then(() => {
-                        Alert.alert('Update successed.', 'Your display name is updated.')
-                    })
             })
+
+        setChangeName(false)
     }
 
     //Update Phone Number
@@ -137,262 +146,331 @@ const UpdateUserInfoScreen = ({ navigation }) => {
             .update({
                 phoneNumber: phoneNumber
             })
-            .then(() => {
-                Alert.alert('Update successed.', 'Your phone number is updated.')
-            })
+
+        setChangePhone(false)
+    }
+
+    //Update Avatar
+    const updateAvatar = async () => {
+        await curUserInfo.updateProfile({
+            photoURL: imageURL
+        })
+
+        setChangeAvatar(false)
+    }
+
+    //Disable Button Update
+    useEffect(() => {
+        if (changeAvatar || changeName || changePhone || (gender != '' && gender != user.gender)) {
+            setChange(true)
+        } else {
+            setChange(false)
+        }
+    }, [changeName, changePhone, gender, changeAvatar])
+
+    const updateInfo = () => {
+        changeName && updateName()
+        changePhone && updatePhoneNumber()
+        gender != '' && setGenderToDB()
+        changeAvatar && updateAvatar()
+        Alert.alert('Success', 'Your information is updated!')
     }
 
     return (
         <SafeAreaView style={styles.container}>
-            <KeyboardAvoidingView>
-                <Card containerStyle={styles.cardContainer}>
-                    <View style={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
+            <TouchableWithoutFeedback
+                style={{
+                    flex: 1,
+                }}
+                onPress={() => Keyboard.dismiss()}
+                accessible={false}
+            >
+                <KeyboardAvoidingView style={{
+                    flex: 1
+                }}>
+                    <Card containerStyle={styles.cardContainer}>
+                        <View style={{
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                        }}>
+                            <TouchableOpacity onPress={pickImages}>
+                                <Avatar rounded
+                                    size={80}
+                                    source={imageURL == null ? require('../assets/logo.jpg') : { uri: imageURL }}
+                                    avatarStyle={{
+                                        borderWidth: 1,
+                                        borderColor: colors.primaryBackground,
+                                        zIndex: 1
+                                    }} />
+                                <Image source={require('../assets/camera.png')}
+                                    resizeMethod='resize'
+                                    resizeMode='contain'
+                                    style={{
+                                        width: 24,
+                                        height: 24,
+                                        zIndex: 0,
+                                        position: 'absolute',
+                                        top: 55,
+                                        left: 55,
+                                    }}
+                                />
+                            </TouchableOpacity>
+                            <View style={{
+                                flex: 1,
+                                flexDirection: 'column',
+                            }}>
+                                <Input
+                                    placeholder='Full Name'
+                                    label='Full Name'
+                                    defaultValue={user.displayName}
+                                    onChangeText={(text) => {
+                                        setFullName(text)
+                                        text != user.displayName ? setChangeName(true) : setChangeName(false)
+                                    }}
+                                    renderErrorMessage={fullName == '' ? true : false}
+                                    errorMessage='This field must not empty.'
+                                    errorStyle={{
+                                        display: fullName == '' ? 'flex' : 'none'
+                                    }}
+                                    rightIcon={<Image source={require('../assets/edit.png')}
+                                        resizeMethod='resize'
+                                        resizeMode='contain'
+                                        style={{
+                                            width: 24,
+                                            height: 24
+                                        }}
+                                    />}
+                                    inputContainerStyle={{
+                                        paddingLeft: 10,
+                                        borderWidth: 2,
+                                        borderColor: colors.primaryBackground,
+                                        borderRadius: 10,
+                                    }}
+                                />
+
+                                <Input
+                                    placeholder='Phone Number'
+                                    label='Phone Number'
+                                    defaultValue={user.phoneNumber}
+                                    onChangeText={(text) => {
+                                        setPhoneNumber(text)
+                                        text != user.phoneNumber ? setChangePhone(true) : setChangePhone(false)
+                                    }}
+                                    renderErrorMessage={phoneNumber == '' || !/([\+84|84|0]+(3|5|7|8|9|1[2|6|8|9]))+([0-9]{8})\b/.test(phoneNumber) ? true : false}
+                                    errorMessage='This field must not empty and have valid phone number.'
+                                    errorStyle={{
+                                        display: phoneNumber == '' || !/([\+84|84|0]+(3|5|7|8|9|1[2|6|8|9]))+([0-9]{8})\b/.test(phoneNumber) ? 'flex' : 'none'
+                                    }}
+                                    rightIcon={<Image source={require('../assets/edit.png')}
+                                        resizeMethod='resize'
+                                        resizeMode='contain'
+                                        style={{
+                                            width: 24,
+                                            height: 24
+                                        }}
+                                    />}
+                                    inputContainerStyle={{
+                                        paddingLeft: 10,
+                                        borderWidth: 2,
+                                        borderColor: colors.primaryBackground,
+                                        borderRadius: 10,
+                                    }}
+                                    containerStyle={{
+                                        marginTop: 10
+                                    }}
+                                />
+                            </View>
+                        </View>
+                    </Card>
+
+                    <Card containerStyle={{
+                        ...styles.cardContainer,
+                        marginTop: 5,
                     }}>
-                        <TouchableOpacity>
-                            <Avatar rounded
-                                size={80}
-                                source={require('../assets/logo.jpg')}
-                                avatarStyle={{
-                                    borderWidth: 1,
-                                    borderColor: colors.primaryBackground,
-                                    zIndex: 1
-                                }} />
-                            <Image source={require('../assets/camera.png')}
+                        <TouchableOpacity
+                            onPress={() => navigation.navigate('ChangePassword')}
+                            style={{
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                paddingVertical: 10
+                            }}>
+                            <Image source={require('../assets/key.png')}
                                 resizeMethod='resize'
                                 resizeMode='contain'
                                 style={{
                                     width: 24,
                                     height: 24,
-                                    zIndex: 0,
-                                    position: 'absolute',
-                                    top: 55,
-                                    left: 55,
+                                    tintColor: 'black'
+                                }} />
+                            <Text style={{
+                                fontFamily: fonts.bold,
+                                fontSize: 16,
+                                marginLeft: 20
+                            }}>Change Password</Text>
+                            <View style={{
+                                flex: 1
+                            }} />
+                            <Image source={require('../assets/next.png')}
+                                resizeMethod='resize'
+                                resizeMode='contain'
+                                style={{
+                                    width: 24,
+                                    height: 24
                                 }}
                             />
                         </TouchableOpacity>
-                        <View style={{
-                            flex: 1,
-                            flexDirection: 'column',
-                        }}>
-                            <Input
-                                placeholder='Full Name'
-                                label='Full Name'
-                                defaultValue={user.displayName}
-                                onChangeText={(text) => setFullName(text)}
-                                renderErrorMessage={fullName == '' ? true : false}
-                                errorMessage='This field must not empty.'
-                                errorStyle={{
-                                    display: fullName == '' ? 'flex' : 'none'
-                                }}
-                                rightIcon={user.displayName == fullName ? <Image source={require('../assets/edit.png')}
-                                    resizeMethod='resize'
-                                    resizeMode='contain'
-                                    style={{
-                                        width: 24,
-                                        height: 24
-                                    }}
-                                />
-                                    : fullName != '' && <TouchableOpacity style={{
-                                        backgroundColor: colors.primary,
-                                        padding: 5,
-                                        borderRadius: 10,
-                                    }}
-                                        onPress={updateName}
-                                    >
-                                        <Text style={{
-                                            fontFamily: fonts.normal,
-                                            color: 'white'
-                                        }}>SAVE</Text>
-                                    </TouchableOpacity>
-                                }
-                                inputContainerStyle={{
-                                    paddingLeft: 10,
-                                    borderWidth: 2,
-                                    borderColor: colors.primaryBackground,
-                                    borderRadius: 10,
-                                }}
-                            />
+                    </Card>
 
-                            <Input
-                                placeholder='Phone Number'
-                                label='Phone Number'
-                                defaultValue={user.phoneNumber}
-                                onChangeText={(text) => setPhoneNumber(text)}
-                                renderErrorMessage={phoneNumber == '' ? true : false}
-                                errorMessage='This field must not empty.'
-                                errorStyle={{
-                                    display: phoneNumber == '' ? 'flex' : 'none'
-                                }}
-                                rightIcon={user.phoneNumber == phoneNumber ? <Image source={require('../assets/edit.png')}
-                                    resizeMethod='resize'
-                                    resizeMode='contain'
-                                    style={{
-                                        width: 24,
-                                        height: 24
-                                    }}
-                                />
-                                    : phoneNumber != '' && <TouchableOpacity style={{
-                                        backgroundColor: colors.primary,
-                                        padding: 5,
-                                        borderRadius: 10
-                                    }}
-                                        onPress={updatePhoneNumber}
-                                    >
-                                        <Text style={{
-                                            fontFamily: fonts.normal,
-                                            color: 'white'
-                                        }}>SAVE</Text>
-                                    </TouchableOpacity>
-                                }
-                                inputContainerStyle={{
-                                    paddingLeft: 10,
-                                    borderWidth: 2,
-                                    borderColor: colors.primaryBackground,
-                                    borderRadius: 10,
-                                }}
-                                containerStyle={{
-                                    marginTop: 10
-                                }}
-                            />
-                        </View>
-                    </View>
-                </Card>
-
-                <Card containerStyle={{
-                    ...styles.cardContainer,
-                    marginTop: 5
-                }}>
-                    <TouchableOpacity
-                        onPress={() => navigation.navigate('ChangePassword')}
-                        style={{
-                            flexDirection: 'row',
-                            alignItems: 'center'
-                        }}>
-                        <View>
-                            <Text style={{
-                                fontFamily: fonts.bold,
-                                fontSize: 16
-                            }}>Password</Text>
-                            <Text>**********</Text>
-                        </View>
-                        <View style={{
-                            flex: 1
-                        }} />
-                        <Image source={require('../assets/next.png')}
-                            resizeMethod='resize'
-                            resizeMode='contain'
-                            style={{
-                                width: 24,
-                                height: 24
-                            }}
-                        />
-                    </TouchableOpacity>
-                </Card>
-
-                <Card containerStyle={{
-                    ...styles.cardContainer,
-                    marginTop: 5
-                }}>
-                    <TouchableOpacity
-                        onPress={() => setModalVisible(true)}
-                        style={{
-                            flexDirection: 'row',
-                            alignItems: 'center'
-                        }}>
-                        <View>
-                            <Text style={{
-                                fontFamily: fonts.bold,
-                                fontSize: 16
-                            }}>Gender</Text>
-                            <Text>{user.gender}</Text>
-                        </View>
-                        <View style={{
-                            flex: 1
-                        }} />
-                        <Image source={require('../assets/next.png')}
-                            resizeMethod='resize'
-                            resizeMode='contain'
-                            style={{
-                                width: 24,
-                                height: 24
-                            }}
-                        />
-                    </TouchableOpacity>
-                </Card>
-
-                <Modal
-                    animationType='fade'
-                    transparent={true}
-                    visible={modalVisible}>
-                    <View style={{
-                        flexDirection: 'column',
-                        backgroundColor: 'white',
-                        position: 'absolute',
-                        top: '40%',
-                        padding: 10,
-                        width: '70%',
-                        alignSelf: 'center',
-                        borderRadius: 10,
-                        borderColor: colors.primaryBackground,
-                        borderWidth: 2
+                    <Card containerStyle={{
+                        ...styles.cardContainer,
+                        marginTop: 5
                     }}>
-                        <Text style={{
-                            fontFamily: fonts.bold,
-                            fontSize: 16,
-                            marginBottom: 10
-                        }}>Please choose your gender.</Text>
-
-                        <TouchableOpacity onPress={() => updateGender('Male')}
+                        <TouchableOpacity
+                            onPress={() => setModalVisible(true)}
                             style={{
                                 flexDirection: 'row',
-                                alignItems: 'center',
-                                paddingBottom: 5,
-                                borderBottomWidth: 1,
-                                borderBottomColor: 'black',
-                                marginBottom: 5
-                            }}
-                        >
-                            <Image source={gender == 'Male' ? require('../assets/check.png') : require('../assets/uncheck.png')} />
-                            <Text style={{
-                                fontFamily: fonts.normal,
-                                marginLeft: 40
-                            }}>Male</Text>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity onPress={() => updateGender('Female')}
-                            style={{
-                                flexDirection: 'row',
-                                alignItems: 'center',
-                                marginBottom: 5,
-                                paddingBottom: 5,
-                                borderBottomWidth: 1,
-                                borderBottomColor: 'black',
+                                alignItems: 'center'
                             }}>
-                            <Image source={gender == 'Female' ? require('../assets/check.png') : require('../assets/uncheck.png')} />
-                            <Text style={{
-                                fontFamily: fonts.normal,
-                                marginLeft: 40
-                            }}>Female</Text>
+                            <Image source={require('../assets/gender.png')}
+                                resizeMethod='resize'
+                                resizeMode='contain'
+                                style={{
+                                    width: 24,
+                                    height: 24,
+                                    tintColor: 'black',
+                                    marginRight: 20
+                                }}
+                            />
+                            <View>
+                                <Text style={{
+                                    fontFamily: fonts.bold,
+                                    fontSize: 16
+                                }}>Gender</Text>
+                                {gender == '' ?
+                                    <Text>{user.gender}</Text>
+                                    : <Text>{gender}</Text>}
+                            </View>
+                            <View style={{
+                                flex: 1
+                            }} />
+                            <Image source={require('../assets/next.png')}
+                                resizeMethod='resize'
+                                resizeMode='contain'
+                                style={{
+                                    width: 24,
+                                    height: 24
+                                }}
+                            />
                         </TouchableOpacity>
+                    </Card>
 
-                        <TouchableOpacity onPress={() => updateGender('Other')}
+                    <Card containerStyle={styles.cardContainer}>
+                        <TouchableOpacity
                             style={{
                                 flexDirection: 'row',
-                                alignItems: 'center',
+                                paddingVertical: 10
                             }}
-                        >
-                            <Image source={gender == 'Other' ? require('../assets/check.png') : require('../assets/uncheck.png')} />
+                            onPress={logoutFunction}>
+                            <Image source={require('../assets/logout.png')}
+                                resizeMethod='resize'
+                                resizeMode='contain'
+                                style={{
+                                    width: 24,
+                                    height: 24,
+                                    tintColor: 'black'
+                                }} />
                             <Text style={{
-                                fontFamily: fonts.normal,
-                                marginLeft: 40
-                            }}>Other</Text>
+                                fontFamily: fonts.bold,
+                                fontSize: 16,
+                                marginLeft: 20
+                            }}>Sign Out</Text>
                         </TouchableOpacity>
-                    </View>
-                </Modal>
+                    </Card>
 
-            </KeyboardAvoidingView>
+                    <Modal
+                        animationType='fade'
+                        transparent={true}
+                        visible={modalVisible}>
+                        <View style={{
+                            flexDirection: 'column',
+                            backgroundColor: 'white',
+                            position: 'absolute',
+                            top: '40%',
+                            padding: 10,
+                            width: '70%',
+                            alignSelf: 'center',
+                            borderRadius: 10,
+                            borderColor: colors.primaryBackground,
+                            borderWidth: 2
+                        }}>
+                            <Text style={{
+                                fontFamily: fonts.bold,
+                                fontSize: 16,
+                                marginBottom: 10
+                            }}>Please choose your gender.</Text>
+
+                            <TouchableOpacity onPress={() => updateGender('Male')}
+                                style={{
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                    paddingBottom: 5,
+                                    borderBottomWidth: 1,
+                                    borderBottomColor: 'black',
+                                    marginBottom: 5
+                                }}
+                            >
+                                <Image source={user.gender == 'Male' ? require('../assets/check.png') : require('../assets/uncheck.png')} />
+                                <Text style={{
+                                    fontFamily: fonts.normal,
+                                    marginLeft: 40
+                                }}>Male</Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity onPress={() => updateGender('Female')}
+                                style={{
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                    marginBottom: 5,
+                                    paddingBottom: 5,
+                                    borderBottomWidth: 1,
+                                    borderBottomColor: 'black',
+                                }}>
+                                <Image source={user.gender == 'Female' ? require('../assets/check.png') : require('../assets/uncheck.png')} />
+                                <Text style={{
+                                    fontFamily: fonts.normal,
+                                    marginLeft: 40
+                                }}>Female</Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity onPress={() => updateGender('Other')}
+                                style={{
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                }}
+                            >
+                                <Image source={user.gender == 'Other' ? require('../assets/check.png') : require('../assets/uncheck.png')} />
+                                <Text style={{
+                                    fontFamily: fonts.normal,
+                                    marginLeft: 40
+                                }}>Other</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </Modal>
+
+                    <View style={{
+                        flex: 1
+                    }} />
+
+                    <Button title='Update'
+                        onPress={updateInfo}
+                        containerStyle={styles.button}
+                        buttonStyle={{
+                            height: 50,
+                        }}
+                        disabled={change ? false : true}
+                    />
+                </KeyboardAvoidingView>
+            </TouchableWithoutFeedback>
         </SafeAreaView >
 
     )
@@ -413,4 +491,13 @@ const styles = StyleSheet.create({
         paddingHorizontal: 5,
         paddingVertical: 10,
     },
+
+    button: {
+        width: 200,
+        marginTop: 10,
+        alignSelf: 'center',
+        borderRadius: 10,
+        marginTop: 20,
+        marginBottom: 20
+    }
 })

@@ -16,6 +16,7 @@ import { SimplePaginationDot } from './SimplePaginationDot';
 const PostDetail = ({ navigation, route }) => {
 
     const [listImages, setListImages] = useState([])
+    const curUser = firebase.auth().currentUser
     const [loading, setLoading] = useState(true)
     const [time, setTime] = useState('')
     const [timeOnline, setTimeOnline] = useState('')
@@ -33,7 +34,7 @@ const PostDetail = ({ navigation, route }) => {
 
     const dataPost = {
         postID: route.params.postID,
-        postBranch: route.params.postBranch,
+        postBrand: route.params.postBrand,
         postCategory: route.params.postCategory,
         postDescription: route.params.postDescription,
         postStatus: route.params.postImages,
@@ -344,8 +345,8 @@ const PostDetail = ({ navigation, route }) => {
         fetchProduct()
     }, [route])
 
-    const detailPost = (postStatus, postID, postTimestamp, postBranch, postCategory, postDescription, postStatusOfProduct, postDisplayName, postTitle, postPrice, postOwner, postImages) => {
-        navigation.navigate("PostDetail", { postStatus, postID, postTimestamp, postBranch, postCategory, postDescription, postStatusOfProduct, postDisplayName, postTitle, postPrice, postOwner, postImages })
+    const detailPost = (postStatus, postID, postTimestamp, postBrand, postCategory, postDescription, postStatusOfProduct, postDisplayName, postTitle, postPrice, postOwner, postImages) => {
+        navigation.navigate("PostDetail", { postStatus, postID, postTimestamp, postBrand, postCategory, postDescription, postStatusOfProduct, postDisplayName, postTitle, postPrice, postOwner, postImages })
     }
 
     //Animated for Popup Menu
@@ -509,7 +510,7 @@ const PostDetail = ({ navigation, route }) => {
                         alignItems: 'center'
                     }}>
                         <Avatar rounded size={64}
-                            source={require('../assets/logo.jpg')}
+                            source={curUser.photoURL == null ? require('../assets/logo.jpg') : { uri: curUser.photoURL }}
                             avatarStyle={{
                                 borderWidth: 1,
                                 borderColor: colors.primaryBackground
@@ -629,8 +630,8 @@ const PostDetail = ({ navigation, route }) => {
                             <View style={{
                                 flexDirection: 'row'
                             }}>
-                                <Text style={styles.textContainer}>Branch: </Text>
-                                <Text>{route.params.postBranch}</Text>
+                                <Text style={styles.textContainer}>Brand: </Text>
+                                <Text>{route.params.postBrand}</Text>
                             </View>
 
                             <View style={{
@@ -673,7 +674,7 @@ const PostDetail = ({ navigation, route }) => {
                                 postID,
                                 postOwner,
                                 postDisplayName,
-                                postBranch,
+                                postBrand,
                                 postCategory,
                                 postDescription,
                                 postStatusOfProduct,
@@ -687,7 +688,7 @@ const PostDetail = ({ navigation, route }) => {
                                     onPress={detailPost}
                                     postOwner={postOwner}
                                     postDisplayName={postDisplayName}
-                                    postBranch={postBranch}
+                                    postBrand={postBrand}
                                     postCategory={postCategory}
                                     postDescription={postDescription}
                                     postStatusOfProduct={postStatusOfProduct}

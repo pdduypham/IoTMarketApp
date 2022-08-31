@@ -1,4 +1,4 @@
-import { Alert, Image, KeyboardAvoidingView, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Alert, Image, Keyboard, KeyboardAvoidingView, SafeAreaView, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native'
 import React, { useEffect, useLayoutEffect, useState } from 'react'
 import colors from '../constants/colors'
 import { Button, Card, Input } from 'react-native-elements'
@@ -50,85 +50,98 @@ const ChangePasswordScreen = ({ navigation }) => {
 
     return (
         <SafeAreaView style={styles.container}>
-            <KeyboardAvoidingView>
-                <Card containerStyle={styles.cardContainer}>
-                    <Input
-                        placeholder='Current Password'
-                        label='Current Password'
-                        onChangeText={(text) => setCurPassword(text)}
-                        renderErrorMessage={curPassword == '' ? true : false}
-                        errorMessage='This field must not empty.'
-                        errorStyle={{
-                            display: curPassword == '' ? 'flex' : 'none'
-                        }}
-                        inputContainerStyle={{
-                            paddingLeft: 10,
-                            borderWidth: 2,
-                            borderColor: colors.primaryBackground,
-                            borderRadius: 10,
-                        }}
-                        secureTextEntry={hide}
-                        rightIcon={
-                            <TouchableOpacity onPress={() => setHide(!hide)}>
-                                <Image source={hide ? require('../assets/hide.png') : require('../assets/show.png')}
-                                    resizeMethod='resize'
-                                    resizeMode='contain'
-                                    style={{
-                                        width: 24,
-                                        height: 24,
-                                        marginRight: 5
-                                    }}
-                                />
-                            </TouchableOpacity>
-                        }
-                    />
+            <TouchableWithoutFeedback style={{
+                flex: 1
+            }}
+                onPress={() => Keyboard.dismiss()}
+                accessible={false}
+            >
+                <KeyboardAvoidingView style={{
+                    flex: 1
+                }}>
 
-                    <Input
-                        placeholder='New Password'
-                        label='New Password'
-                        onChangeText={(text) => setNewPassword(text)}
-                        renderErrorMessage={newPassword == '' ? true : false}
-                        errorMessage='This field must not empty.'
-                        errorStyle={{
-                            display: newPassword == '' ? 'flex' : 'none'
-                        }}
-                        inputContainerStyle={{
-                            paddingLeft: 10,
-                            borderWidth: 2,
-                            borderColor: colors.primaryBackground,
-                            borderRadius: 10,
-                        }}
-                        secureTextEntry={hide}
-                    />
+                    <Card containerStyle={styles.cardContainer}>
+                        <Input
+                            placeholder='Current Password'
+                            label='Current Password'
+                            onChangeText={(text) => setCurPassword(text)}
+                            renderErrorMessage={curPassword == '' ? true : false}
+                            errorMessage='This field must not empty.'
+                            errorStyle={{
+                                display: curPassword == '' ? 'flex' : 'none'
+                            }}
+                            inputContainerStyle={{
+                                paddingLeft: 10,
+                                borderWidth: 2,
+                                borderColor: colors.primaryBackground,
+                                borderRadius: 10,
+                            }}
+                            secureTextEntry={hide}
+                            rightIcon={
+                                <TouchableOpacity onPress={() => setHide(!hide)}>
+                                    <Image source={hide ? require('../assets/hide.png') : require('../assets/show.png')}
+                                        resizeMethod='resize'
+                                        resizeMode='contain'
+                                        style={{
+                                            width: 24,
+                                            height: 24,
+                                            marginRight: 5
+                                        }}
+                                    />
+                                </TouchableOpacity>
+                            }
+                        />
 
-                    <Input
-                        placeholder='Re-type New Password'
-                        label='Re-type New Password'
-                        secureTextEntry={hide}
-                        onChangeText={(text) => setReNewPassword(text)}
-                        renderErrorMessage={reNewPassword == '' ? true : false}
-                        errorMessage='This field must not empty.'
-                        errorStyle={{
-                            display: reNewPassword == '' ? 'flex' : 'none'
+                        <Input
+                            placeholder='New Password'
+                            label='New Password'
+                            onChangeText={(text) => setNewPassword(text)}
+                            renderErrorMessage={newPassword == '' ? true : false}
+                            errorMessage='This field must not empty.'
+                            errorStyle={{
+                                display: newPassword == '' ? 'flex' : 'none'
+                            }}
+                            inputContainerStyle={{
+                                paddingLeft: 10,
+                                borderWidth: 2,
+                                borderColor: colors.primaryBackground,
+                                borderRadius: 10,
+                            }}
+                            secureTextEntry={hide}
+                        />
+
+                        <Input
+                            placeholder='Re-type New Password'
+                            label='Re-type New Password'
+                            secureTextEntry={hide}
+                            onChangeText={(text) => setReNewPassword(text)}
+                            renderErrorMessage={reNewPassword == '' ? true : false}
+                            errorMessage='This field must not empty.'
+                            errorStyle={{
+                                display: reNewPassword == '' ? 'flex' : 'none'
+                            }}
+                            inputContainerStyle={{
+                                paddingLeft: 10,
+                                borderWidth: 2,
+                                borderColor: colors.primaryBackground,
+                                borderRadius: 10,
+                            }}
+                        />
+                    </Card>
+                    <View style={{
+                        flex: 1
+                    }} />
+                    <Button title='Update'
+                        onPress={updatePassword}
+                        containerStyle={styles.button}
+                        buttonStyle={{
+                            height: 50,
                         }}
-                        inputContainerStyle={{
-                            paddingLeft: 10,
-                            borderWidth: 2,
-                            borderColor: colors.primaryBackground,
-                            borderRadius: 10,
-                        }}
+                        disabled={curPassword != '' && newPassword != '' && reNewPassword != '' ? false : true}
                     />
-                </Card>
-                <Button title='Update'
-                    onPress={updatePassword}
-                    containerStyle={styles.button}
-                    buttonStyle={{
-                        height: 50,
-                    }}
-                    disabled={curPassword != '' && newPassword != '' && reNewPassword != '' ? false : true}
-                />
-            </KeyboardAvoidingView>
-        </SafeAreaView>
+                </KeyboardAvoidingView>
+            </TouchableWithoutFeedback>
+        </SafeAreaView >
     )
 }
 
@@ -152,8 +165,8 @@ const styles = StyleSheet.create({
         width: 200,
         marginTop: 10,
         alignSelf: 'center',
-        marginBottom: 100,
         borderRadius: 10,
-        marginTop: 20
+        marginTop: 20,
+        marginBottom: 20
     }
 })

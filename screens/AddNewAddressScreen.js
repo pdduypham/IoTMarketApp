@@ -137,8 +137,16 @@ const AddNewAddressScreen = ({ navigation, route }) => {
 
     //Set Initial Value
     useLayoutEffect(() => {
-        curUserInfor.displayName != undefined && setReceiverName(curUserInfor.displayName)
-        curUserInfor.phoneNumber != undefined && setReceiverPhoneNumber(curUserInfor.phoneNumber)
+        // curUserInfor.displayName != undefined && setReceiverName(curUserInfor.displayName)
+        // curUserInfor.phoneNumber != undefined && setReceiverPhoneNumber(curUserInfor.phoneNumber)
+        firebase.firestore()
+            .collection('users')
+            .doc(curUserInfor.uid)
+            .get()
+            .then((data) => {
+                setReceiverName(data.data().displayName)
+                setReceiverPhoneNumber(data.data().phoneNumber)
+            })
     }, [])
 
     //Validate data
@@ -238,7 +246,7 @@ const AddNewAddressScreen = ({ navigation, route }) => {
                     <Card containerStyle={styles.cardContainer}>
                         <Input label={`Name`}
                             placeholder={'Name'}
-                            defaultValue={curUserInfor.displayName}
+                            defaultValue={receiverName}
                             onChangeText={(text) => setReceiverName(text)}
                             containerStyle={styles.input}
                             renderErrorMessage={receiverName == '' ? true : false}
@@ -249,7 +257,7 @@ const AddNewAddressScreen = ({ navigation, route }) => {
                         />
                         <Input label={`Phone Number`}
                             placeholder={'Phone Number'}
-                            defaultValue={curUserInfor.phoneNumber}
+                            defaultValue={receiverPhoneNumber}
                             onChangeText={(text) => setReceiverPhoneNumber(text)}
                             containerStyle={styles.input}
                             renderErrorMessage={receiverPhoneNumber == '' ? true : false}

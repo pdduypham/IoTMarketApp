@@ -59,7 +59,7 @@ const FavouritePostsScreen = ({ navigation }) => {
     const detailPost = (data) => {
         let postID = data.postID
         let postTimestamp = data.postTimestamp
-        let postBranch = data.postBranch
+        let postBrand = data.postBrand
         let postDescription = data.postDescription
         let postCategory = data.postCategory
         let postTitle = data.postTitle
@@ -70,7 +70,7 @@ const FavouritePostsScreen = ({ navigation }) => {
         let postImages = data.postImages
         let postStatus = data.postStatus
 
-        navigation.navigate("PostDetail", { postStatus, postID, postTimestamp, postBranch, postCategory, postDescription, postStatusOfProduct, postDisplayName, postTitle, postPrice, postOwner, postImages })
+        navigation.navigate("PostDetail", { postStatus, postID, postTimestamp, postBrand, postCategory, postDescription, postStatusOfProduct, postDisplayName, postTitle, postPrice, postOwner, postImages })
     }
 
     return (

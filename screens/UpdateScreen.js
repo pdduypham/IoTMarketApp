@@ -13,7 +13,7 @@ import RNFS from 'react-native-fs';
 
 const UpdateScreen = ({ navigation, route }) => {
 
-    const { postID, postBranch, postCategory, postDescription, postImages, postPrice, postStatusOfProduct, postTitle } = route.params.dataPost
+    const { postID, postBrand, postCategory, postDescription, postImages, postPrice, postStatusOfProduct, postTitle } = route.params.dataPost
     const [categories, setCategories] = useState('')
     const [loading, setLoading] = useState(true)
     let [price, setPrice] = useState('')
@@ -26,7 +26,7 @@ const UpdateScreen = ({ navigation, route }) => {
     const [transferred, setTransferred] = useState(0)
     const [uploading, setUploading] = useState(false)
     const dropdownCategoryRef = useRef({})
-    const dropdownBranchRef = useRef({})
+    const dropdownBrandRef = useRef({})
     const dropdownStatusRef = useRef({})
     const time = firebase.firestore.Timestamp.now().seconds
     const displayName = firebase.auth().currentUser.displayName
@@ -56,7 +56,7 @@ const UpdateScreen = ({ navigation, route }) => {
         setPrice(postPrice)
         setTitle(postTitle)
         setDescription(postDescription)
-        setSelectedBranch(postBranch)
+        setSelectedBrand(postBrand)
         setSelectedCategory(postCategory)
         setSelectedStatus(postStatusOfProduct)
     }, [navigation, route])
@@ -109,13 +109,13 @@ const UpdateScreen = ({ navigation, route }) => {
             title == undefined ||
             title == '' ||
             selectedCategory == undefined ||
-            selectedBranch == undefined ||
+            selectedBrand == undefined ||
             selectedStatus == undefined ||
             price == undefined || isNaN(price) ||
             price == '' ||
             description == undefined ||
             description == ''))
-    }, [description, price, selectedStatus, title, selectedCategory, selectedBranch])
+    }, [description, price, selectedStatus, title, selectedCategory, selectedBrand])
 
     //Update post.
     const uploadPost = async () => {
@@ -144,7 +144,7 @@ const UpdateScreen = ({ navigation, route }) => {
                 .set({
                     postTitle: title,
                     postCategory: selectedCategory,
-                    postBranch: selectedBranch,
+                    postBrand: selectedBrand,
                     postStatusOfProduct: selectedStatus,
                     postStatus: 0,
                     postPrice: price,
@@ -164,11 +164,11 @@ const UpdateScreen = ({ navigation, route }) => {
                     setListImages([]),
                     setPrice(undefined),
                     setDescription(undefined),
-                    setSelectedBranch(undefined),
+                    setSelectedBrand(undefined),
                     setSelectedStatus(undefined),
                     setSelectedCategory(undefined),
                     dropdownCategoryRef.current.reset(),
-                    dropdownBranchRef.current.reset(),
+                    dropdownBrandRef.current.reset(),
                     dropdownStatusRef.current.reset(),
                 )
         } else {
@@ -195,7 +195,7 @@ const UpdateScreen = ({ navigation, route }) => {
                                 .set({
                                     postTitle: title,
                                     postCategory: selectedCategory,
-                                    postBranch: selectedBranch,
+                                    postBrand: selectedBrand,
                                     postStatusOfProduct: selectedStatus,
                                     postStatus: 0,
                                     postPrice: price,
@@ -215,11 +215,11 @@ const UpdateScreen = ({ navigation, route }) => {
                                     setListImages([]),
                                     setPrice(undefined),
                                     setDescription(undefined),
-                                    setSelectedBranch(undefined),
+                                    setSelectedBrand(undefined),
                                     setSelectedStatus(undefined),
                                     setSelectedCategory(undefined),
                                     dropdownCategoryRef.current.reset(),
-                                    dropdownBranchRef.current.reset(),
+                                    dropdownBrandRef.current.reset(),
                                     dropdownStatusRef.current.reset(),
                                 )
                         }
@@ -250,12 +250,12 @@ const UpdateScreen = ({ navigation, route }) => {
     }
 
     const [selectedCategory, setSelectedCategory] = useState('')
-    const [selectedBranch, setSelectedBranch] = useState('')
+    const [selectedBrand, setSelectedBrand] = useState('')
     const [selectedStatus, setSelectedStatus] = useState('')
 
     //Data.
     const dataStatus = ['New', 'Used (Not maintained yet)', 'Used (Maintained)']
-    const dataBranch = ['Dell', 'Acer', 'Asus', 'HP']
+    const dataBrand = ['Dell', 'Acer', 'Asus', 'HP']
 
     return (
         <SafeAreaView style={styles.container}>
@@ -327,17 +327,17 @@ const UpdateScreen = ({ navigation, route }) => {
                             />
                         </View>
 
-                        {/* Select branch */}
+                        {/* Select Brand */}
                         <View style={{
                             marginHorizontal: 20,
                             marginTop: 10,
                             backgroundColor: colors.primaryBackground,
                             borderRadius: 10
                         }}>
-                            <SelectDropdown data={dataBranch}
-                                defaultButtonText={postBranch}
-                                defaultValue={postBranch}
-                                ref={dropdownBranchRef}
+                            <SelectDropdown data={dataBrand}
+                                defaultButtonText={postBrand}
+                                defaultValue={postBrand}
+                                ref={dropdownBrandRef}
                                 buttonStyle={{
                                     width: '100%',
                                     alignSelf: 'center',
@@ -348,7 +348,7 @@ const UpdateScreen = ({ navigation, route }) => {
                                 }}
                                 renderDropdownIcon={() =>
                                     <Image source={require('../assets/dropdown.png')} />}
-                                onSelect={(selectedItem, index) => { setSelectedBranch(selectedItem) }}
+                                onSelect={(selectedItem, index) => { setSelectedBrand(selectedItem) }}
                                 dropdownStyle={{
                                     borderRadius: 10,
                                 }}

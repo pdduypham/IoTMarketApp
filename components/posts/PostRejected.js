@@ -30,7 +30,7 @@ const PostRejected = ({ navigation, route }) => {
   const detailPost = (data) => {
     let postID = data.postID
     let postTimestamp = data.postTimestamp
-    let postBranch = data.postBranch
+    let postBrand = data.postBrand
     let postDescription = data.postDescription
     let postCategory = data.postCategory
     let postTitle = data.postTitle
@@ -42,7 +42,7 @@ const PostRejected = ({ navigation, route }) => {
     let postStatus = data.postStatus
     let postReason = data.postReason
 
-    navigation.navigate("PostDetail", { postReason, postStatus, postID, postTimestamp, postBranch, postCategory, postDescription, postStatusOfProduct, postDisplayName, postTitle, postPrice, postOwner, postImages })
+    navigation.navigate("PostDetail", { postReason, postStatus, postID, postTimestamp, postBrand, postCategory, postDescription, postStatusOfProduct, postDisplayName, postTitle, postPrice, postOwner, postImages })
   }
 
   useEffect(() => {

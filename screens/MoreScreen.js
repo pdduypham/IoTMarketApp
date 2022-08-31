@@ -46,7 +46,7 @@ const MoreScreen = ({ navigation }) => {
                 borderColor: colors.primaryBackground,
                 borderWidth: 1
               }}
-              source={require('../assets/logo.jpg')} />
+              source={user.photoURL == null ? require('../assets/logo.jpg') : { uri: user.photoURL }} />
             <View style={{
               flexDirection: 'column',
               flex: 1

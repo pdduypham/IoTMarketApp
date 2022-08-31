@@ -25,7 +25,7 @@ const UploadScreen = ({ navigation, route }) => {
     const [transferred, setTransferred] = useState(0)
     const [uploading, setUploading] = useState(false)
     const dropdownCategoryRef = useRef({})
-    const dropdownBranchRef = useRef({})
+    const dropdownBrandRef = useRef({})
     const dropdownStatusRef = useRef({})
     const time = firebase.firestore.Timestamp.now().seconds
     const displayName = firebase.auth().currentUser.displayName
@@ -61,13 +61,13 @@ const UploadScreen = ({ navigation, route }) => {
             title == undefined ||
             title == '' ||
             selectedCategory == undefined ||
-            selectedBranch == undefined ||
+            selectedBrand == undefined ||
             selectedStatus == undefined ||
             price == undefined || isNaN(price) ||
             price == '' ||
             description == undefined ||
             description == ''))
-    }, [description, price, selectedStatus, title, selectedCategory, selectedBranch])
+    }, [description, price, selectedStatus, title, selectedCategory, selectedBrand])
 
     //Upload post.
     const uploadPost = () => {
@@ -80,7 +80,7 @@ const UploadScreen = ({ navigation, route }) => {
                 .set({
                     postTitle: title,
                     postCategory: selectedCategory,
-                    postBranch: selectedBranch,
+                    postBrand: selectedBrand,
                     postStatusOfProduct: selectedStatus,
                     postStatus: 0,
                     postPrice: price,
@@ -107,11 +107,11 @@ const UploadScreen = ({ navigation, route }) => {
                     setListImages([]),
                     setPrice(undefined),
                     setDescription(undefined),
-                    setSelectedBranch(undefined),
+                    setSelectedBrand(undefined),
                     setSelectedStatus(undefined),
                     setSelectedCategory(undefined),
                     dropdownCategoryRef.current.reset(),
-                    dropdownBranchRef.current.reset(),
+                    dropdownBrandRef.current.reset(),
                     dropdownStatusRef.current.reset(),
                 )
         } else {
@@ -138,7 +138,7 @@ const UploadScreen = ({ navigation, route }) => {
                                 .set({
                                     postTitle: title,
                                     postCategory: selectedCategory,
-                                    postBranch: selectedBranch,
+                                    postBrand: selectedBrand,
                                     postStatusOfProduct: selectedStatus,
                                     postStatus: 0,
                                     postPrice: price,
@@ -165,11 +165,11 @@ const UploadScreen = ({ navigation, route }) => {
                                     setListImages([]),
                                     setPrice(undefined),
                                     setDescription(undefined),
-                                    setSelectedBranch(undefined),
+                                    setSelectedBrand(undefined),
                                     setSelectedStatus(undefined),
                                     setSelectedCategory(undefined),
                                     dropdownCategoryRef.current.reset(),
-                                    dropdownBranchRef.current.reset(),
+                                    dropdownBrandRef.current.reset(),
                                     dropdownStatusRef.current.reset(),
                                 )
                         }
@@ -200,12 +200,12 @@ const UploadScreen = ({ navigation, route }) => {
     }
 
     const [selectedCategory, setSelectedCategory] = useState()
-    const [selectedBranch, setSelectedBranch] = useState()
+    const [selectedBrand, setSelectedBrand] = useState()
     const [selectedStatus, setSelectedStatus] = useState()
 
     //Data.
     const dataStatus = ['New', 'Used (Not maintained yet)', 'Used (Maintained)']
-    const dataBranch = ['Dell', 'Acer', 'Asus', 'HP']
+    const dataBrand = ['Dell', 'Acer', 'Asus', 'HP']
 
     return (
         <SafeAreaView style={styles.container}>
@@ -275,16 +275,16 @@ const UploadScreen = ({ navigation, route }) => {
                             />
                         </View>
 
-                        {/* Select branch */}
+                        {/* Select Brand */}
                         <View style={{
                             marginHorizontal: 10,
                             marginTop: 10,
                             backgroundColor: colors.primaryBackground,
                             borderRadius: 10
                         }}>
-                            <SelectDropdown data={dataBranch}
-                                defaultButtonText='Branch'
-                                ref={dropdownBranchRef}
+                            <SelectDropdown data={dataBrand}
+                                defaultButtonText='Brand'
+                                ref={dropdownBrandRef}
                                 buttonStyle={{
                                     width: '100%',
                                     alignSelf: 'center',
@@ -295,7 +295,7 @@ const UploadScreen = ({ navigation, route }) => {
                                 }}
                                 renderDropdownIcon={() =>
                                     <Image source={require('../assets/dropdown.png')} />}
-                                onSelect={(selectedItem, index) => { setSelectedBranch(selectedItem) }}
+                                onSelect={(selectedItem, index) => { setSelectedBrand(selectedItem) }}
                                 dropdownStyle={{
                                     borderRadius: 10,
                                 }}
@@ -341,7 +341,7 @@ const UploadScreen = ({ navigation, route }) => {
                                     borderWidth: 2,
                                     borderColor: colors.primaryBackground,
                                     borderRadius: 10,
-                                    marginTop: 10
+                                    marginVertical: 10
                                 }} />
                         </View>
                     </View>
@@ -365,7 +365,8 @@ const UploadScreen = ({ navigation, route }) => {
                                     borderWidth: 2,
                                     borderColor: colors.primaryBackground,
                                     borderRadius: 10,
-                                    marginBottom: 10
+                                    marginBottom: 10,
+                                    marginTop: 5
                                 }} />
                         </View>
 
@@ -399,7 +400,6 @@ const UploadScreen = ({ navigation, route }) => {
                                     <Text style={{
                                         fontWeight: 'bold',
                                         fontSize: 20,
-                                        marginTop: 10
                                     }}>{transferred}% completed</Text>
                                     <ActivityIndicator size='large' color={colors.primary} />
                                 </View>
@@ -433,7 +433,6 @@ const styles = StyleSheet.create({
     },
     button: {
         width: 200,
-        marginTop: 10,
         alignSelf: 'center',
         marginBottom: 100,
         borderRadius: 10

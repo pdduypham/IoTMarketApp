@@ -69,8 +69,8 @@ const HomeScreen = ({ navigation }) => {
     return subscriber
   }, [])
 
-  const detailPost = (postStatus, postID, postTimestamp, postBranch, postCategory, postDescription, postStatusOfProduct, postDisplayName, postTitle, postPrice, postOwner, postImages) => {
-    navigation.navigate("PostDetail", { postStatus, postID, postTimestamp, postBranch, postCategory, postDescription, postStatusOfProduct, postDisplayName, postTitle, postPrice, postOwner, postImages })
+  const detailPost = (postStatus, postID, postTimestamp, postBrand, postCategory, postDescription, postStatusOfProduct, postDisplayName, postTitle, postPrice, postOwner, postImages) => {
+    navigation.navigate("PostDetail", { postStatus, postID, postTimestamp, postBrand, postCategory, postDescription, postStatusOfProduct, postDisplayName, postTitle, postPrice, postOwner, postImages })
   }
 
   //Count notifies
@@ -208,7 +208,7 @@ const HomeScreen = ({ navigation }) => {
               postID,
               postOwner,
               postDisplayName,
-              postBranch,
+              postBrand,
               postCategory,
               postDescription,
               postStatusOfProduct,
@@ -222,7 +222,7 @@ const HomeScreen = ({ navigation }) => {
                 onPress={detailPost}
                 postOwner={postOwner}
                 postDisplayName={postDisplayName}
-                postBranch={postBranch}
+                postBrand={postBrand}
                 postCategory={postCategory}
                 postDescription={postDescription}
                 postStatusOfProduct={postStatusOfProduct}

@@ -11,7 +11,7 @@ import fonts from '../constants/fonts'
 
 const Tab = createBottomTabNavigator()
 
-const screenOptions = ({ navigation }) => ({
+const screenOptions = () => ({
   tabBarStyle: {
     position: 'absolute',
     bottom: 20,
@@ -44,9 +44,10 @@ const CustomTabBarButton = ({ children, onPress }) => (
   }}
     onPress={onPress}>
     <View style={{
-      width: 24,
-      height: 24,
+      width: 64,
+      height: 64,
       borderRadius: 35,
+      marginHorizontal: 5,
       backgroundColor: 'white'
     }}>
       {children}
@@ -54,7 +55,7 @@ const CustomTabBarButton = ({ children, onPress }) => (
   </TouchableOpacity>
 )
 
-const TabBar = ({ navigation, route }) => {
+const TabBar = ({ route }) => {
   return (
     <Tab.Navigator screenOptions={screenOptions} initialRouteName={route.params.routeName}>
       <Tab.Screen name='Home' component={HomeScreen}
