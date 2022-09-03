@@ -3,10 +3,12 @@ import React, { useEffect, useLayoutEffect, useState } from 'react'
 import colors from '../constants/colors'
 import firebase from '@react-native-firebase/app'
 import PostItemHorizontal from '../components/posts/PostItemHorizontal'
+import { useIsFocused } from '@react-navigation/native'
 
 const FavouritePostsScreen = ({ navigation }) => {
 
     const [favouritePosts, setFavouritePosts] = useState([])
+    const isFocus = useIsFocused()
 
     //Navigation Header
     useLayoutEffect(() => {
@@ -24,7 +26,6 @@ const FavouritePostsScreen = ({ navigation }) => {
     //Get Favourite Posts
     useEffect(() => {
         let list = []
-        let list2 = []
         firebase.firestore()
             .collection('users')
             .doc(firebase.auth().currentUser.uid.toString())
@@ -43,7 +44,7 @@ const FavouritePostsScreen = ({ navigation }) => {
                         setFavouritePosts(data.docs.map((doc) => doc.data()))
                     })
             })
-    }, [navigation])
+    }, [navigation, isFocus])
 
     const detailPost = (data) => {
         let postID = data.postID

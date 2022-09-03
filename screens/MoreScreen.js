@@ -103,7 +103,8 @@ const MoreScreen = ({ navigation }) => {
       }}>
         <TouchableOpacity style={{
           flexDirection: 'row'
-        }}>
+        }}
+        onPress={() => navigation.navigate('ProductsBuy')}>
           <Image source={require('../assets/buy.png')}
             resizeMethod='resize'
             resizeMode='contain'

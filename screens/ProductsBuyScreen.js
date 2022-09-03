@@ -5,7 +5,7 @@ import firebase from '@react-native-firebase/app'
 import PostItemHorizontal from '../components/posts/PostItemHorizontal'
 import { useIsFocused } from '@react-navigation/native'
 
-const ProductsSellScreen = ({ navigation }) => {
+const ProductsBuyScreen = ({ navigation }) => {
 
     const curUser = firebase.auth().currentUser
     const [sellPosts, setSellPosts] = useState([])
@@ -25,12 +25,12 @@ const ProductsSellScreen = ({ navigation }) => {
         })
     })
 
-    //Get Sell Posts
+    //Get Buy Posts
     useEffect(() => {
         let list = []
         firebase.firestore()
             .collection('orders')
-            .where('sellerID', 'in', [curUser.uid.toString()])
+            .where('buyerID', 'in', [curUser.uid.toString()])
             .get()
             .then((postID) => {
                 postID.docs.forEach((doc) => {
@@ -77,7 +77,7 @@ const ProductsSellScreen = ({ navigation }) => {
     )
 }
 
-export default ProductsSellScreen
+export default ProductsBuyScreen
 
 const styles = StyleSheet.create({
     container: {

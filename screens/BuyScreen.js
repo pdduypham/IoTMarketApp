@@ -4,7 +4,7 @@ import { Avatar, Card } from 'react-native-elements'
 import fonts from '../constants/fonts'
 import colors from '../constants/colors'
 import firebase from '@react-native-firebase/app'
-import { useIsFocused } from '@react-navigation/native'
+import { StackActions, useIsFocused } from '@react-navigation/native'
 
 const BuyScreen = ({ navigation, route }) => {
 
@@ -122,7 +122,8 @@ const BuyScreen = ({ navigation, route }) => {
                             deliveryMethod: deliveryMethod
                         })
                         .then(async () => {
-                            navigation.replace('Ordering')
+                            navigation.dispatch(StackActions.popToTop())
+                            navigation.navigate('ProductsBuy')
                             await firebase.firestore()
                                 .collection('posts')
                                 .doc(route.params.data.postID)
