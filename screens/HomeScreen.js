@@ -18,6 +18,7 @@ const HomeScreen = ({ navigation }) => {
   const [refreshing, setRefreshing] = React.useState(false);
   const [countNotify, setCountNotify] = useState(0)
   const curUserInfo = firebase.auth().currentUser
+  const [searchInput, setSearchInput] = useState('')
 
   //Refresh
   const onRefresh = React.useCallback(() => {
@@ -115,6 +116,11 @@ const HomeScreen = ({ navigation }) => {
           }}>
             {/* Search bar */}
             <TextInput placeholder='Search...'
+              onChangeText={(text) => setSearchInput(text)}
+              onSubmitEditing={() => {
+                navigation.navigate('SearchResult', { keyword: searchInput })
+                setSearchInput('')
+              }}
               rightIcon={require('../assets/home.png')}
               style={{
                 ...styles.inputContainer,
@@ -143,9 +149,9 @@ const HomeScreen = ({ navigation }) => {
                 zIndex: 0,
                 position: 'absolute',
                 top: 5,
-                right: 27,
+                right: countNotify < 10 ? 27 : 23,
                 fontFamily: fonts.normal,
-                fontSize: 18
+                fontSize: 16
               }}>{countNotify}</Text>}
             </TouchableOpacity>
           </View>
@@ -182,7 +188,8 @@ const HomeScreen = ({ navigation }) => {
               <CategoryItem key={category.categoryID}
                 categoryName={category.categoryName}
                 categoryImage={category.categoryImage}
-                categoryID={category.categoryID} />
+                categoryID={category.categoryID}
+                navigation={navigation} />
             ))}
           </ScrollView>
         </View>

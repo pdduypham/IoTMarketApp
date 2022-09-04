@@ -1,15 +1,16 @@
-import { SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native'
-import React, { useEffect, useLayoutEffect, useState } from 'react'
+import { StyleSheet, Text, View } from 'react-native'
+import React, { useLayoutEffect } from 'react'
 import colors from '../constants/colors'
+import { SafeAreaView } from 'react-native'
+import { ScrollView } from 'react-native'
+import { useEffect } from 'react'
 import firebase from '@react-native-firebase/app'
+import { useState } from 'react'
 import PostItemHorizontal from '../components/posts/PostItemHorizontal'
-import { useIsFocused } from '@react-navigation/native'
 
-const ProductsBuyScreen = ({ navigation }) => {
+const SearchResultScreen = ({ navigation, route }) => {
 
-    const curUser = firebase.auth().currentUser
-    const [sellPosts, setSellPosts] = useState([])
-    const isFocus = useIsFocused()
+    const [posts, setPosts] = useState([])
 
     //Navigation Header
     useLayoutEffect(() => {
@@ -24,27 +25,29 @@ const ProductsBuyScreen = ({ navigation }) => {
         })
     })
 
-    //Get Buy Posts
+    //Get Posts
     useEffect(() => {
-        let list = []
-        firebase.firestore()
-            .collection('orders')
-            .where('buyerID', 'in', [curUser.uid.toString()])
-            .get()
-            .then((postID) => {
-                postID.docs.forEach((doc) => {
-                    list.push(doc.data().postID)
+        if (route.params.category != null) {
+            firebase.firestore()
+                .collection('posts')
+                .orderBy('postTimestamp', 'desc')
+                .where('postCategory', '==', route.params.category)
+                .get()
+                .then((post) => {
+                    setPosts(post.docs.map((doc) => doc.data()))
                 })
+        } else {
+            firebase.firestore()
+                .collection('posts')
+                .where('postCategory', 'array-contains', [route.params.keyword])
+                .orderBy('postTimestamp', 'desc')
+                .get()
+                .then((post) => {
+                    setPosts(post.docs.map((doc) => doc.data()))
+                })
+        }
 
-                firebase.firestore()
-                    .collection('posts')
-                    .where('postID', 'in', list)
-                    .get()
-                    .then((data) => {
-                        setSellPosts(data.docs.map((doc) => doc.data()))
-                    })
-            })
-    }, [navigation, isFocus])
+    }, [])
 
     const detailPost = (data) => {
         let postID = data.postID
@@ -66,9 +69,9 @@ const ProductsBuyScreen = ({ navigation }) => {
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView style={{
-                flex: 1
+                flex: 1,
             }}>
-                {sellPosts.map((data) =>
+                {posts.map((data) =>
                     <PostItemHorizontal data={data} key={data.postID} onPress={detailPost} />
                 )}
             </ScrollView>
@@ -76,11 +79,13 @@ const ProductsBuyScreen = ({ navigation }) => {
     )
 }
 
-export default ProductsBuyScreen
+export default SearchResultScreen
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        backgroundColor: 'white'
-    }
+        backgroundColor: 'white',
+        paddingLeft: 10,
+        paddingRight: 10,
+        flex: 1
+    },
 })

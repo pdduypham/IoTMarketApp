@@ -25,6 +25,7 @@ import FavouritePostsScreen from './screens/FavouritePostsScreen';
 import ProductsSellScreen from './screens/ProductsSellScreen';
 import ProductsBuyScreen from './screens/ProductsBuyScreen';
 import MoreScreen from './screens/MoreScreen';
+import SearchResultScreen from './screens/SearchResultScreen';
 
 
 const Stack = createNativeStackNavigator();
@@ -92,6 +93,7 @@ export default function App() {
         <Stack.Screen name='ProductsSell' component={ProductsSellScreen} />
         <Stack.Screen name='ProductsBuy' component={ProductsBuyScreen} />
         <Stack.Screen name='MoreScreen' component={MoreScreen} />
+        <Stack.Screen name='SearchResult' component={SearchResultScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
