@@ -27,6 +27,7 @@ import ProductsBuyScreen from './screens/ProductsBuyScreen';
 import MoreScreen from './screens/MoreScreen';
 import SearchResultScreen from './screens/SearchResultScreen';
 import ActivitieNotify from './components/notification/ActivitieNotify';
+import messaging from '@react-native-firebase/messaging';
 
 
 const Stack = createNativeStackNavigator();
@@ -35,6 +36,8 @@ const globalSreenOptions = {
 }
 
 export default function App() {
+
+  const [initialRoute, setInitialRoute] = useState('Home');
 
   useEffect(() => {
     AppState.addEventListener("change", _handleAppStateChange);
@@ -69,7 +72,35 @@ export default function App() {
 
   };
 
+  useEffect(() => {
+    // Assume a message-notification contains a "type" property in the data payload of the screen to open
 
+    messaging().onNotificationOpenedApp(remoteMessage => {
+      console.log(
+        'Notification caused app to open from background state:',
+        remoteMessage.notification,
+      );
+      // navigation.navigate(remoteMessage.data.type);
+    });
+
+    // Check whether an initial notification is available
+    messaging()
+      .getInitialNotification()
+      .then(remoteMessage => {
+        if (remoteMessage) {
+          console.log(
+            'Notification caused app to open from quit state:',
+            remoteMessage.notification,
+          );
+          // setInitialRoute(remoteMessage.data.type); // e.g. "Settings"
+        }
+        // setLoading(false);
+      });
+
+      messaging().onMessage(async remoteMessage =>{
+        console.log('asdas', remoteMessage)
+      })
+  }, []);
 
   return (
     <NavigationContainer>

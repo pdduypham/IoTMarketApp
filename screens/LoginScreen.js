@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { Button, Input } from 'react-native-elements'
 import auth from '@react-native-firebase/auth';
 import firebase from '@react-native-firebase/app';
+import messaging from '@react-native-firebase/messaging';
 
 const LoginScreen = ({ navigation }) => {
 
@@ -24,14 +25,18 @@ const LoginScreen = ({ navigation }) => {
     return unsubscribe
   }, [])
 
-  const signIn = () => {
+  const signIn = async () => {
+    await messaging().registerDeviceForRemoteMessages();
+    const token = await messaging().getToken();
+
     auth().signInWithEmailAndPassword(email, password)
       .then(async () => {
         await firebase.firestore()
           .collection('users')
           .doc(firebase.auth().currentUser.uid)
           .update({
-            onlineStatus: 'online'
+            onlineStatus: 'online',
+            deviceToken: token
           })
       })
       .catch((error) => alert(error))

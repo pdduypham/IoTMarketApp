@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { Card } from 'react-native-elements'
 import firebase from '@react-native-firebase/app'
 import fonts from '../../constants/fonts'
+import messaging from '@react-native-firebase/messaging';
 
 const NotifyItem = ({ navigation, data }) => {
 
@@ -23,8 +24,16 @@ const NotifyItem = ({ navigation, data }) => {
         }
     }, [])
 
-    const readNotify = () => {
+    const readNotify = async () => {
         navigation.navigate('ProductsSell')
+        !data.notifyStatus && await firebase.firestore()
+            .collection('users')
+            .doc(firebase.auth().currentUser.uid.toString())
+            .collection('notifies')
+            .doc(data.createAt.toString())
+            .update({
+                notifyStatus: true
+            })
     }
 
     return (
@@ -56,7 +65,7 @@ const NotifyItem = ({ navigation, data }) => {
                             fontFamily: fonts.bold,
                             fontSize: 16
                         }}>{data.postTitle}</Text>
-                        <Text>{data.buyerDisplayName} have {data.paymentType ? 'paid' : 'deposited'} for your product. Please check order.</Text>
+                        <Text>{data.buyerDisplayName} have {data.paymentType ? 'paid' : 'deposited'} for your product. Please check the order.</Text>
                     </View>
                 </View>
             </TouchableOpacity>

@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import { Button, Input } from 'react-native-elements'
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
+import messaging from '@react-native-firebase/messaging';
 
 const SignUpScreen = ({ navigation }) => {
 
@@ -14,7 +15,9 @@ const SignUpScreen = ({ navigation }) => {
     const signUp = () => {
         password == rePassword ?
             auth().createUserWithEmailAndPassword(email, password)
-                .then((authUser) => {
+                .then(async (authUser) => {
+                    await messaging().registerDeviceForRemoteMessages();
+                    const token = await messaging().getToken();
                     authUser.user.updateProfile({
                         displayName: name,
                     })
@@ -24,6 +27,7 @@ const SignUpScreen = ({ navigation }) => {
                         userIsAdmin: 0,
                         onlineStatus: 'online',
                         displayName: name,
+                        deviceToken: token,
                     })
                         .catch(error => alert('Error: ', error))
                 })

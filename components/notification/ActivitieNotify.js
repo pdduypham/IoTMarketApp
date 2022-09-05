@@ -2,12 +2,15 @@ import { SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import firebase from '@react-native-firebase/app'
 import NotifyItem from './NotifyItem'
+import { useIsFocused } from '@react-navigation/native'
 
 const ActivitieNotify = ({ navigation }) => {
 
     const curUserInfo = firebase.auth().currentUser
     const [notifies, setNotifies] = useState([])
+    const isFocus = useIsFocused()
 
+    //Get Notifies
     useEffect(() => {
         let list = []
         const fetchNotifies = async () =>
@@ -21,11 +24,11 @@ const ActivitieNotify = ({ navigation }) => {
                     setNotifies(list)
                 })
         fetchNotifies()
-    }, [])
+    }, [isFocus])
 
     return (
         <SafeAreaView style={styles.container}>
-            <ScrollView>
+            <ScrollView showsVerticalScrollIndicator={false} >
                 {notifies.map((notify) => (
                     <NotifyItem key={notify.id}
                         data={notify.data}

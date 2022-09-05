@@ -93,6 +93,7 @@ const BuyScreen = ({ navigation, route }) => {
         }
     }, [])
 
+    //Handle Buy Action
     const buyFunction = () => {
         Alert.alert('Confirm', 'Are you sure you want to buy this product?', [
             {
@@ -138,6 +139,7 @@ const BuyScreen = ({ navigation, route }) => {
                                 .doc(createAt.toString())
                                 .set({
                                     notifyType: true,
+                                    notifyStatus: false,
                                     paymentType: check,
                                     buyerID: curUser.uid,
                                     createAt: createAt,
