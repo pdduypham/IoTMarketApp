@@ -119,7 +119,7 @@ const HomeScreen = ({ navigation }) => {
               onChangeText={(text) => setSearchInput(text)}
               onSubmitEditing={() => {
                 navigation.navigate('SearchResult', { keyword: searchInput })
-                setSearchInput('')
+                // setSearchInput('')
               }}
               rightIcon={require('../assets/home.png')}
               style={{

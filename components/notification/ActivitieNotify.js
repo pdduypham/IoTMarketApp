@@ -28,7 +28,8 @@ const ActivitieNotify = ({ navigation }) => {
             <ScrollView>
                 {notifies.map((notify) => (
                     <NotifyItem key={notify.id}
-                        data={notify.data} />
+                        data={notify.data}
+                        navigation={navigation} />
                 ))}
             </ScrollView>
         </SafeAreaView>

@@ -39,7 +39,7 @@ const SearchResultScreen = ({ navigation, route }) => {
         } else {
             firebase.firestore()
                 .collection('posts')
-                .where('postCategory', 'array-contains', [route.params.keyword])
+                .where('postTitle', 'array-contains', route.params.keyword)
                 .orderBy('postTimestamp', 'desc')
                 .get()
                 .then((post) => {

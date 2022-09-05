@@ -4,7 +4,7 @@ import { Card } from 'react-native-elements'
 import firebase from '@react-native-firebase/app'
 import fonts from '../../constants/fonts'
 
-const NotifyItem = ({ data }) => {
+const NotifyItem = ({ navigation, data }) => {
 
     const [imageURL, setImageURL] = useState('https://i.pinimg.com/564x/64/ba/95/64ba9507533272c92924364a6c451ca2.jpg')
 
@@ -23,13 +23,17 @@ const NotifyItem = ({ data }) => {
         }
     }, [])
 
+    const readNotify = () => {
+        navigation.navigate('ProductsSell')
+    }
+
     return (
         <Card containerStyle={{
             ...styles.cardContainer,
             marginTop: 0,
             backgroundColor: !data.notifyStatus ? '#FFF8DC' : 'white',
         }}>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={readNotify}>
                 <View style={{
                     flexDirection: 'row'
                 }} >

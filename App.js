@@ -26,6 +26,7 @@ import ProductsSellScreen from './screens/ProductsSellScreen';
 import ProductsBuyScreen from './screens/ProductsBuyScreen';
 import MoreScreen from './screens/MoreScreen';
 import SearchResultScreen from './screens/SearchResultScreen';
+import ActivitieNotify from './components/notification/ActivitieNotify';
 
 
 const Stack = createNativeStackNavigator();
@@ -94,6 +95,7 @@ export default function App() {
         <Stack.Screen name='ProductsBuy' component={ProductsBuyScreen} />
         <Stack.Screen name='MoreScreen' component={MoreScreen} />
         <Stack.Screen name='SearchResult' component={SearchResultScreen} />
+        <Stack.Screen name='ActivitiveNotify' component={ActivitieNotify} />
       </Stack.Navigator>
     </NavigationContainer>
   );
