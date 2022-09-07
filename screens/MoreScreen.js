@@ -93,7 +93,7 @@ const MoreScreen = ({ navigation }) => {
           />
           <Text style={{
             fontFamily: fonts.bold
-          }}>Product for Sell</Text>
+          }}>Sell History</Text>
         </TouchableOpacity>
       </Card>
 
@@ -116,7 +116,7 @@ const MoreScreen = ({ navigation }) => {
             }} />
           <Text style={{
             fontFamily: fonts.bold
-          }}>Product for Buy</Text>
+          }}>Buy History</Text>
         </TouchableOpacity>
       </Card>
 
